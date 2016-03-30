@@ -8,7 +8,6 @@
 
 #include "globals.h"
 #include "ms_time.h"
-#include "video.h"
 #include "close.h"
 
 #define __VMUTEX &videoIn->common.mutex
