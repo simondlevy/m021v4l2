@@ -7,7 +7,6 @@ guvcview_OBJECTS = \
 	guvcview-ms_time.o \
 	guvcview-timers.o \
 	guvcview-m021_v4l2.o \
-	guvcview-video.o
 
 guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
 	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
@@ -45,9 +44,7 @@ guvcview_SOURCES = \
 	timers.h \
 	timers.c \
 	../m021_v4l2.h \
-	../m021_v4l2.c \
-	video.h \
-	video.c
+	../m021_v4l2.c 
 
 guvcview_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 				  -DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -84,9 +81,6 @@ guvcview-timers.o: timers.c *.h
 
 guvcview-m021_v4l2.o: ../m021_v4l2.c *.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-m021_v4l2.o ../m021_v4l2.c
-
-guvcview-video.o: video.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-video.o video.c
 
 clean:
 	rm -f guvcview *.o
