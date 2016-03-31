@@ -503,12 +503,6 @@ int main(int argc, char *argv[])
 	gwidget = g_new0(struct GWIDGET, 1);
 	gwidget->vid_widget_state = TRUE;
 
-	/* widgets */
-	GtkWidget *scroll1;
-	GtkWidget *Tab1;
-	GtkWidget *Tab1Label;
-	GtkWidget *Tab1Icon;
-
     if(!gtk_init_check(&argc, &argv))
     {
         g_printerr("can't open display\n");
@@ -554,33 +548,6 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    scroll1=gtk_scrolled_window_new(NULL,NULL);
-    gtk_scrolled_window_set_placement(GTK_SCROLLED_WINDOW(scroll1), GTK_CORNER_TOP_LEFT);
-
-    //viewport is only needed for gtk < 3.8
-    //for 3.8 and above s->table can be directly added to scroll1
-    GtkWidget* viewport = gtk_viewport_new(NULL,NULL);
-    gtk_widget_show(viewport);
-
-    gtk_container_add(GTK_CONTAINER(scroll1), viewport);
-    gtk_widget_show(scroll1);
-
-    Tab1 = gtk_grid_new();
-    Tab1Label = gtk_label_new(_("Image Controls"));
-    gtk_widget_show (Tab1Label);
-    /** check for files */
-    gchar* Tab1IconPath = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/image_controls.png",NULL);
-    /** don't test for file - use default empty image if load fails */
-    /** get icon image*/
-    Tab1Icon = gtk_image_new_from_file(Tab1IconPath);
-    g_free(Tab1IconPath);
-    gtk_widget_show (Tab1Icon);
-    gtk_grid_attach (GTK_GRID(Tab1), Tab1Icon, 0, 0, 1, 1);
-    gtk_grid_attach (GTK_GRID(Tab1), Tab1Label, 1, 0, 1, 1);
-
-    gtk_widget_show (Tab1);
-
-    /*------------------ Creating the video thread ---------------*/
     if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
     {
         g_printerr("Video thread creation failed\n");
