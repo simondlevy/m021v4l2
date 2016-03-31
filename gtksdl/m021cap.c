@@ -508,11 +508,6 @@ int main(int argc, char *argv[])
 	GtkWidget *Tab1;
 	GtkWidget *Tab1Label;
 	GtkWidget *Tab1Icon;
-	GtkWidget *ImgButton_Img;
-	GtkWidget *VidButton_Img;
-	GtkWidget *QButton_Img;
-	GtkWidget *HButtonBox;
-
 
     if(!gtk_init_check(&argc, &argv))
     {
