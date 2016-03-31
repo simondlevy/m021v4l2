@@ -9,6 +9,9 @@ run: capture
 clean:
 	rm -f capture *~ 
 
+edit:
+	vim capture.cpp
+
 commit:
 	git commit -a --allow-empty-message -m '' 
 	git push

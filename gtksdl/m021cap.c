@@ -44,7 +44,6 @@
 
 #define __MUTEX_TYPE pthread_mutex_t
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
-#define __GMUTEX &mutex
 
 static	__MUTEX_TYPE         mutex;      
 static int                   hwaccel;    
@@ -310,7 +309,7 @@ int main(int argc, char *argv[])
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
   	GError *error = NULL;	/* handle errors */
 
-	__INIT_MUTEX( __GMUTEX );
+	__INIT_MUTEX(&mutex);
 
 	caption = g_new(char, 32);
 
@@ -320,7 +319,6 @@ int main(int argc, char *argv[])
 	hwaccel = 1; //use hardware acceleration
 	framewidth = WIDTH;
 	frameheight = HEIGHT;
-
 
 	vid_widget_state = TRUE;
 
@@ -373,8 +371,6 @@ int main(int argc, char *argv[])
 
     // Install the unix signal handler pipe_signals for the signals of interest 
     signal(SIGINT, pipe_signals);
-    signal(SIGUSR1, pipe_signals);
-    signal(SIGUSR2, pipe_signals);
 
     //  convert the reading end of the pipe into a GIOChannel
     g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
