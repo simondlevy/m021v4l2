@@ -24,13 +24,7 @@ DEPS_CFLAGS = $(INCLUDES) -pthread -D_GNU_SOURCE=1 -D_REENTRANT -pthread
 
 DEPS_LIBS = -lgtk-3 -lgdk-3 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lSDL -lpthread -lv4l2 -ludev
 
-guvcview_SOURCES = \
-	defs.h \
-	guvcview.h \
-	guvcview.c \
-	jdatatype.h \
-	../m021_v4l2.h \
-	../m021_v4l2.c 
+guvcview_SOURCES = guvcview.c ../m021_v4l2.h ../m021_v4l2.c 
 
 guvcview_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 				  -DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -50,10 +44,10 @@ all: guvcview
 guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
 	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
 
-guvcview.o: guvcview.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
+guvcview.o: guvcview.c ../m021_v4l2.h
+	 $(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
 
-m021_v4l2.o: ../m021_v4l2.c *.h
+m021_v4l2.o: ../m021_v4l2.c ../m021_v4l2*.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
 
 clean:
