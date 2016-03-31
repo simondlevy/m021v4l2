@@ -38,19 +38,18 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 // -------------------------------------------------------------
 
-static gboolean  signalquit;
-static pthread_t video_thread;
-
 typedef struct {
 
+    VDIN_T * videoIn;
+    gboolean signalquit;
     pthread_t video_thread;
 
 } shared_t;
 
 static void shutdown(shared_t * data)
 {
-    signalquit = TRUE;
-    pthread_join(video_thread, NULL);
+    data->signalquit = TRUE;
+    pthread_join(data->video_thread, NULL);
     gtk_main_quit();
 }
 
@@ -117,7 +116,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
 static void * main_loop(void * arg)
 {
-    VDIN_T * videoIn = (VDIN_T *)arg;
+    shared_t * shared = (shared_t *)arg;
 
     SDL_Event event;
     SDL_Surface *pscreen = NULL;
@@ -126,14 +125,14 @@ static void * main_loop(void * arg)
 
     uint8_t *p = NULL;
 
-    signalquit = FALSE;
+    shared->signalquit = FALSE;
 
     overlay = video_init(&(pscreen));
 
     if(overlay == NULL)
     {
         g_print("FATAL: Couldn't create yuv overlay - please disable hardware accelaration\n");
-        signalquit = TRUE; // exit video thread
+        shared->signalquit = TRUE; // exit video thread
     }
     else
     {
@@ -145,10 +144,10 @@ static void * main_loop(void * arg)
         drect.h = pscreen->h;
     }
 
-    while (!signalquit)
+    while (!shared->signalquit)
     {
         SDL_LockYUVOverlay(overlay);
-        if (VD_GRAB(videoIn, p) < 0) {
+        if (VD_GRAB(shared->videoIn, p) < 0) {
             g_printerr("Error grabbing image \n");
             continue;
         }
@@ -161,7 +160,7 @@ static void * main_loop(void * arg)
             {
                 case SDL_QUIT:
                 case SDL_KEYDOWN:
-                    g_timeout_add(200, shutdown_timer, NULL);
+                    g_timeout_add(200, shutdown_timer, (gpointer)shared);
             }
         }
 
@@ -293,11 +292,13 @@ int main(int argc, char *argv[])
     // make sure gtk-button-images property is set to true (defaults to false in karmic)
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
-    VDIN_T * videoIn = g_new0(VDIN_T, 1);
+    shared_t * shared = g_new0(shared_t, 1);
 
-    VD_INIT("/dev/video0", videoIn);
+    shared->videoIn = g_new0(VDIN_T, 1);
 
-    if(pthread_create(&video_thread, NULL, main_loop, videoIn))
+    VD_INIT("/dev/video0", shared->videoIn);
+
+    if(pthread_create(&shared->video_thread, NULL, main_loop, shared))
     {
         g_printerr("Video thread creation failed\n");
     }
