@@ -38,7 +38,6 @@
 
 // -------------------------------------------------------------
 
-#define __THREAD_TYPE pthread_t
 #define __THREAD_CREATE(t,f,d) (pthread_create(t,NULL,f,d))
 #define __THREAD_JOIN(t) (pthread_join(t, NULL))
 
@@ -53,7 +52,7 @@ static gboolean              signalquit;
 static	int                  framewidth; 
 static	int                  frameheight;
 static VDIN_T *              videoIn;
-static __THREAD_TYPE         video_thread;
+static pthread_t             video_thread;
 static const SDL_VideoInfo * info;
 static	gboolean             vid_widget_state;
 
