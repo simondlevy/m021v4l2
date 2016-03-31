@@ -38,9 +38,9 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 // -------------------------------------------------------------
 
-static gboolean              signalquit;
-static pthread_t             video_thread;
-static VDIN_T *              videoIn;
+static gboolean  signalquit;
+static pthread_t video_thread;
+static VDIN_T *  videoIn;
 
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
 
@@ -151,14 +151,15 @@ static void *main_loop()
 
         while( SDL_PollEvent(&event) )
         {
-            if(event.type==SDL_QUIT)
+            switch (event.type) 
             {
-                g_timeout_add(200, shutdown_timer, NULL);
+                case SDL_QUIT:
+                case SDL_KEYDOWN:
+                    g_timeout_add(200, shutdown_timer, NULL);
             }
         }
 
-    } // loop end
-
+    }
 
     p = NULL;
 
