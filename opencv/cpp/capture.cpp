@@ -17,9 +17,10 @@ int main()
 
     while (true) {
 
-        m021_800x460_grab_bgr(&cap, buf);
+        //m021_800x460_grab_bgr(&cap, buf);
+        m021_800x460_grab_bgr(&cap, mat.data);
 
-        memcpy(mat.data, buf, 460*800*3);
+        //memcpy(mat.data, buf, 460*800*3);
 
         imshow("LI-USB30-M021", mat);
 
