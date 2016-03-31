@@ -120,12 +120,6 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	GtkWidget *Resolution;
-	GtkWidget *InpType;
-	GtkWidget *FrameRate;
-	GtkWidget *Devices;
-	GtkWidget *quitButton;
-
 	gboolean vid_widget_state;
 	int status_warning_id;
 };
@@ -590,58 +584,6 @@ int main(int argc, char *argv[])
     gtk_grid_attach (GTK_GRID(Tab1), Tab1Label, 1, 0, 1, 1);
 
     gtk_widget_show (Tab1);
-
-
-    /*---------------------- Add  Buttons ---------------------------------*/
-    HButtonBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_widget_set_halign (HButtonBox, GTK_ALIGN_FILL);
-    gtk_widget_set_hexpand (HButtonBox, TRUE);
-    gtk_button_box_set_layout(GTK_BUTTON_BOX(HButtonBox),GTK_BUTTONBOX_SPREAD);
-    gtk_box_set_homogeneous(GTK_BOX(HButtonBox),TRUE);
-
-    gtk_widget_show(HButtonBox);
-
-    //gwidget->quitButton=gtk_button_new_from_stock(GTK_STOCK_QUIT);
-
-    gchar* icon1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/guvcview.png",NULL);
-    g_free(icon1path);
-
-    /*add images to Buttons and top window*/
-    /*check for files*/
-
-    gchar* pix1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/movie.png",NULL);
-    if (g_file_test(pix1path,G_FILE_TEST_EXISTS))
-    {
-        VidButton_Img = gtk_image_new_from_file (pix1path);
-
-    }
-    //else g_print("couldn't load %s\n", pix1path);
-    gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
-    if (g_file_test(pix2path,G_FILE_TEST_EXISTS))
-    {
-        ImgButton_Img = gtk_image_new_from_file (pix2path);
-
-    }
-    g_free(pix1path);
-    g_free(pix2path);
-
-    gchar* pix3path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/close.png",NULL);
-    if (g_file_test(pix3path,G_FILE_TEST_EXISTS))
-    {
-        QButton_Img = gtk_image_new_from_file (pix3path);
-
-        gtk_button_set_image(GTK_BUTTON(gwidget->quitButton),QButton_Img);
-        gtk_button_set_image_position(GTK_BUTTON(gwidget->quitButton),GTK_POS_TOP);
-    }
-
-    /*must free path strings*/
-    g_free(pix3path);
-
-    gtk_box_pack_start(GTK_BOX(HButtonBox), gwidget->quitButton,TRUE,TRUE,2);
-
-    gtk_widget_show_all (gwidget->quitButton);
-
-
 
     /*------------------ Creating the video thread ---------------*/
     if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
