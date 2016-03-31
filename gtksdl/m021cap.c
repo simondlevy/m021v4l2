@@ -38,11 +38,6 @@
 
 // -------------------------------------------------------------
 
-#define __THREAD_JOIN(t) (pthread_join(t, NULL))
-
-#define __MUTEX_TYPE pthread_mutex_t
-#define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
-
 static	pthread_mutex_t      mutex;      
 static int                   hwaccel;    
 static int                   bpp;        
@@ -53,7 +48,7 @@ static	int                  frameheight;
 static VDIN_T *              videoIn;
 static pthread_t             video_thread;
 static const SDL_VideoInfo * info;
-static	gboolean             vid_widget_state;
+static gboolean              vid_widget_state;
 
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
 
@@ -306,7 +301,7 @@ int main(int argc, char *argv[])
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
   	GError *error = NULL;	/* handle errors */
 
-	__INIT_MUTEX(&mutex);
+    pthread_mutex_init(&mutex, NULL);
 
 	caption = g_new(char, 32);
 
