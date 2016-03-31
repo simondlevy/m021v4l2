@@ -24,13 +24,13 @@
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
 #define __GMUTEX &mutex
 
-static	__MUTEX_TYPE         mutex;      //global struct mutex
-static int                   hwaccel;    //use hardware acceleration
-static int                   bpp;        //current bytes per pixel
-static char *                caption;    //title bar caption
+static	__MUTEX_TYPE         mutex;      
+static int                   hwaccel;    
+static int                   bpp;        
+static char *                caption;    
 static gboolean              signalquit;
-static	int                  framewidth; //frame width
-static	int                  frameheight;//frame height
+static	int                  framewidth; 
+static	int                  frameheight;
 static VDIN_T *              videoIn;
 static __THREAD_TYPE         video_thread;
 static const SDL_VideoInfo * info;
@@ -40,7 +40,6 @@ static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE;
 
 static void shutdown (void)
 {
-	/* wait for the video thread */
     signalquit = TRUE;
     __THREAD_JOIN(video_thread);
 
@@ -49,10 +48,9 @@ static void shutdown (void)
 }
 static int shutdown_timer(gpointer data)
 {
-    /*stop video capture*/
     shutdown ();
     
-    return (FALSE);/*destroys the timer*/
+    return (FALSE);
 }
 
 static SDL_Overlay * video_init(SDL_Surface **pscreen)
@@ -62,14 +60,14 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
     if (*pscreen == NULL) //init SDL
     {
-        /*----------------------------- Test SDL capabilities ---------------------*/
+    
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
         {
             g_printerr("Couldn't initialize SDL: %s\n", SDL_GetError());
             exit(1);
         }
 
-        /* For this version, we will use hardware acceleration as default*/
+   
         if(hwaccel)
         {
             if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
@@ -100,10 +98,9 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
         SDL_WM_SetCaption(caption, NULL);
 
-        /* enable key repeat */
+        
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
     }
-    /*------------------------------ SDL init video ---------------------*/
 
     g_print("Checking video mode %ix%i@32bpp : ", width, height);
     int bpp = SDL_VideoModeOK( width, height, 32, SDL_VIDEO_Flags);
@@ -118,7 +115,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     {
         return (NULL);
     }
-    //use requested resolution for overlay even if not available as video mode
+    
     SDL_Overlay* overlay=NULL;
     overlay = SDL_CreateYUVOverlay(framewidth, frameheight, SDL_YUY2_OVERLAY, *pscreen);
 
@@ -126,12 +123,8 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     return (overlay);
 }
 
-/*-------------------------------- Main Video Loop ---------------------------*/
-/* run in a thread (SDL overlay)*/
 static void *main_loop()
 {
-    struct particle* particles = NULL; //for the particles video effect
-
     SDL_Event event;
     /*the main SDL surface*/
     SDL_Surface *pscreen = NULL;
@@ -189,8 +182,6 @@ static void *main_loop()
 
 
     p = NULL;
-    if(particles) g_free(particles);
-    particles=NULL;
 
     fflush(NULL);//flush all output buffers
 
