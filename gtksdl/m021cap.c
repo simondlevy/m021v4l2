@@ -14,32 +14,12 @@
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
 #define __GMUTEX &mutex
 
-#define MEDIUM
 
-#ifdef SMALL
-#define VDIN_T vdIn_640x480_t
-#define WIDTH 640
-#define HEIGHT 480
-#define VD_INIT m021_init_640x480
-#define VD_GRAB m021_grab_640x480_yuyv
-#else
-#ifdef MEDIUM
-#define VDIN_T vdIn_800x460_t
-#define WIDTH 800
-#define HEIGHT 460
-#define VD_INIT m021_init_800x460
-#define VD_GRAB m021_grab_800x460_yuyv
-#else
 #define VDIN_T vdIn_1280x720_t
 #define WIDTH 1280
 #define HEIGHT 720
 #define VD_INIT m021_init_1280x720
 #define VD_GRAB m021_grab_1280x720_yuyv
-#endif
-#endif
-
-
-typedef char * pchar;
 
 #define WINSIZEX 560
 #define WINSIZEY 560
@@ -59,7 +39,6 @@ static	int winwidth;           //control windoe width
 static	int winheight;          //control window height
 static	int framewidth;         //frame width
 static	int frameheight;        //frame height
-
 static VDIN_T *videoIn;
 static struct GWIDGET *gwidget;
 static __THREAD_TYPE video_thread;
@@ -174,11 +153,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     /*------------------------------ SDL init video ---------------------*/
 
     g_print("Checking video mode %ix%i@32bpp : ", width, height);
-    int bpp = SDL_VideoModeOK(
-        width,
-        height,
-        32,
-        SDL_VIDEO_Flags);
+    int bpp = SDL_VideoModeOK( width, height, 32, SDL_VIDEO_Flags);
 
     if(!bpp)
     {
