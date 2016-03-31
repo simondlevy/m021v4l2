@@ -19,13 +19,13 @@ static int getMilliCount(){
 int main()
 {
     // XXX not sure why we have to do this!
-    uint8_t dummy[4000];
+    //uint8_t dummy[4000];
 
     Mat mat(460, 800, CV_8UC3);
 
-    vdIn_800x460_t cap;
+    vdIn_800x460_t * cap = (vdIn_800x460_t *)malloc(sizeof(vdIn_800x460_t));
 
-    m021_800x460_init("/dev/video0", &cap);
+    m021_800x460_init("/dev/video0", cap);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
@@ -34,7 +34,7 @@ int main()
 
     while (true) {
 
-        m021_800x460_grab_bgr(&cap, mat.data);
+        m021_800x460_grab_bgr(cap, mat.data);
 
         mat *= 1.5;
 
