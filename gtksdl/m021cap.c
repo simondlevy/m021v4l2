@@ -48,8 +48,7 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	char *WVcaption;       //video preview title bar caption
-	char *mode;            //mjpg (default)
+	char *WVcaption;       //title bar caption
 	pchar* imgFPath;       //image path [0] - filename  [1] - dir
 	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
@@ -221,8 +220,6 @@ static int initGlobals (struct GLOBAL *global)
 
 	global->default_action=0;
 
-	global->mode = g_new(char, 6);
-	g_snprintf(global->mode, 5, "mjpg");
 
 	global->osdFlags = 0;
 
