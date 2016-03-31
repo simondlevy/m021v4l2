@@ -783,37 +783,34 @@ int main(int argc, char *argv[])
 
     if(!gtk_init_check(&argc, &argv))
     {
-        g_printerr("GUVCVIEW: can't open display: changing to no_display mode\n");
+        g_printerr("can't open display: changing to no_display mode\n");
         global->no_display = TRUE; /*if we can't open the display fallback to no_display mode*/
     }
 
-    if(!global->no_display)
+    g_set_application_name(_("LEOPARD Video Capture"));
+    g_setenv("PULSE_PROP_media.role", "video", TRUE); //needed for Pulse Audio
+
+    /* make sure the type is realized so that we can change the properties*/
+    g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
+    /* make sure gtk-button-images property is set to true (defaults to false in karmic)*/
+    g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
+
+    //get screen resolution
+    if((!global->desktop_w) || (!global->desktop_h))
     {
-        g_set_application_name(_("LEOPARD Video Capture"));
-        g_setenv("PULSE_PROP_media.role", "video", TRUE); //needed for Pulse Audio
-
-        /* make sure the type is realized so that we can change the properties*/
-        g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
-        /* make sure gtk-button-images property is set to true (defaults to false in karmic)*/
-        g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
-
-        //get screen resolution
-        if((!global->desktop_w) || (!global->desktop_h))
-        {
-            GdkScreen* screen = NULL;
-            global->desktop_w = gdk_screen_get_width(screen);
-            global->desktop_h = gdk_screen_get_height(screen);
-        }
-
-        if((global->winwidth > global->desktop_w) && (global->desktop_w > 0))
-            global->winwidth = global->desktop_w;
-        if((global->winheight > global->desktop_h) && (global->desktop_h > 0))
-            global->winheight = global->desktop_h;
-
+        GdkScreen* screen = NULL;
+        global->desktop_w = gdk_screen_get_width(screen);
+        global->desktop_h = gdk_screen_get_height(screen);
     }
 
-	/*----------------------- init videoIn structure --------------------------*/
-	videoIn = g_new0(VDIN_T, 1);
+    if((global->winwidth > global->desktop_w) && (global->desktop_w > 0))
+        global->winwidth = global->desktop_w;
+    if((global->winheight > global->desktop_h) && (global->desktop_h > 0))
+        global->winheight = global->desktop_h;
+
+
+    /*----------------------- init videoIn structure --------------------------*/
+    videoIn = g_new0(VDIN_T, 1);
 
     /*set structure with all global allocations*/
     all_data.pdata = pdata;
@@ -871,16 +868,16 @@ int main(int argc, char *argv[])
         /*---------------------- Add  Buttons ---------------------------------*/
         HButtonBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
         gtk_widget_set_halign (HButtonBox, GTK_ALIGN_FILL);
-		gtk_widget_set_hexpand (HButtonBox, TRUE);
+        gtk_widget_set_hexpand (HButtonBox, TRUE);
         gtk_button_box_set_layout(GTK_BUTTON_BOX(HButtonBox),GTK_BUTTONBOX_SPREAD);
         gtk_box_set_homogeneous(GTK_BOX(HButtonBox),TRUE);
 
-		gtk_widget_show(HButtonBox);
+        gtk_widget_show(HButtonBox);
 
-		/** Attach the buttons */
-		gtk_box_pack_start(GTK_BOX(gwidget->maintable), HButtonBox, FALSE, TRUE, 2);
-		/** Attach the notebook (tabs) */
-		gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->boxh, TRUE, TRUE, 2);
+        /** Attach the buttons */
+        gtk_box_pack_start(GTK_BOX(gwidget->maintable), HButtonBox, FALSE, TRUE, 2);
+        /** Attach the notebook (tabs) */
+        gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->boxh, TRUE, TRUE, 2);
 
         //gwidget->quitButton=gtk_button_new_from_stock(GTK_STOCK_QUIT);
 
