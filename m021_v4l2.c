@@ -684,12 +684,10 @@ static void bayer16_convert_bayer8(int16_t *inbuf, uint8_t *outbuf, int width, i
 	}
 }
 
-static void frame_decode_bgr(vdIn_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
-        uint8_t * frame, int width, int height)
-{
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
-    bayer_to_bgr24 (tmpbuffer1, tmpbuffer, width, height);
-    memcpy(frame, tmpbuffer, width * height * 3);
+static void frame_decode_bgr(vdIn_t * vd, uint8_t * frame) {
+    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
+    bayer_to_bgr24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+    memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
 }
 
 static void frame_decode_yuyv(vdIn_t * vd, uint8_t * frame)
@@ -844,6 +842,16 @@ int m021_init_1280x720(const char * devname, vdIn_t * videoIn)
 	return m021_init(devname, videoIn, 1280, 720);
 }
 
+int m021_init_800x460(const char * devname, vdIn_t * videoIn)
+{
+	return m021_init(devname, videoIn, 800, 460);
+}
+
+int m021_init_640x480(const char * devname, vdIn_t * videoIn)
+{
+	return m021_init(devname, videoIn, 640, 480);
+}
+
 int m021_grab_yuyv(vdIn_t * videoIn, uint8_t * frame)
 {
     int ret = m021_grab(videoIn);
@@ -856,10 +864,10 @@ int m021_grab_yuyv(vdIn_t * videoIn, uint8_t * frame)
 
 int m021_grab_bgr(vdIn_t * videoIn, uint8_t *frame)
 {
-    int ret = 0; //m021_grab_common(&videoIn->common);
+    int ret = m021_grab(videoIn);
 
-    //if (!ret)
-     //   frame_decode_bgr(&videoIn->common, videoIn->framebuffer, videoIn->tmpbuffer, videoIn->tmpbuffer1, frame, 1280, 720);
+    if (!ret)
+        frame_decode_bgr(videoIn, frame);
 
     return ret;
 }
