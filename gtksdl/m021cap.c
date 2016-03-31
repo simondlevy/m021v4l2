@@ -5,12 +5,6 @@
 
 #include "../m021_v4l2.h"
 
-#ifdef WORDS_BIGENDIAN
-  #define BIGENDIAN 1
-#else
-  #define BIGENDIAN 0
-#endif
-
 #define IO_MMAP 1
 #define IO_READ 2
 
@@ -281,9 +275,6 @@ static int initGlobals (struct GLOBAL *global)
 	global->WVcaption = g_new(char, 32);
 
 	g_sprintf(global->WVcaption,"LI-USB30-M021");
-
-	//global->videoBuff = NULL;
-	//global->video_buff_size = VIDBUFF_SIZE;
 
 	global->image_inc = 1; //increment filename by default
 	global->vid_inc = 1;   //increment filename by default
