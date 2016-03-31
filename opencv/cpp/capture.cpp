@@ -15,7 +15,6 @@ static int getMilliCount(){
     return nCount;
 }
 
-
 int main()
 {
     Mat mat(460, 800, CV_8UC3);
