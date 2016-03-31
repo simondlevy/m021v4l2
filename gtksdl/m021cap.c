@@ -37,27 +37,7 @@ static VDIN_T *              videoIn;
 static struct GWIDGET *      gwidget;
 static __THREAD_TYPE         video_thread;
 static const SDL_VideoInfo * info;
-static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; static int initGlobals (void)
-{
-	__INIT_MUTEX( __GMUTEX );
-
-	caption = g_new(char, 32);
-
-	g_sprintf(caption,"LI-USB30-M021");
-
-	bpp = 0; //current bytes per pixel
-	hwaccel = 1; //use hardware acceleration
-	desktop_w = 0;
-	desktop_h = 0;
-	framewidth = WIDTH;
-	frameheight = HEIGHT;
-
-	/* reset with videoIn parameters */
-	return (0);
-}
-
-/* Must set this as global so they */
-/* can be set from any callback.   */
+static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
 
 struct GWIDGET
 {
@@ -365,7 +345,19 @@ int main(int argc, char *argv[])
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
   	GError *error = NULL;	/* handle errors */
 
-	initGlobals();
+	__INIT_MUTEX( __GMUTEX );
+
+	caption = g_new(char, 32);
+
+	g_sprintf(caption,"LI-USB30-M021");
+
+	bpp = 0; //current bytes per pixel
+	hwaccel = 1; //use hardware acceleration
+	desktop_w = 0;
+	desktop_h = 0;
+	framewidth = WIDTH;
+	frameheight = HEIGHT;
+
 
 	/*---------------------------------- Allocations -------------------------*/
 
