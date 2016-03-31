@@ -26,17 +26,6 @@
 #include <pthread.h>
 #include "defs.h"
 
-typedef struct _sndDev
-{
-	int id;
-	int chan;
-	int samprate;
-	char name[512];
-	char description[256];
-	//PaTime Hlatency;
-	//PaTime Llatency;
-} sndDev;
-
 typedef struct _VidBuff
 {
 	gboolean used;
@@ -68,7 +57,6 @@ struct GLOBAL
 	pchar* imgFPath;       //image path [0] - filename  [1] - dir
 	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
-	sndDev *Sound_IndexDev;//list of sound input devices
 	BYTE *jpeg;            // jpeg buffer
 
 	int64_t av_drift;      // amount of A/V time correction

@@ -137,7 +137,6 @@ int closeGlobals(struct GLOBAL *global)
 	g_free (global->WVcaption);
 	g_free(global->vidfile);
 	g_free(global->mode);
-	g_free(global->Sound_IndexDev);
 	__CLOSE_MUTEX( __GMUTEX );
 	__CLOSE_MUTEX( __FMUTEX );
 	__CLOSE_COND( __GCOND );
