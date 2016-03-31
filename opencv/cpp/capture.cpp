@@ -18,9 +18,6 @@ static int getMilliCount(){
 
 int main()
 {
-    // XXX not sure why we have to do this!
-    //uint8_t dummy[4000];
-
     Mat mat(460, 800, CV_8UC3);
 
     vdIn_800x460_t * cap = (vdIn_800x460_t *)malloc(sizeof(vdIn_800x460_t));
@@ -45,6 +42,8 @@ int main()
         if (cvWaitKey(1) == 27)
             break;
     }
+
+    free(cap);
 
     double duration = (getMilliCount() - start) / 1000.;
 
