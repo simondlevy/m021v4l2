@@ -39,7 +39,6 @@
 #include <portaudio.h>
 
 #include "config.h"
-#include "ms_time.h"
 #include "globals.h"
 #include "guvcview.h"
 

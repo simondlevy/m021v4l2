@@ -1,6 +1,6 @@
 CC = gcc
 
-guvcview_OBJECTS = globals.o guvcview.o ms_time.o m021_v4l2.o
+guvcview_OBJECTS = globals.o guvcview.o m021_v4l2.o
 
 guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
 	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
@@ -31,8 +31,6 @@ guvcview_SOURCES = \
 	guvcview.h \
 	guvcview.c \
 	jdatatype.h \
-	ms_time.h \
-	ms_time.c \
 	../m021_v4l2.h \
 	../m021_v4l2.c 
 
@@ -59,9 +57,6 @@ globals.o: globals.c *.h
 
 guvcview.o: guvcview.c *.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
-
-ms_time.o: ms_time.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o ms_time.o ms_time.c
 
 m021_v4l2.o: ../m021_v4l2.c *.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
