@@ -35,18 +35,6 @@ typedef unsigned long      ULONG;
 
 typedef char* pchar;
 
-typedef float SAMPLE;
-
-/* 0 is device default*/
-static const int stdSampleRates[] =
-{
-	0, 8000,  9600, 11025, 12000,
-	16000, 22050, 24000,
-	32000, 44100, 48000,
-	88200, 96000,
-	-1   /* Negative terminated list. */
-};
-
 #define DEBUG (0)
 
 #define INCPANTILT 64 // 1°
