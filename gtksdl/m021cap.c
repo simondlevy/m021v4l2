@@ -47,7 +47,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	int bpp;               //current bytes per pixel
 	int hwaccel;           //use hardware acceleration
 	int desktop_w;         //Desktop width
 	int desktop_h;         //Desktop height
@@ -59,6 +58,7 @@ struct GLOBAL
 
 static struct GLOBAL global;
 
+static int bpp;               //current bytes per pixel
 static	char *caption;       //title bar caption
 static gboolean signalquit;
 
@@ -100,7 +100,7 @@ static int initGlobals (void)
 
 	g_sprintf(caption,"LI-USB30-M021");
 
-	global.bpp = 0; //current bytes per pixel
+	bpp = 0; //current bytes per pixel
 	global.hwaccel = 1; //use hardware acceleration
 	global.desktop_w = 0;
 	global.desktop_h = 0;
@@ -235,13 +235,13 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     else
     {
         g_print("OK \n");
-        global.bpp = bpp;
+        bpp = bpp;
     }
 
     *pscreen = SDL_SetVideoMode(
         width,
         height,
-        global.bpp,
+        bpp,
         SDL_VIDEO_Flags);
 
     if(*pscreen == NULL)
@@ -305,11 +305,7 @@ static void *main_loop()
             //printf("event type:%i  event key:%i\n", event.type, event.key.keysym.scancode);
             if(event.type==SDL_VIDEORESIZE)
             {
-                pscreen =
-                    SDL_SetVideoMode(event.resize.w,
-                            event.resize.h,
-                            global.bpp,
-                            SDL_VIDEO_Flags);
+                pscreen = SDL_SetVideoMode(event.resize.w, event.resize.h, bpp, SDL_VIDEO_Flags);
                 drect.w = event.resize.w;
                 drect.h = event.resize.h;
             }
