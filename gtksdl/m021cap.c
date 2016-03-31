@@ -51,17 +51,8 @@ struct GLOBAL
 	char *caption;       //title bar caption
 
 	int64_t av_drift;      // amount of A/V time correction
-	UINT64 Vidstarttime;   //video start time
-	UINT64 Vidstoptime;    //video stop time
-	QWORD v_ts;            //video time stamp
-	QWORD a_ts;            //audio time stamp
-	uint64_t vid_inc;      //video name increment
-	uint64_t framecount;   //video frame count
-	DWORD frmCount;        //frame count for fps display calc
-	uint64_t image_inc;    //image name increment
 
 	int vid_sleep;         //video thread sleep time (0 by default)
-	int Capture_time;      //video capture time passed through argument options with -t
 	int imgFormat;         //image format: 0-"jpg", 1-"png", 2-"bmp"
 	int VidCodec;          //0-"MJPG"  1-"YUY2" 2-"DIB "(rgb32) 3-....
 	int VidCodec_ID;       //lavc codec ID
@@ -159,24 +150,16 @@ static int initGlobals (struct GLOBAL *global)
 	__INIT_MUTEX( __GMUTEX );
 	__INIT_MUTEX( __FMUTEX );
 
-	const gchar *home = g_get_home_dir();
-
 	global->caption = g_new(char, 32);
 
 	g_sprintf(global->caption,"LI-USB30-M021");
 
-	global->image_inc = 1; //increment filename by default
-	global->vid_inc = 1;   //increment filename by default
 
 	global->vid_sleep=0;
-	global->Capture_time=0; /*vid capture time passed through argument options with -t */
 	global->lprofile=0; /* flag for -l command line option*/
 
 
 	global->av_drift=0;
-	global->Vidstarttime=0;
-	global->Vidstoptime=0;
-	global->framecount=0;
 	global->w_ind=0;
 	global->r_ind=0;
 
@@ -188,7 +171,6 @@ static int initGlobals (struct GLOBAL *global)
 	global->image_timer=0;
 	global->image_npics=9999;/*default max number of captures*/
 	global->image_picn =0;
-	global->frmCount=0;
 	global->PanStep=2;/*2 degree step for Pan*/
 	global->TiltStep=2;/*2 degree step for Tilt*/
 	global->DispFps=0;
@@ -822,17 +804,6 @@ int main(int argc, char *argv[])
     else
     {
         gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
-    }
-
-    if (global->Capture_time > 0)
-    {	/*vid capture enabled from start*/
-        gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Stop Video (V)"));
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), TRUE);
-    }
-    else
-    {
-        gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Cap. Video (V)"));
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), FALSE);
     }
 
     /*add images to Buttons and top window*/
