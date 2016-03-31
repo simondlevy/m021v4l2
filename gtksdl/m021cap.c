@@ -115,7 +115,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     }
 
     SDL_Overlay* overlay=NULL;
-    overlay = SDL_CreateYUVOverlay(framewidth, frameheight, SDL_YUY2_OVERLAY, *pscreen);
+    overlay = SDL_CreateYUVOverlay(WIDTH, HEIGHT, SDL_YUY2_OVERLAY, *pscreen);
 
     SDL_ShowCursor(SDL_DISABLE);
     return overlay;
