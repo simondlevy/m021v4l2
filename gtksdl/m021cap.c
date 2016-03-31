@@ -48,7 +48,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	char *confPath;        //configuration file path
 	char *vidfile;         //video filename passed through argument options with -n
 	char *WVcaption;       //video preview title bar caption
 	char *mode;            //mjpg (default)
@@ -118,7 +117,6 @@ struct GLOBAL
 	gboolean Sound_enable; //Enable/disable Sound (Def. enable)
 	gboolean AFcontrol;    //Autofocus control flag (exists or not)
 	gboolean autofocus;    //autofocus flag (enable/disable)
-	gboolean flg_config;   //flag confPath if set in args
 	gboolean lprofile;     //flag for command line -l option
 	gboolean flg_npics;    //flag npics if set in args
 	gboolean flg_hwaccel;  //flag hwaccel if set in args
@@ -170,14 +168,6 @@ static int initGlobals (struct GLOBAL *global)
 	__INIT_MUTEX( __FMUTEX );
 
 	const gchar *home = g_get_home_dir();
-
-	global->confPath = g_strjoin("/", home, ".config", "guvcview", NULL);
-	int ret = g_mkdir_with_parents(global->confPath, 0777);
-	if(ret)
-		fprintf(stderr, "Couldn't create configuration dir: %s \n", global->confPath);
-
-	g_free(global->confPath);
-	global->confPath = g_strjoin("/", home, ".config", "guvcview", "video0", NULL);
 
 	global->vidFPath = g_new(pchar, 2);
 
@@ -1007,5 +997,3 @@ int main(int argc, char *argv[])
     g_print("Closing GTK... OK\n");
     return 0;
 }
-
-
