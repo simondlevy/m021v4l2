@@ -35,33 +35,11 @@ typedef unsigned long      ULONG;
 
 typedef char* pchar;
 
-#define DEBUG (0)
-
-#define INCPANTILT 64 // 1°
-
 #define WINSIZEX 560
 #define WINSIZEY 560
 
-#define AUTO_EXP 8
-#define MAN_EXP	1
-
-#define DHT_SIZE 432
-
 #define DEFAULT_WIDTH 640
 #define DEFAULT_HEIGHT 480
-
-#define DEFAULT_FPS	25
-#define DEFAULT_FPS_NUM 1
-#define SDL_WAIT_TIME 30 /*SDL - Thread loop sleep time */
-
-/*clip value between 0 and 255*/
-#define CLIP(value) (BYTE)(((value)>0xFF)?0xff:(((value)<0)?0:(value)))
-
-/*MAX macro - gets the bigger value*/
-#ifndef MAX
-#define MAX(a,b) (((a) < (b)) ? (b) : (a))
-#endif
-
 
 struct GLOBAL
 {
@@ -153,7 +131,6 @@ struct GLOBAL
 	gboolean flg_mode;     //flag mode if set in args
 	gboolean flg_imgFPath; //flag imgFPath if set in args
 	gboolean flg_FpsCount; //flag FpsCount if set in args
-	gboolean debug;        //debug mode flag (--verbose)
 	gboolean VidButtPress;
 	gboolean control_only; //if set don't stream video (enables image control in other apps e.g. ekiga, skype, mplayer)
 	gboolean change_res;   //flag for reseting resolution
@@ -199,8 +176,6 @@ static int initGlobals (struct GLOBAL *global)
 	__INIT_MUTEX( __GMUTEX );
 	__INIT_MUTEX( __FMUTEX );
 	__INIT_COND( __GCOND );   /* Initialized video buffer semaphore */
-
-	global->debug = DEBUG;
 
 	const gchar *home = g_get_home_dir();
 
@@ -437,10 +412,8 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	/* wait for the video thread */
 	if(!(control_only))
 	{
-		if (global->debug) g_print("Shuting Down Thread\n");
         global->signalquit = TRUE;
 		__THREAD_JOIN(all_data->video_thread);
-		if (global->debug) g_print("Video Thread finished\n");
 	}
 
 	/* destroys fps timer*/
@@ -484,7 +457,6 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
 
     if (*pscreen == NULL) //init SDL
     {
-        char driver[128];
         /*----------------------------- Test SDL capabilities ---------------------*/
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
         {
@@ -504,20 +476,10 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
             if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=0");
         }
 
-        if (SDL_VideoDriverName(driver, sizeof(driver)) && global->debug)
-        {
-            g_print("Video driver: %s\n", driver);
-        }
-
         info = SDL_GetVideoInfo();
-
-        if (info->wm_available && global->debug) g_print("A window manager is available\n");
 
         if (info->hw_available)
         {
-            if (global->debug)
-                g_print("Hardware surfaces are available (%dK video memory)\n", info->video_mem);
-
             SDL_VIDEO_Flags |= SDL_HWSURFACE;
             SDL_VIDEO_Flags |= SDL_DOUBLEBUF;
         }
@@ -528,23 +490,11 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
 
         if (info->blit_hw)
         {
-            if (global->debug) g_print("Copy blits between hardware surfaces are accelerated\n");
-
             SDL_VIDEO_Flags |= SDL_ASYNCBLIT;
         }
 
         if(!global->desktop_w) global->desktop_w = info->current_w; //get desktop width
         if(!global->desktop_h) global->desktop_h = info->current_h; //get desktop height
-
-        if (global->debug)
-        {
-            if (info->blit_hw_CC) g_print ("Colorkey blits between hardware surfaces are accelerated\n");
-            if (info->blit_hw_A) g_print("Alpha blits between hardware surfaces are accelerated\n");
-            if (info->blit_sw) g_print ("Copy blits from software surfaces to hardware surfaces are accelerated\n");
-            if (info->blit_sw_CC) g_print ("Colorkey blits from software surfaces to hardware surfaces are accelerated\n");
-            if (info->blit_sw_A) g_print("Alpha blits from software surfaces to hardware surfaces are accelerated\n");
-            if (info->blit_fill) g_print("Color fills on hardware surfaces are accelerated\n");
-        }
 
         SDL_WM_SetCaption(global->WVcaption, NULL);
 
@@ -553,8 +503,6 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
     }
     /*------------------------------ SDL init video ---------------------*/
 
-    if(global->debug)
-        g_print("(Desktop resolution = %ix%i)\n", global->desktop_w, global->desktop_h);
     g_print("Checking video mode %ix%i@32bpp : ", width, height);
     int bpp = SDL_VideoModeOK(
         width,
@@ -582,7 +530,6 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
     else
     {
         g_print("OK \n");
-        if ((bpp != 32) && global->debug) g_print("recomended color depth = %i\n", bpp);
         global->bpp = bpp;
     }
 
@@ -680,12 +627,10 @@ static void *main_loop(void *data)
     }/*loop end*/
 
 
-    if (global->debug) g_print("Thread terminated...\n");
     p = NULL;
     if(particles) g_free(particles);
     particles=NULL;
 
-    if (global->debug) g_print("cleaning Thread allocations: 100%%\n");
     fflush(NULL);//flush all output buffers
 
     if(!global->no_display)
@@ -697,7 +642,6 @@ static void *main_loop(void *data)
         SDL_Quit();
     }
 
-    if (global->debug) g_print("Video thread completed\n");
 
     global = NULL;
     videoIn = NULL;
@@ -886,8 +830,6 @@ int main(int argc, char *argv[])
             global->desktop_w = gdk_screen_get_width(screen);
             global->desktop_h = gdk_screen_get_height(screen);
         }
-        if(global->debug)
-            g_print("Screen resolution is (%d x %d)\n", global->desktop_w, global->desktop_h);
 
         if((global->winwidth > global->desktop_w) && (global->desktop_w > 0))
             global->winwidth = global->desktop_w;
@@ -1119,10 +1061,6 @@ int main(int argc, char *argv[])
   	/* register the reading end with the event loop */
   	g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, &all_data);
 
-
-	/* The last thing to get called (gtk or glib main loop)*/
-	if(global->debug)
-		g_print("Starting main loop \n");
 
 	if(!global->no_display)
 		gtk_main();
