@@ -47,7 +47,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	char *caption;       //title bar caption
 	int bpp;               //current bytes per pixel
 	int hwaccel;           //use hardware acceleration
 	int desktop_w;         //Desktop width
@@ -59,6 +58,8 @@ struct GLOBAL
 };
 
 static struct GLOBAL global;
+
+static	char *caption;       //title bar caption
 static gboolean signalquit;
 
 #define MEDIUM
@@ -95,9 +96,9 @@ static int initGlobals (void)
 	__INIT_MUTEX( __GMUTEX );
 	__INIT_MUTEX( __FMUTEX );
 
-	global.caption = g_new(char, 32);
+	caption = g_new(char, 32);
 
-	g_sprintf(global.caption,"LI-USB30-M021");
+	g_sprintf(caption,"LI-USB30-M021");
 
 	global.bpp = 0; //current bytes per pixel
 	global.hwaccel = 1; //use hardware acceleration
@@ -200,7 +201,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
         if(!global.desktop_w) global.desktop_w = info->current_w; //get desktop width
         if(!global.desktop_h) global.desktop_h = info->current_h; //get desktop height
 
-        SDL_WM_SetCaption(global.caption, NULL);
+        SDL_WM_SetCaption(caption, NULL);
 
         /* enable key repeat */
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
