@@ -120,16 +120,6 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	//group list for menu video codecs
-	GSList *vgroup;
-
-	//group list for menu audio codecs
-	GSList *agroup;
-
-	//menu top widgets
-	GtkWidget *menu_photo_top;
-	GtkWidget *menu_video_top;
-
 	GtkWidget *status_bar;
 
 	GtkWidget *label_SndAPI;
