@@ -49,7 +49,6 @@ struct GLOBAL
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
 	char *caption;       //title bar caption
-	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
 	BYTE *jpeg;            // jpeg buffer
 
@@ -163,12 +162,6 @@ static int initGlobals (struct GLOBAL *global)
 	__INIT_MUTEX( __FMUTEX );
 
 	const gchar *home = g_get_home_dir();
-
-	global->profile_FPath = g_new(pchar, 2);
-
-	global->profile_FPath[1] = g_strdup(home);
-
-	global->profile_FPath[0] = g_strdup("default.gpfl");
 
 	global->caption = g_new(char, 32);
 
