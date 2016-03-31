@@ -781,19 +781,16 @@ int main(int argc, char *argv[])
 	GtkWidget *HButtonBox;
 
 
-	if(!global->no_display)
-	{
-		if(!gtk_init_check(&argc, &argv))
-		{
-			g_printerr("GUVCVIEW: can't open display: changing to no_display mode\n");
-			global->no_display = TRUE; /*if we can't open the display fallback to no_display mode*/
-		}
-	}
+    if(!gtk_init_check(&argc, &argv))
+    {
+        g_printerr("GUVCVIEW: can't open display: changing to no_display mode\n");
+        global->no_display = TRUE; /*if we can't open the display fallback to no_display mode*/
+    }
 
     if(!global->no_display)
     {
-		g_set_application_name(_("LEOPARD Video Capture"));
-		g_setenv("PULSE_PROP_media.role", "video", TRUE); //needed for Pulse Audio
+        g_set_application_name(_("LEOPARD Video Capture"));
+        g_setenv("PULSE_PROP_media.role", "video", TRUE); //needed for Pulse Audio
 
         /* make sure the type is realized so that we can change the properties*/
         g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
