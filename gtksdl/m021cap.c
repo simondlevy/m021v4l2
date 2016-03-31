@@ -38,12 +38,10 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 // -------------------------------------------------------------
 
-static	pthread_mutex_t      mutex;      
-static pthread_t             video_thread;
-
 static int                   bpp;        
 static char *                caption;    
 static gboolean              signalquit;
+static pthread_t             video_thread;
 static VDIN_T *              videoIn;
 
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
@@ -282,6 +280,7 @@ int main(int argc, char *argv[])
     long fd_flags; 	    /* used to change the pipe into non-blocking mode */
     GError *error = NULL;	/* handle errors */
 
+    pthread_mutex_t mutex;      
     pthread_mutex_init(&mutex, NULL);
 
     caption = g_new(char, 32);
