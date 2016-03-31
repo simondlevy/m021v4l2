@@ -120,16 +120,6 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	GtkWidget *status_bar;
-
-	GtkWidget *label_SndAPI;
-	GtkWidget *SndAPI;
-	GtkWidget *SndEnable;
-	GtkWidget *SndSampleRate;
-	GtkWidget *SndDevice;
-	GtkWidget *SndNumChan;
-	GtkWidget *SndComp;
-	/*must be called from main loop if capture timer enabled*/
 	GtkWidget *ImageType;
 	GtkWidget *CapImageButt;
 	GtkWidget *CapVidButt;
@@ -665,11 +655,6 @@ int main(int argc, char *argv[])
 
     gtk_widget_show_all (gwidget->quitButton);
 
-
-    gwidget->status_bar = gtk_statusbar_new();
-    gwidget->status_warning_id = gtk_statusbar_get_context_id (GTK_STATUSBAR(gwidget->status_bar), "warning");
-
-    gtk_widget_show(gwidget->status_bar);
 
 
     /*------------------ Creating the video thread ---------------*/
