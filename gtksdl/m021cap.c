@@ -950,16 +950,12 @@ int main(int argc, char *argv[])
     gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->status_bar, FALSE, FALSE, 2);
 
 
-    if (!control_only) /*control_only exclusion*/
+    /*------------------ Creating the video thread ---------------*/
+    if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
     {
-        /*------------------ Creating the video thread ---------------*/
-        if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
-        {
-            g_printerr("Video thread creation failed\n");
+        g_printerr("Video thread creation failed\n");
 
-        }
-
-    }/*end of control_only exclusion*/
+    }
 
     /*
      * Set the unix signal handling up.
