@@ -47,7 +47,6 @@ static gboolean              signalquit;
 static	int                  framewidth; 
 static	int                  frameheight;
 static VDIN_T *              videoIn;
-static const SDL_VideoInfo * info;
 static gboolean              vid_widget_state;
 
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
@@ -82,7 +81,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
         if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
         if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=1");
 
-        info = SDL_GetVideoInfo();
+        const SDL_VideoInfo * info = SDL_GetVideoInfo();
 
         if (info->hw_available)
         {
