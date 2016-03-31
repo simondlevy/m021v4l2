@@ -48,6 +48,7 @@ static void shutdown(shared_t * data)
 {
     data->signalquit = TRUE;
     pthread_join(data->video_thread, NULL);
+    m021_free(data->videoIn);
     gtk_main_quit();
 }
 

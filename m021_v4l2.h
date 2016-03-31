@@ -89,5 +89,7 @@ int m021_grab_yuyv(vdIn_t * vdIn, uint8_t * frame);
 
 int m021_grab_bgr(vdIn_t * vdIn, uint8_t * frame);
 
+void m021_free(vdIn_t * vdIn);
+
 #endif
 

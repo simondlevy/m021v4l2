@@ -42,7 +42,7 @@ int main()
             break;
     }
 
-    free(cap);
+    m021_free(cap);
 
     double duration = (getMilliCount() - start) / 1000.;
 
