@@ -91,7 +91,8 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
             SDL_VIDEO_Flags |= SDL_ASYNCBLIT;
         }
 
-        SDL_WM_SetCaption(caption, NULL);
+        SDL_WM_SetCaption("LI-USB30-M021", NULL);
+        //g_sprintf(caption,"LI-USB30-M021");
 
 
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
