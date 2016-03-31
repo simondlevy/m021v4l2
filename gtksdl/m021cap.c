@@ -394,7 +394,7 @@ static int signal_pipe[2];
  * non-blocking mode. If it is full (which can only happen when the
  * event loop stops working) signals will be dropped.
  */
-void pipe_signals(int signal)
+static void pipe_signals(int signal)
 {
   if(write(signal_pipe[1], &signal, sizeof(int)) != sizeof(int))
     {
@@ -408,7 +408,7 @@ void pipe_signals(int signal)
  *   G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
  * the pointer d is always NULL
  */
-gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer data)
+static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer data)
 {
   GError *error = NULL;		/* for error handling */
 
