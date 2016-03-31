@@ -84,27 +84,29 @@ struct GLOBAL
 #endif
 #endif
 
-#define __AMUTEX &pdata->mutex
-#define __GMUTEX &global->mutex
-#define __FMUTEX &global->file_mutex
+static struct GLOBAL global;
 
-static int initGlobals (struct GLOBAL *global)
+#define __AMUTEX &pdata->mutex
+#define __GMUTEX &global.mutex
+#define __FMUTEX &global.file_mutex
+
+static int initGlobals (void)
 {
 	__INIT_MUTEX( __GMUTEX );
 	__INIT_MUTEX( __FMUTEX );
 
-	global->caption = g_new(char, 32);
+	global.caption = g_new(char, 32);
 
-	g_sprintf(global->caption,"LI-USB30-M021");
+	g_sprintf(global.caption,"LI-USB30-M021");
 
-	global->bpp = 0; //current bytes per pixel
-	global->hwaccel = 1; //use hardware acceleration
-	global->desktop_w = 0;
-	global->desktop_h = 0;
-	global->width = DEFAULT_WIDTH;
-	global->height = DEFAULT_HEIGHT;
-	global->winwidth=WINSIZEX;
-	global->winheight=WINSIZEY;
+	global.bpp = 0; //current bytes per pixel
+	global.hwaccel = 1; //use hardware acceleration
+	global.desktop_w = 0;
+	global.desktop_h = 0;
+	global.width = DEFAULT_WIDTH;
+	global.height = DEFAULT_HEIGHT;
+	global.winwidth=WINSIZEX;
+	global.winheight=WINSIZEY;
 
 	/* reset with videoIn parameters */
 	return (0);
@@ -124,61 +126,38 @@ struct GWIDGET
 	int status_warning_id;
 };
 
-struct ALL_DATA
-{
-	struct paRecordData *pdata;
-	struct GLOBAL *global;
-	struct focusData *AFdata;
-	VDIN_T *videoIn;
-	struct VideoFormatData *videoF;
-	struct GWIDGET *gwidget;
-	struct VidState *s;
-	__THREAD_TYPE video_thread;
-	__THREAD_TYPE IO_thread;
-};
-
+static VDIN_T *videoIn;
+static struct GWIDGET *gwidget;
+static __THREAD_TYPE video_thread;
 
 static Uint32 SDL_VIDEO_Flags =
         SDL_ANYFORMAT | SDL_RESIZABLE;
 
 static const SDL_VideoInfo *info;
 
-static void
-shutd (gint restart, struct ALL_DATA *all_data)
+static void shutdown (void)
 {
-	struct GWIDGET *gwidget = all_data->gwidget;
-	//gchar *EXEC_CALL = all_data->EXEC_CALL;
-
-	//struct paRecordData *pdata = all_data->pdata;
-	struct GLOBAL *global = all_data->global;
-
 	/* wait for the video thread */
-    global->signalquit = TRUE;
-    __THREAD_JOIN(all_data->video_thread);
+    global.signalquit = TRUE;
+    __THREAD_JOIN(video_thread);
 
-    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
-
-	gwidget = NULL;
-	global = NULL;
+    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global.winwidth),&(global.winheight));//mainwin or widget
 
 	gtk_main_quit();
 
 }
-static int shutd_timer(gpointer data)
+static int shutdown_timer(gpointer data)
 {
     /*stop video capture*/
-    shutd (0, data);
+    shutdown ();
     
     return (FALSE);/*destroys the timer*/
 }
 
-static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
+static SDL_Overlay * video_init(SDL_Surface **pscreen)
 {
-    struct ALL_DATA *all_data = (struct ALL_DATA *) data;
-    struct GLOBAL *global = all_data->global;
-
-    int width = global->width;
-    int height = global->height;
+    int width = global.width;
+    int height = global.height;
 
     if (*pscreen == NULL) //init SDL
     {
@@ -190,7 +169,7 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
         }
 
         /* For this version, we will use hardware acceleration as default*/
-        if(global->hwaccel)
+        if(global.hwaccel)
         {
             if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
             if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=1");
@@ -218,10 +197,10 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
             SDL_VIDEO_Flags |= SDL_ASYNCBLIT;
         }
 
-        if(!global->desktop_w) global->desktop_w = info->current_w; //get desktop width
-        if(!global->desktop_h) global->desktop_h = info->current_h; //get desktop height
+        if(!global.desktop_w) global.desktop_w = info->current_w; //get desktop width
+        if(!global.desktop_h) global.desktop_h = info->current_h; //get desktop height
 
-        SDL_WM_SetCaption(global->caption, NULL);
+        SDL_WM_SetCaption(global.caption, NULL);
 
         /* enable key repeat */
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
@@ -239,10 +218,10 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
     {
         g_print("Not available \n");
         /*resize video mode*/
-        if ((width > global->desktop_w) || (height > global->desktop_h))
+        if ((width > global.desktop_w) || (height > global.desktop_h))
         {
-            width = global->desktop_w; /*use desktop video resolution*/
-            height = global->desktop_h;
+            width = global.desktop_w; /*use desktop video resolution*/
+            height = global.desktop_h;
         }
         else
         {
@@ -255,13 +234,13 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
     else
     {
         g_print("OK \n");
-        global->bpp = bpp;
+        global.bpp = bpp;
     }
 
     *pscreen = SDL_SetVideoMode(
         width,
         height,
-        global->bpp,
+        global.bpp,
         SDL_VIDEO_Flags);
 
     if(*pscreen == NULL)
@@ -270,7 +249,7 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
     }
     //use requested resolution for overlay even if not available as video mode
     SDL_Overlay* overlay=NULL;
-    overlay = SDL_CreateYUVOverlay(global->width, global->height,
+    overlay = SDL_CreateYUVOverlay(global.width, global.height,
         SDL_YUY2_OVERLAY, *pscreen);
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -279,13 +258,8 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
 
 /*-------------------------------- Main Video Loop ---------------------------*/
 /* run in a thread (SDL overlay)*/
-static void *main_loop(void *data)
+static void *main_loop()
 {
-    struct ALL_DATA *all_data = (struct ALL_DATA *) data;
-
-    struct GLOBAL *global = all_data->global;
-    VDIN_T *videoIn = all_data->videoIn;
-
     struct particle* particles = NULL; //for the particles video effect
 
     SDL_Event event;
@@ -296,14 +270,14 @@ static void *main_loop(void *data)
 
     BYTE *p = NULL;
 
-    global->signalquit = FALSE;
+    global.signalquit = FALSE;
 
-    overlay = video_init(data, &(pscreen));
+    overlay = video_init(&(pscreen));
 
     if(overlay == NULL)
     {
         g_print("FATAL: Couldn't create yuv overlay - please disable hardware accelaration\n");
-        global->signalquit = TRUE; /*exit video thread*/
+        global.signalquit = TRUE; /*exit video thread*/
     }
     else
     {
@@ -315,7 +289,7 @@ static void *main_loop(void *data)
         drect.h = pscreen->h;
     }
 
-    while (!global->signalquit)
+    while (!global.signalquit)
     {
         SDL_LockYUVOverlay(overlay);
         if (VD_GRAB(videoIn, p) < 0) {
@@ -333,7 +307,7 @@ static void *main_loop(void *data)
                 pscreen =
                     SDL_SetVideoMode(event.resize.w,
                             event.resize.h,
-                            global->bpp,
+                            global.bpp,
                             SDL_VIDEO_Flags);
                 drect.w = event.resize.w;
                 drect.h = event.resize.h;
@@ -341,7 +315,7 @@ static void *main_loop(void *data)
             if(event.type==SDL_QUIT)
             {
                 //shutDown
-                g_timeout_add(200, shutd_timer, all_data);
+                g_timeout_add(200, shutdown_timer, NULL);
             }
         }
 
@@ -360,25 +334,9 @@ static void *main_loop(void *data)
     SDL_Quit();
 
 
-    global = NULL;
     videoIn = NULL;
     return ((void *) 0);
 }
-
-
-/*----------------------------- globals --------------------------------------*/
-
-struct paRecordData *pdata = NULL;
-struct GLOBAL *global = NULL;
-struct focusData *AFdata = NULL;
-VDIN_T *videoIn = NULL;
-struct VideoFormatData *videoF = NULL;
-
-/*controls data*/
-struct VidState *s = NULL;
-
-/*global widgets*/
-struct GWIDGET *gwidget = NULL;
 
 /*
  * Unix signals that are cought are written to a pipe. The pipe connects
@@ -447,8 +405,7 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
      switch (buf.signal)
      {
      	case SIGINT:
-     		shutd(0, (struct ALL_DATA *)data);//shutDown
-            //shutd (gint restart, struct ALL_DATA *all_data)
+     		shutdown();
      		break;
     	default:
     		printf("guvcview signal %d caught\n", buf.signal);
@@ -484,13 +441,7 @@ int main(int argc, char *argv[])
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
   	GError *error = NULL;	/* handle errors */
 
-	/*structure containing all shared data - passed in callbacks*/
-	struct ALL_DATA all_data;
-	memset(&all_data,0,sizeof(struct ALL_DATA));
-
-	/*allocate global variables*/
-	global = g_new0(struct GLOBAL, 1);
-	initGlobals(global);
+	initGlobals();
 
 	/*---------------------------------- Allocations -------------------------*/
 
@@ -511,37 +462,28 @@ int main(int argc, char *argv[])
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
     //get screen resolution
-    if((!global->desktop_w) || (!global->desktop_h))
+    if((!global.desktop_w) || (!global.desktop_h))
     {
         GdkScreen* screen = NULL;
-        global->desktop_w = gdk_screen_get_width(screen);
-        global->desktop_h = gdk_screen_get_height(screen);
+        global.desktop_w = gdk_screen_get_width(screen);
+        global.desktop_h = gdk_screen_get_height(screen);
     }
 
-    if((global->winwidth > global->desktop_w) && (global->desktop_w > 0))
-        global->winwidth = global->desktop_w;
-    if((global->winheight > global->desktop_h) && (global->desktop_h > 0))
-        global->winheight = global->desktop_h;
+    if((global.winwidth > global.desktop_w) && (global.desktop_w > 0))
+        global.winwidth = global.desktop_w;
+    if((global.winheight > global.desktop_h) && (global.desktop_h > 0))
+        global.winheight = global.desktop_h;
 
 
     /*----------------------- init videoIn structure --------------------------*/
     videoIn = g_new0(VDIN_T, 1);
 
-    /*set structure with all global allocations*/
-    all_data.pdata = pdata;
-    all_data.global = global;
-    all_data.AFdata = AFdata; /*not allocated yet*/
-    all_data.videoIn = videoIn;
-    all_data.videoF = videoF;
-    all_data.gwidget = gwidget;
-    all_data.s = s;
-
-    global->width =  WIDTH;
-    global->height = HEIGHT;
+    global.width =  WIDTH;
+    global.height = HEIGHT;
 
     VD_INIT("/dev/video0", videoIn);
 
-    if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
+    if( __THREAD_CREATE(&video_thread, main_loop, NULL))
     {
         g_printerr("Video thread creation failed\n");
 
@@ -602,13 +544,12 @@ int main(int argc, char *argv[])
     }
 
     /* register the reading end with the event loop */
-    g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, &all_data);
+    g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
 
 
     gtk_main();
 
-    //free all_data allocations
-    free(all_data.gwidget);
+    free(gwidget);
 
     g_print("Closing GTK... OK\n");
     return 0;
