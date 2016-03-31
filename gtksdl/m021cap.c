@@ -827,109 +827,107 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    if(!(global->no_display))
+    gwidget->maintable = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+
+    gtk_widget_show (gwidget->maintable);
+
+    gwidget->boxh = gtk_notebook_new();
+
+    gtk_widget_show (gwidget->boxh);
+
+    scroll1=gtk_scrolled_window_new(NULL,NULL);
+    gtk_scrolled_window_set_placement(GTK_SCROLLED_WINDOW(scroll1), GTK_CORNER_TOP_LEFT);
+
+    //viewport is only needed for gtk < 3.8
+    //for 3.8 and above s->table can be directly added to scroll1
+    GtkWidget* viewport = gtk_viewport_new(NULL,NULL);
+    gtk_widget_show(viewport);
+
+    gtk_container_add(GTK_CONTAINER(scroll1), viewport);
+    gtk_widget_show(scroll1);
+
+    Tab1 = gtk_grid_new();
+    Tab1Label = gtk_label_new(_("Image Controls"));
+    gtk_widget_show (Tab1Label);
+    /** check for files */
+    gchar* Tab1IconPath = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/image_controls.png",NULL);
+    /** don't test for file - use default empty image if load fails */
+    /** get icon image*/
+    Tab1Icon = gtk_image_new_from_file(Tab1IconPath);
+    g_free(Tab1IconPath);
+    gtk_widget_show (Tab1Icon);
+    gtk_grid_attach (GTK_GRID(Tab1), Tab1Icon, 0, 0, 1, 1);
+    gtk_grid_attach (GTK_GRID(Tab1), Tab1Label, 1, 0, 1, 1);
+
+    gtk_widget_show (Tab1);
+
+    gtk_notebook_append_page(GTK_NOTEBOOK(gwidget->boxh),scroll1,Tab1);
+
+    /*---------------------- Add  Buttons ---------------------------------*/
+    HButtonBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+    gtk_widget_set_halign (HButtonBox, GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand (HButtonBox, TRUE);
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(HButtonBox),GTK_BUTTONBOX_SPREAD);
+    gtk_box_set_homogeneous(GTK_BOX(HButtonBox),TRUE);
+
+    gtk_widget_show(HButtonBox);
+
+    /** Attach the buttons */
+    gtk_box_pack_start(GTK_BOX(gwidget->maintable), HButtonBox, FALSE, TRUE, 2);
+    /** Attach the notebook (tabs) */
+    gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->boxh, TRUE, TRUE, 2);
+
+    //gwidget->quitButton=gtk_button_new_from_stock(GTK_STOCK_QUIT);
+
+    gchar* icon1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/guvcview.png",NULL);
+    g_free(icon1path);
+
+    if(!control_only)/*control_only exclusion Image and video buttons*/
     {
-        gwidget->maintable = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-
-        gtk_widget_show (gwidget->maintable);
-
-        gwidget->boxh = gtk_notebook_new();
-
-        gtk_widget_show (gwidget->boxh);
-
-        scroll1=gtk_scrolled_window_new(NULL,NULL);
-        gtk_scrolled_window_set_placement(GTK_SCROLLED_WINDOW(scroll1), GTK_CORNER_TOP_LEFT);
-
-        //viewport is only needed for gtk < 3.8
-        //for 3.8 and above s->table can be directly added to scroll1
-        GtkWidget* viewport = gtk_viewport_new(NULL,NULL);
-        gtk_widget_show(viewport);
-
-        gtk_container_add(GTK_CONTAINER(scroll1), viewport);
-        gtk_widget_show(scroll1);
-
-        Tab1 = gtk_grid_new();
-        Tab1Label = gtk_label_new(_("Image Controls"));
-        gtk_widget_show (Tab1Label);
-        /** check for files */
-        gchar* Tab1IconPath = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/image_controls.png",NULL);
-        /** don't test for file - use default empty image if load fails */
-        /** get icon image*/
-        Tab1Icon = gtk_image_new_from_file(Tab1IconPath);
-        g_free(Tab1IconPath);
-        gtk_widget_show (Tab1Icon);
-        gtk_grid_attach (GTK_GRID(Tab1), Tab1Icon, 0, 0, 1, 1);
-        gtk_grid_attach (GTK_GRID(Tab1), Tab1Label, 1, 0, 1, 1);
-
-        gtk_widget_show (Tab1);
-
-        gtk_notebook_append_page(GTK_NOTEBOOK(gwidget->boxh),scroll1,Tab1);
-
-        /*---------------------- Add  Buttons ---------------------------------*/
-        HButtonBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_widget_set_halign (HButtonBox, GTK_ALIGN_FILL);
-        gtk_widget_set_hexpand (HButtonBox, TRUE);
-        gtk_button_box_set_layout(GTK_BUTTON_BOX(HButtonBox),GTK_BUTTONBOX_SPREAD);
-        gtk_box_set_homogeneous(GTK_BOX(HButtonBox),TRUE);
-
-        gtk_widget_show(HButtonBox);
-
-        /** Attach the buttons */
-        gtk_box_pack_start(GTK_BOX(gwidget->maintable), HButtonBox, FALSE, TRUE, 2);
-        /** Attach the notebook (tabs) */
-        gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->boxh, TRUE, TRUE, 2);
-
-        //gwidget->quitButton=gtk_button_new_from_stock(GTK_STOCK_QUIT);
-
-        gchar* icon1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/guvcview.png",NULL);
-        g_free(icon1path);
-
-        if(!control_only)/*control_only exclusion Image and video buttons*/
+        if(global->image_timer)
+        {	/*image auto capture*/
+            gwidget->CapImageButt=gtk_button_new_with_label (_("Stop Auto (I)"));
+        }
+        else
         {
-            if(global->image_timer)
-            {	/*image auto capture*/
-                gwidget->CapImageButt=gtk_button_new_with_label (_("Stop Auto (I)"));
-            }
-            else
-            {
-                gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
-            }
+            gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
+        }
 
-            if (global->Capture_time > 0)
-            {	/*vid capture enabled from start*/
-                gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Stop Video (V)"));
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), TRUE);
-            }
-            else
-            {
-                gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Cap. Video (V)"));
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), FALSE);
-            }
+        if (global->Capture_time > 0)
+        {	/*vid capture enabled from start*/
+            gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Stop Video (V)"));
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), TRUE);
+        }
+        else
+        {
+            gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Cap. Video (V)"));
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), FALSE);
+        }
 
-            /*add images to Buttons and top window*/
-            /*check for files*/
+        /*add images to Buttons and top window*/
+        /*check for files*/
 
-            gchar* pix1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/movie.png",NULL);
-            if (g_file_test(pix1path,G_FILE_TEST_EXISTS))
-            {
-                VidButton_Img = gtk_image_new_from_file (pix1path);
+        gchar* pix1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/movie.png",NULL);
+        if (g_file_test(pix1path,G_FILE_TEST_EXISTS))
+        {
+            VidButton_Img = gtk_image_new_from_file (pix1path);
 
-                gtk_button_set_image(GTK_BUTTON(gwidget->CapVidButt),VidButton_Img);
-                gtk_button_set_image_position(GTK_BUTTON(gwidget->CapVidButt),GTK_POS_TOP);
-                //gtk_widget_show (gwidget->VidButton_Img);
-            }
-            //else g_print("couldn't load %s\n", pix1path);
-            gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
-            if (g_file_test(pix2path,G_FILE_TEST_EXISTS))
-            {
-                ImgButton_Img = gtk_image_new_from_file (pix2path);
+            gtk_button_set_image(GTK_BUTTON(gwidget->CapVidButt),VidButton_Img);
+            gtk_button_set_image_position(GTK_BUTTON(gwidget->CapVidButt),GTK_POS_TOP);
+            //gtk_widget_show (gwidget->VidButton_Img);
+        }
+        //else g_print("couldn't load %s\n", pix1path);
+        gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
+        if (g_file_test(pix2path,G_FILE_TEST_EXISTS))
+        {
+            ImgButton_Img = gtk_image_new_from_file (pix2path);
 
-                gtk_button_set_image(GTK_BUTTON(gwidget->CapImageButt),ImgButton_Img);
-                gtk_button_set_image_position(GTK_BUTTON(gwidget->CapImageButt),GTK_POS_TOP);
-                //gtk_widget_show (ImgButton_Img);
-            }
-            g_free(pix1path);
-            g_free(pix2path);
+            gtk_button_set_image(GTK_BUTTON(gwidget->CapImageButt),ImgButton_Img);
+            gtk_button_set_image_position(GTK_BUTTON(gwidget->CapImageButt),GTK_POS_TOP);
+            //gtk_widget_show (ImgButton_Img);
+        }
+        g_free(pix1path);
+        g_free(pix2path);
             gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapImageButt,TRUE,TRUE,2);
             gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapVidButt,TRUE,TRUE,2);
             gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (gwidget->CapVidButt), FALSE);
@@ -961,7 +959,6 @@ int main(int argc, char *argv[])
         gtk_widget_show(gwidget->status_bar);
 
         gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->status_bar, FALSE, FALSE, 2);
-    }
 
 
 	if (!control_only) /*control_only exclusion*/
