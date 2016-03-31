@@ -38,7 +38,6 @@
 
 // -------------------------------------------------------------
 
-#define __THREAD_CREATE(t,f,d) (pthread_create(t,NULL,f,d))
 #define __THREAD_JOIN(t) (pthread_join(t, NULL))
 
 #define __MUTEX_TYPE pthread_mutex_t
@@ -61,8 +60,7 @@ static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE;
 static void shutdown (void)
 {
     signalquit = TRUE;
-    __THREAD_JOIN(video_thread);
-
+    pthread_join(video_thread, NULL);
     gtk_main_quit();
 
 }
