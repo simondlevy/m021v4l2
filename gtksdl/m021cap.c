@@ -342,10 +342,9 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    if( __THREAD_CREATE(&video_thread, main_loop, NULL))
+    if(pthread_create(&video_thread, NULL, main_loop, NULL))
     {
         g_printerr("Video thread creation failed\n");
-
     }
 
     if(pipe(signal_pipe))
