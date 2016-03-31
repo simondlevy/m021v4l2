@@ -49,9 +49,6 @@ struct GLOBAL
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
 	char *caption;       //title bar caption
-
-	int image_npics;       //number of captures
-	int image_picn;        //capture number
 	int bpp;               //current bytes per pixel
 	int hwaccel;           //use hardware acceleration
 	int desktop_w;         //Desktop width
@@ -60,29 +57,7 @@ struct GLOBAL
 	int height;            //frame height
 	int winwidth;          //control windoe width
 	int winheight;         //control window height
-	int Frame_Flags;       //frame filter flags
-	int osdFlags;          // Flags to control onscreen display
-	int skip_n;            //initial frames to skip
-	int w_ind;             //write frame index
-	int r_ind;             //read  frame index
-	int default_action;    // 0 for taking picture, 1 for video
-	int lctl_method;       // 0 for control id loop, 1 for next_ctrl flag method
-	int uvc_h264_unit;     //uvc h264 unit id, if <= 0 then uvc h264 is not supported
 
-	float DispFps;         //fps value
-
-	gboolean exit_on_close;//exit guvcview after closing video when capturing from start
-	gboolean AFcontrol;    //Autofocus control flag (exists or not)
-	gboolean autofocus;    //autofocus flag (enable/disable)
-	gboolean lprofile;     //flag for command line -l option
-	gboolean flg_npics;    //flag npics if set in args
-	gboolean flg_hwaccel;  //flag hwaccel if set in args
-	gboolean flg_res;      //flag resol if set in args
-	gboolean flg_mode;     //flag mode if set in args
-	gboolean VidButtPress;
-	gboolean change_res;   //flag for reseting resolution
-	gboolean add_ctrls;    //flag for exiting after adding extension controls
-	gboolean monotonic_pts;//flag if we are using monotonic or real pts
     gboolean signalquit;
 };
 
@@ -126,16 +101,6 @@ static int initGlobals (struct GLOBAL *global)
 
 	g_sprintf(global->caption,"LI-USB30-M021");
 
-
-	global->lprofile=0; /* flag for -l command line option*/
-
-
-	global->w_ind=0;
-	global->r_ind=0;
-
-	global->image_npics=9999;/*default max number of captures*/
-	global->image_picn =0;
-	global->DispFps=0;
 	global->bpp = 0; //current bytes per pixel
 	global->hwaccel = 1; //use hardware acceleration
 	global->desktop_w = 0;
@@ -145,21 +110,7 @@ static int initGlobals (struct GLOBAL *global)
 	global->winwidth=WINSIZEX;
 	global->winheight=WINSIZEY;
 
-	global->default_action=0;
-
-	global->osdFlags = 0;
-
-	global->exit_on_close = FALSE;
-	global->skip_n=0;
-	global->uvc_h264_unit = 0; //not supported by default
-
 	/* reset with videoIn parameters */
-	global->autofocus = FALSE;
-	global->AFcontrol = FALSE;
-	global->VidButtPress = FALSE;
-	global->change_res = FALSE;
-	global->add_ctrls = FALSE;
-	global->lctl_method = LIST_CTL_METHOD_NEXT_FLAG; //next_ctrl flag method
 	return (0);
 }
 
