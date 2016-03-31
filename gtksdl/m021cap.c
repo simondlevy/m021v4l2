@@ -48,10 +48,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	//VidBuff *videoBuff;    //video Buffer
-	int video_buff_size;   //size in frames of video buffer
-
-	char *videodevice;     // video device (def. /dev/video0)
 	char *confPath;        //configuration file path
 	char *vidfile;         //video filename passed through argument options with -n
 	char *WVcaption;       //video preview title bar caption
@@ -176,8 +172,6 @@ static int initGlobals (struct GLOBAL *global)
 	__INIT_COND( __GCOND );   /* Initialized video buffer semaphore */
 
 	const gchar *home = g_get_home_dir();
-
-	global->videodevice = g_strdup("/dev/video0");
 
 	global->confPath = g_strjoin("/", home, ".config", "guvcview", NULL);
 	int ret = g_mkdir_with_parents(global->confPath, 0777);
@@ -394,7 +388,6 @@ static const SDL_VideoInfo *info;
 static void
 shutd (gint restart, struct ALL_DATA *all_data)
 {
-	gchar videodevice[16];
 	struct GWIDGET *gwidget = all_data->gwidget;
 	//gchar *EXEC_CALL = all_data->EXEC_CALL;
 
@@ -411,9 +404,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
     if (global->udev_timer_id > 0) g_source_remove(global->udev_timer_id);
 
     gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
-
-
-	g_snprintf(videodevice, 15, "%s", global->videodevice);
 
 	gwidget = NULL;
 	//pdata = NULL;
