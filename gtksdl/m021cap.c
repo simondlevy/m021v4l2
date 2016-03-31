@@ -41,15 +41,9 @@ typedef char* pchar;
 #define DEFAULT_WIDTH 640
 #define DEFAULT_HEIGHT 480
 
-struct GLOBAL
-{
-	__MUTEX_TYPE mutex;    //global struct mutex
-	__MUTEX_TYPE file_mutex; //video file mutex
-	__COND_TYPE  IO_cond;      //IO thread semaphore
-
-};
-
-static struct GLOBAL global;
+static	__MUTEX_TYPE mutex;    //global struct mutex
+static	__MUTEX_TYPE file_mutex; //video file mutex
+static	__COND_TYPE  IO_cond;      //IO thread semaphore
 
 static int hwaccel;           //use hardware acceleration
 static int bpp;               //current bytes per pixel
@@ -88,8 +82,8 @@ static	int frameheight;            //frame height
 
 
 #define __AMUTEX &pdata->mutex
-#define __GMUTEX &global.mutex
-#define __FMUTEX &global.file_mutex
+#define __GMUTEX &mutex
+#define __FMUTEX &file_mutex
 
 static int initGlobals (void)
 {
