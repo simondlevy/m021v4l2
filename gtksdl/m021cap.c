@@ -47,7 +47,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	int hwaccel;           //use hardware acceleration
 	int desktop_w;         //Desktop width
 	int desktop_h;         //Desktop height
 	int width;             //frame width
@@ -58,8 +57,9 @@ struct GLOBAL
 
 static struct GLOBAL global;
 
+static int hwaccel;           //use hardware acceleration
 static int bpp;               //current bytes per pixel
-static	char *caption;       //title bar caption
+static char *caption;       //title bar caption
 static gboolean signalquit;
 
 #define MEDIUM
@@ -101,7 +101,7 @@ static int initGlobals (void)
 	g_sprintf(caption,"LI-USB30-M021");
 
 	bpp = 0; //current bytes per pixel
-	global.hwaccel = 1; //use hardware acceleration
+	hwaccel = 1; //use hardware acceleration
 	global.desktop_w = 0;
 	global.desktop_h = 0;
 	global.width = DEFAULT_WIDTH;
@@ -170,7 +170,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
         }
 
         /* For this version, we will use hardware acceleration as default*/
-        if(global.hwaccel)
+        if(hwaccel)
         {
             if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
             if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=1");
