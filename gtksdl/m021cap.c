@@ -118,7 +118,6 @@ struct GLOBAL
 
 	float DispFps;         //fps value
 
-    gboolean no_display;   //flag if guvcview will present the gui or not.
 	gboolean exit_on_close;//exit guvcview after closing video when capturing from start
 	gboolean Sound_enable; //Enable/disable Sound (Def. enable)
 	gboolean AFcontrol;    //Autofocus control flag (exists or not)
@@ -255,7 +254,6 @@ static int initGlobals (struct GLOBAL *global)
 
 	global->osdFlags = 0;
 
-    global->no_display = FALSE;
 	global->exit_on_close = FALSE;
 	global->skip_n=0;
 	global->jpeg=NULL;
@@ -452,7 +450,7 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
         {
             g_printerr("Couldn't initialize SDL: %s\n", SDL_GetError());
-            exit(1);
+            return 1;
         }
 
         /* For this version, we will use hardware acceleration as default*/
@@ -783,8 +781,8 @@ int main(int argc, char *argv[])
 
     if(!gtk_init_check(&argc, &argv))
     {
-        g_printerr("can't open display: changing to no_display mode\n");
-        global->no_display = TRUE; /*if we can't open the display fallback to no_display mode*/
+        g_printerr("can't open display\n");
+        exit(1);
     }
 
     g_set_application_name(_("LEOPARD Video Capture"));
