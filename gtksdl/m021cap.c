@@ -41,17 +41,22 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 static gboolean  signalquit;
 static pthread_t video_thread;
 
-static void shutdown (void)
+typedef struct {
+
+    pthread_t video_thread;
+
+} shared_t;
+
+static void shutdown(shared_t * data)
 {
     signalquit = TRUE;
     pthread_join(video_thread, NULL);
     gtk_main_quit();
-
 }
 
 static int shutdown_timer(gpointer data)
 {
-    shutdown ();
+    shutdown((shared_t *)data);
     return FALSE;
 }
 
@@ -236,7 +241,7 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
         switch (buf.signal)
         {
             case SIGINT:
-                shutdown();
+                shutdown(NULL);
                 break;
             default:
                 printf("guvcview signal %d caught\n", buf.signal);
