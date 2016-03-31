@@ -134,7 +134,6 @@ struct ALL_DATA
 	struct GWIDGET *gwidget;
 	struct VidState *s;
 	__THREAD_TYPE video_thread;
-	__THREAD_TYPE audio_thread;
 	__THREAD_TYPE IO_thread;
 };
 
@@ -510,7 +509,6 @@ int main(int argc, char *argv[])
     }
 
     g_set_application_name(_("LEOPARD Video Capture"));
-    g_setenv("PULSE_PROP_media.role", "video", TRUE); //needed for Pulse Audio
 
     /* make sure the type is realized so that we can change the properties*/
     g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
