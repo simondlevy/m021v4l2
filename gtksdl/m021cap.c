@@ -45,7 +45,6 @@ static int                   bpp;
 static char *                caption;    
 static gboolean              signalquit;
 static VDIN_T *              videoIn;
-static gboolean              vid_widget_state;
 
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
 
@@ -290,8 +289,6 @@ int main(int argc, char *argv[])
     g_sprintf(caption,"LI-USB30-M021");
 
     bpp = 0; //current bytes per pixel
-
-    vid_widget_state = TRUE;
 
     if(!gtk_init_check(&argc, &argv))
     {
