@@ -48,7 +48,7 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	char *WVcaption;       //title bar caption
+	char *caption;       //title bar caption
 	pchar* imgFPath;       //image path [0] - filename  [1] - dir
 	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
@@ -178,9 +178,9 @@ static int initGlobals (struct GLOBAL *global)
 
 	global->profile_FPath[0] = g_strdup("default.gpfl");
 
-	global->WVcaption = g_new(char, 32);
+	global->caption = g_new(char, 32);
 
-	g_sprintf(global->WVcaption,"LI-USB30-M021");
+	g_sprintf(global->caption,"LI-USB30-M021");
 
 	global->image_inc = 1; //increment filename by default
 	global->vid_inc = 1;   //increment filename by default
@@ -219,7 +219,6 @@ static int initGlobals (struct GLOBAL *global)
 	global->winheight=WINSIZEY;
 
 	global->default_action=0;
-
 
 	global->osdFlags = 0;
 
@@ -445,7 +444,7 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
         if(!global->desktop_w) global->desktop_w = info->current_w; //get desktop width
         if(!global->desktop_h) global->desktop_h = info->current_h; //get desktop height
 
-        SDL_WM_SetCaption(global->WVcaption, NULL);
+        SDL_WM_SetCaption(global->caption, NULL);
 
         /* enable key repeat */
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
