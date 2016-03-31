@@ -50,24 +50,6 @@ struct GLOBAL
 
 	char *caption;       //title bar caption
 
-	int64_t av_drift;      // amount of A/V time correction
-
-	int vid_sleep;         //video thread sleep time (0 by default)
-	int imgFormat;         //image format: 0-"jpg", 1-"png", 2-"bmp"
-	int VidCodec;          //0-"MJPG"  1-"YUY2" 2-"DIB "(rgb32) 3-....
-	int VidCodec_ID;       //lavc codec ID
-	int AudCodec;          //0-PCM 1-MPG2 3-...
-	int VidFormat;         //0-AVI 1-MKV ....
-	int Sound_API;         //audio API: 0-PORTAUDIO 1-PULSEAUDIO
-	int Sound_SampRate;    //audio sample rate
-	int Sound_SampRateInd; //audio sample rate combo index
-	int Sound_numInputDev; //number of audio input devices
-	int Sound_DefDev;      //audio default device index
-	int Sound_UseDev;      //audio used device index
-	int Sound_NumChan;     //audio number of channels
-	int Sound_NumChanInd;  //audio number of channels combo index
-	WORD Sound_Format;     //audio codec - fourcc (avilib.h)
-	uint64_t Sound_delay;  //added sound delay (in nanosec)
 	int PanStep;           //step angle for Pan
 	int TiltStep;          //step angle for Tilt
 	int FpsCount;          //frames counter for fps calc
@@ -98,7 +80,6 @@ struct GLOBAL
 	float DispFps;         //fps value
 
 	gboolean exit_on_close;//exit guvcview after closing video when capturing from start
-	gboolean Sound_enable; //Enable/disable Sound (Def. enable)
 	gboolean AFcontrol;    //Autofocus control flag (exists or not)
 	gboolean autofocus;    //autofocus flag (enable/disable)
 	gboolean lprofile;     //flag for command line -l option
@@ -155,11 +136,9 @@ static int initGlobals (struct GLOBAL *global)
 	g_sprintf(global->caption,"LI-USB30-M021");
 
 
-	global->vid_sleep=0;
 	global->lprofile=0; /* flag for -l command line option*/
 
 
-	global->av_drift=0;
 	global->w_ind=0;
 	global->r_ind=0;
 
