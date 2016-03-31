@@ -1,7 +1,6 @@
 CC = gcc
 
 guvcview_OBJECTS = \
-	guvcview-close.o \
 	guvcview-globals.o \
 	guvcview-guvcview.o \
 	guvcview-ms_time.o \
@@ -30,8 +29,6 @@ DEPS_CFLAGS = $(INCLUDES) -pthread -D_GNU_SOURCE=1 -D_REENTRANT -pthread
 DEPS_LIBS = -lgtk-3 -lgdk-3 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lSDL -lpthread -lv4l2 -ludev
 
 guvcview_SOURCES = \
-	close.h \
-	close.c \
 	defs.h \
 	globals.h \
 	globals.c \
@@ -60,9 +57,6 @@ all: guvcview
 
 guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
 	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
-
-guvcview-close.o: close.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-close.o close.c
 
 guvcview-globals.o: globals.c *.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-globals.o globals.c
