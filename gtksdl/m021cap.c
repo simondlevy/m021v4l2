@@ -161,7 +161,6 @@ struct GLOBAL
 #define __AMUTEX &pdata->mutex
 #define __GMUTEX &global->mutex
 #define __FMUTEX &global->file_mutex
-#define __GCOND  &global->IO_cond
 
 #define LIST_CTL_METHOD_NEXT_FLAG 1
 
@@ -169,7 +168,6 @@ static int initGlobals (struct GLOBAL *global)
 {
 	__INIT_MUTEX( __GMUTEX );
 	__INIT_MUTEX( __FMUTEX );
-	__INIT_COND( __GCOND );   /* Initialized video buffer semaphore */
 
 	const gchar *home = g_get_home_dir();
 
