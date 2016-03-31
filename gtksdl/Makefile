@@ -1,9 +1,9 @@
 CC = gcc
 
-guvcview_OBJECTS = guvcview.o m021_v4l2.o
+m021cap_OBJECTS = m021cap.o m021_v4l2.o
 
-guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
-	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
+m021cap_LINK = $(CC) $(m021cap_CFLAGS) $(CFLAGS) \
+	$(m021cap_LDFLAGS) $(LDFLAGS) -o $@
 
 QUIET = @echo "  CC      " $@;
 
@@ -24,9 +24,9 @@ DEPS_CFLAGS = $(INCLUDES) -pthread -D_GNU_SOURCE=1 -D_REENTRANT -pthread
 
 DEPS_LIBS = -lgtk-3 -lgdk-3 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lSDL -lpthread -lv4l2 -ludev
 
-guvcview_SOURCES = guvcview.c ../m021_v4l2.h ../m021_v4l2.c 
+m021cap_SOURCES = m021cap.c ../m021_v4l2.h ../m021_v4l2.c 
 
-guvcview_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+m021cap_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 				  -DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 				  -DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 				  $(DEPS_CFLAGS) \
@@ -36,28 +36,25 @@ guvcview_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	 			  -D_FILE_OFFSET_BITS=64 \
 	 			  -Wall
 
-guvcview_LDFLAGS = $(LIBINTL)
-guvcview_LDADD = $(DEPS_LIBS) $(EXTRA_LIBS) $(PTHREAD_LIBS)
+m021cap_LDFLAGS = $(LIBINTL)
+m021cap_LDADD = $(DEPS_LIBS) $(EXTRA_LIBS) $(PTHREAD_LIBS)
 
-all: guvcview
+all: m021cap
 
-guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
-	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
+m021cap: $(m021cap_OBJECTS) $(m021cap_DEPENDENCIES) $(EXTRA_m021cap_DEPENDENCIES) 
+	$(m021cap_LINK) $(m021cap_OBJECTS) $(m021cap_LDADD) $(LIBS)
 
-guvcview.o: guvcview.c ../m021_v4l2.h
-	 $(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
+m021cap.o: m021cap.c ../m021_v4l2.h
+	 $(QUIET) $(CC)  $(m021cap_CFLAGS) -c -o m021cap.o m021cap.c
 
 m021_v4l2.o: ../m021_v4l2.c ../m021_v4l2*.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
+	$(QUIET) $(CC)  $(m021cap_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
 
 clean:
-	rm -f guvcview *.o
+	rm -f m021cap *.o
 
-run: guvcview
-	./guvcview
+run: m021cap
+	./m021cap
 
 commit:
 	git commit -a --allow-empty-message -m ''; git push
-
-count:
-	wc -l *.c | sort -nr
