@@ -49,6 +49,7 @@ static void shutdown (void)
     gtk_main_quit();
 
 }
+
 static int shutdown_timer(gpointer data)
 {
     shutdown ();
