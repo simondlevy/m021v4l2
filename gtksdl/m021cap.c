@@ -1,5 +1,5 @@
 /*
-   m021cap :  Capture and display images from LI-USB30-M021 using V4L2
+   m021cap :  Capture and display YUYV images from LI-USB30-M021 using V4L2
 
    Copyright (C) 2016 Simon D. Levy
 
