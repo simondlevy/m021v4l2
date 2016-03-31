@@ -23,6 +23,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
 #include <libv4l2.h>
@@ -691,13 +692,12 @@ static void frame_decode_bgr(vdIn_t * vd, uint8_t * framebuffer, uint8_t * tmpbu
     memcpy(frame, tmpbuffer, width * height * 3);
 }
 
-static void frame_decode(vdIn_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
-        uint8_t * frame, int width, int height)
+static void frame_decode_yuyv(vdIn_t * vd, uint8_t * frame)
 {
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
-    bayer_to_rgb24 (tmpbuffer1, tmpbuffer, width, height);
-    rgb2yuyv (tmpbuffer, framebuffer, width, height);
-    memcpy(frame, framebuffer, width * height * 2);
+    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
+    bayer_to_rgb24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+    rgb2yuyv (vd->tmpbuffer, vd->framebuffer, vd->width, vd->height);
+    memcpy(frame, vd->framebuffer, vd->width * vd->height * 2);
 }
 
 static int check_frame_available(vdIn_t *vd)
@@ -736,76 +736,90 @@ static int check_frame_available(vdIn_t *vd)
 }
 
 
-static int m021_init_common(const char * devname, vdIn_t * common, int width, int height)
+static int m021_init(const char * devname, vdIn_t * vd, int width, int height)
 {
+    vd->width = width;
+    vd->height = height;
+
+    uint8_t * mem = (uint8_t *)malloc(width*height*7);
+
+    if (!mem)
+        return ALLOC_ERR;
+
+    vd->framebuffer = mem;
+    vd->tmpbuffer = mem + width*height*2;
+    vd->tmpbuffer1 = mem + width*height*4;
+
     int ret = VDIN_OK;
 
-    common->udev = udev_new();
+    vd->udev = udev_new();
 
-    pthread_mutex_init(&common->mutex, NULL);
+    pthread_mutex_init(&vd->mutex, NULL);
 
-	common->available_exp[0]=-1;
-	common->available_exp[1]=-1;
-	common->available_exp[2]=-1;
-	common->available_exp[3]=-1;
+	vd->available_exp[0]=-1;
+	vd->available_exp[1]=-1;
+	vd->available_exp[2]=-1;
+	vd->available_exp[3]=-1;
 
     /*start udev device monitoring*/
     /* Set up a monitor to monitor v4l2 devices */
-    if(common->udev)
+    if(vd->udev)
     {
-        common->udev_mon = udev_monitor_new_from_netlink(common->udev, "udev");
-        udev_monitor_filter_add_match_subsystem_devtype(common->udev_mon, "video4linux", NULL);
-        udev_monitor_enable_receiving(common->udev_mon);
-        common->udev_fd = udev_monitor_get_fd(common->udev_mon);
+        vd->udev_mon = udev_monitor_new_from_netlink(vd->udev, "udev");
+        udev_monitor_filter_add_match_subsystem_devtype(vd->udev_mon, "video4linux", NULL);
+        udev_monitor_enable_receiving(vd->udev_mon);
+        vd->udev_fd = udev_monitor_get_fd(vd->udev_mon);
     }
 
-    if ((common->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
+    if ((vd->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
         perror("ERROR opening V4L interface");
         ret = VDIN_DEVICE_ERR;
-        clear_v4l2(common);
+        clear_v4l2(vd);
         return ret;
     }
 
 	//reset v4l2_format
-	memset(&common->fmt, 0, sizeof(struct v4l2_format));
+	memset(&vd->fmt, 0, sizeof(struct v4l2_format));
 
 	// populate video capabilities structure array
 	// should only be called after all vdIn struct elements
 	// have been initialized
-	if((ret = check_videoIn(devname, common)) != VDIN_OK)
+	if((ret = check_videoIn(devname, vd)) != VDIN_OK)
 	{
-		clear_v4l2(common);
+		clear_v4l2(vd);
 		return ret;
 	}
 
 	ret = 0; //clean ret code
 
-    common->format = 0x56595559; // YUYV
+    vd->format = 0x56595559; // YUYV
 
-    if ((ret=init_v4l2(common, &common->format, width, height)) < 0)
+    if ((ret=init_v4l2(vd, &vd->format, width, height)) < 0)
     {
         fprintf(stderr, "Init v4L2 failed !! \n");
-        clear_v4l2(common);
+        clear_v4l2(vd);
     }
 
-    return ret;
+    if (!ret)
+      frame_init(vd->framebuffer, width, height);
 
+    return ret;
  }
 
-int m021_grab_common(vdIn_t * common)
+int m021_grab(vdIn_t * vd)
 {
-    int ret = check_frame_available(common);
+    int ret = check_frame_available(vd);
 
     if (ret < 0)
         return ret;
 
     /* dequeue the buffers */
-    memset(&common->buf, 0, sizeof(struct v4l2_buffer));
-    common->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    common->buf.memory = V4L2_MEMORY_MMAP;
+    memset(&vd->buf, 0, sizeof(struct v4l2_buffer));
+    vd->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    vd->buf.memory = V4L2_MEMORY_MMAP;
 
-    ret = xioctl(common->fd, VIDIOC_DQBUF, &common->buf);
+    ret = xioctl(vd->fd, VIDIOC_DQBUF, &vd->buf);
     if (ret < 0)
     {
         perror("VIDIOC_DQBUF - Unable to dequeue buffer ");
@@ -813,7 +827,7 @@ int m021_grab_common(vdIn_t * common)
         return ret;
     }
 
-    ret = xioctl(common->fd, VIDIOC_QBUF, &common->buf);
+    ret = xioctl(vd->fd, VIDIOC_QBUF, &vd->buf);
     if (ret < 0)
     {
         perror("VIDIOC_QBUF - Unable to queue buffer");
@@ -825,92 +839,27 @@ int m021_grab_common(vdIn_t * common)
 
 // =============================================================================================
 
-int m021_1280x720_init(const char * devname, vdIn_1280x720_t * videoIn)
+int m021_init_1280x720(const char * devname, vdIn_t * videoIn)
 {
-	int ret = m021_init_common(devname, &videoIn->common, 1280, 720);
+	return m021_init(devname, videoIn, 1280, 720);
+}
+
+int m021_grab_yuyv(vdIn_t * videoIn, uint8_t * frame)
+{
+    int ret = m021_grab(videoIn);
 
     if (!ret)
-        frame_init(videoIn->framebuffer, 1280, 720);
+        frame_decode_yuyv(videoIn, frame);
 
     return ret;
 }
 
-int m021_1280x720_grab_yuyv(vdIn_1280x720_t * vd, uint8_t * frame)
+int m021_grab_bgr(vdIn_t * videoIn, uint8_t *frame)
 {
-    int ret = m021_grab_common(&vd->common);
+    int ret = 0; //m021_grab_common(&videoIn->common);
 
-    if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
-
-    return ret;
-}
-
-int m021_1280x720_grab_bgr(vdIn_1280x720_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
-
-    return ret;
-}
-
-int m021_800x460_init(const char * devname, vdIn_800x460_t * videoIn)
-{
-	int ret = m021_init_common(devname, &videoIn->common, 800, 460);
-
-    if (!ret)
-        frame_init(videoIn->framebuffer, 800, 460);
-
-    return ret;
-}
-
-int m021_800x460_grab_yuyv(vdIn_800x460_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
-
-    return ret;
-}
-
-int m021_800x460_grab_bgr(vdIn_800x460_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
-
-    return ret;
-}
-
-int m021_640x480_init(const char * devname, vdIn_640x480_t * videoIn)
-{
-	int ret = m021_init_common(devname, &videoIn->common, 640, 480);
-
-    if (!ret)
-        frame_init(videoIn->framebuffer, 640, 480);
-
-    return ret;
-}
-
-int m021_640x480_grab_yuyv(vdIn_640x480_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
-
-    return ret;
-}
-
-int m021_640x480_grab_bgr(vdIn_640x480_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
+    //if (!ret)
+     //   frame_decode_bgr(&videoIn->common, videoIn->framebuffer, videoIn->tmpbuffer, videoIn->tmpbuffer1, frame, 1280, 720);
 
     return ret;
 }

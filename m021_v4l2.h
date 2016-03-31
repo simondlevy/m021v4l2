@@ -28,6 +28,7 @@
 
 // Error codes that may be reported
 
+#define ALLOC_ERR                  1
 #define VDIN_OK                    0
 #define VDIN_DEVICE_ERR           -1
 #define VDIN_FORMAT_ERR           -2
@@ -68,52 +69,25 @@ typedef struct vdIn {
     int      isstreaming;                 // video stream flag (1- ON  0- OFF)
     int      available_exp[4];            // backward compatible (old v4l2 exposure menu interface)
     int      format;
+
     int      width;
     int      height;
 
+    uint8_t * framebuffer;
+    uint8_t * tmpbuffer;
+    uint8_t * tmpbuffer1;
+
 } vdIn_t;
 
-typedef struct vdIn_1280x720 {
+int m021_init_1280x720(const char * devname, vdIn_t * videoIn);
 
-    uint8_t tmpbuffer[1280*720*2];     // temp buffer for decoding compressed data
-    uint8_t tmpbuffer1[1280*720*3];    // temp buffer for converting bayer16 to bayer8
-    uint8_t framebuffer[1280*720*2];   // frame buffer (YUYV)
+int m021_init_800x460(const char * devname, vdIn_t * videoIn);
 
-    vdIn_t common;
+int m021_init_640x480(const char * devname, vdIn_t * videoIn);
 
-} vdIn_1280x720_t;
+int m021_grab_yuyv(vdIn_t * vdIn, uint8_t * frame);
 
-typedef struct vdIn_800x460 {
-
-    uint8_t tmpbuffer[800*460*2];     // temp buffer for decoding compressed data
-    uint8_t tmpbuffer1[800*460*3];    // temp buffer for converting bayer16 to bayer8
-    uint8_t framebuffer[800*460*2];   // frame buffer (YUYV)
-
-    vdIn_t common;
-
-} vdIn_800x460_t;
-
-typedef struct vdIn_640x480 {
-
-    uint8_t tmpbuffer[640*480*2];     // temp buffer for decoding compressed data
-    uint8_t tmpbuffer1[640*480*3];    // temp buffer for converting bayer16 to bayer8
-    uint8_t framebuffer[640*480*2];   // frame buffer (YUYV)
-
-    vdIn_t common;
-
-} vdIn_640x480_t;
-
-int m021_1280x720_init(const char * devname, vdIn_1280x720_t * videoIn);
-int m021_1280x720_grab_yuyv(vdIn_1280x720_t * vdIn, uint8_t * frame);
-int m021_1280x720_grab_bgr(vdIn_1280x720_t * vdIn, uint8_t * frame);
-
-int m021_800x460_init(const char * devname, vdIn_800x460_t * videoIn);
-int m021_800x460_grab_yuyv(vdIn_800x460_t * vdIn, uint8_t * frame);
-int m021_800x460_grab_bgr(vdIn_800x460_t * vdIn, uint8_t * frame);
-
-int m021_640x480_init(const char * devname, vdIn_640x480_t * videoIn);
-int m021_640x480_grab_yuyv(vdIn_640x480_t * vdIn, uint8_t * frame);
-int m021_640x480_grab_bgr(vdIn_640x480_t * vdIn, uint8_t * frame);
+int m021_grab_bgr(vdIn_t * vdIn, uint8_t * frame);
 
 #endif
 

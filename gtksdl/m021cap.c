@@ -30,17 +30,15 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 // Other possibilities are 800x460 and 640x480 ----------------
 
-#define VDIN_T vdIn_1280x720_t
 #define WIDTH 1280
 #define HEIGHT 720
-#define VD_INIT m021_1280x720_init
-#define VD_GRAB m021_1280x720_grab_yuyv
+#define VD_INIT m021_init_1280x720
 
 // -------------------------------------------------------------
 
 typedef struct {
 
-    VDIN_T * videoIn;
+    vdIn_t * videoIn;
     gboolean signalquit;
     pthread_t video_thread;
 
@@ -147,7 +145,7 @@ static void * main_loop(void * arg)
     while (!shared->signalquit)
     {
         SDL_LockYUVOverlay(overlay);
-        if (VD_GRAB(shared->videoIn, p) < 0) {
+        if (m021_grab_yuyv(shared->videoIn, p) < 0) {
             g_printerr("Error grabbing image \n");
             continue;
         }
@@ -294,7 +292,7 @@ int main(int argc, char *argv[])
 
     shared_t * shared = g_new0(shared_t, 1);
 
-    shared->videoIn = g_new0(VDIN_T, 1);
+    shared->videoIn = g_new0(vdIn_t, 1);
 
     VD_INIT("/dev/video0", shared->videoIn);
 
