@@ -40,7 +40,6 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 static gboolean  signalquit;
 static pthread_t video_thread;
-static VDIN_T *  videoIn;
 
 static void shutdown (void)
 {
@@ -111,8 +110,10 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     return overlay;
 }
 
-static void * main_loop(VDIN_T * videoIn)
+static void * main_loop(void * arg)
 {
+    VDIN_T * videoIn = (VDIN_T *)arg;
+
     SDL_Event event;
     SDL_Surface *pscreen = NULL;
     SDL_Overlay *overlay = NULL;
@@ -287,7 +288,7 @@ int main(int argc, char *argv[])
     // make sure gtk-button-images property is set to true (defaults to false in karmic)
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
-    videoIn = g_new0(VDIN_T, 1);
+    VDIN_T * videoIn = g_new0(VDIN_T, 1);
 
     VD_INIT("/dev/video0", videoIn);
 
