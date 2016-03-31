@@ -1,3 +1,25 @@
+/*
+   m021cap :  Capture and display images from LI-USB30-M021 using V4L2
+
+   Copyright (C) 2016 Simon D. Levy
+
+   Adapted from GUVCView: http://guvcview.sourceforge.net
+
+   This file is part of M021_V4L2.
+
+   M021_V4L2 is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   M021_V4L2 is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <gtk/gtk.h>
 #include <SDL/SDL.h>
 #include <glib/gi18n.h>
@@ -43,7 +65,7 @@ static void shutdown (void)
     signalquit = TRUE;
     __THREAD_JOIN(video_thread);
 
-	gtk_main_quit();
+    gtk_main_quit();
 
 }
 static int shutdown_timer(gpointer data)
@@ -59,14 +81,14 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
     if (*pscreen == NULL) 
     {
-    
+
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
         {
             g_printerr("Couldn't initialize SDL: %s\n", SDL_GetError());
             exit(1);
         }
 
-   
+
         if(hwaccel)
         {
             if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
