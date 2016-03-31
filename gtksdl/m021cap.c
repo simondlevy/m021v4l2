@@ -276,7 +276,6 @@ static int initGlobals (struct GLOBAL *global)
 
 struct GWIDGET
 {
-	/*the main loop : only needed for no_display option*/
 	GMainLoop *main_loop;
 
 	/* The main window*/
@@ -406,8 +405,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	struct GLOBAL *global = all_data->global;
 
 	gboolean control_only = (global->control_only || global->add_ctrls);
-	gboolean no_display = global->no_display;
-	GMainLoop *main_loop = gwidget->main_loop;
 
 	/* wait for the video thread */
 	if(!(control_only))
@@ -421,10 +418,8 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	/* destroys udev device event check timer*/
 	if (global->udev_timer_id > 0) g_source_remove(global->udev_timer_id);
 
-	if(!no_display)
-	{
-	    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
-	}
+    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
+
 
 	g_snprintf(videodevice, 15, "%s", global->videodevice);
 
@@ -432,11 +427,7 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	//pdata = NULL;
 	global = NULL;
 
-	//end gtk or glib main loop
-	if(!no_display)
-		gtk_main_quit();
-	else
-		g_main_loop_quit(main_loop);
+	gtk_main_quit();
 
 }
 static int shutd_timer(gpointer data)
