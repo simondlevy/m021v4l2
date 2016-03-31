@@ -24,23 +24,20 @@
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
 #define __GMUTEX &mutex
 
-static	__MUTEX_TYPE mutex;      //global struct mutex
-
-static int hwaccel;             //use hardware acceleration
-static int bpp;                 //current bytes per pixel
-static char *caption;           //title bar caption
-static gboolean signalquit;
-static	int desktop_w;          //Desktop width
-static	int desktop_h;          //Desktop height
-static	int framewidth;         //frame width
-static	int frameheight;        //frame height
-static VDIN_T *videoIn;
-static struct GWIDGET *gwidget;
-static __THREAD_TYPE video_thread;
-static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE;
-static const SDL_VideoInfo *info;
-
-static int initGlobals (void)
+static	__MUTEX_TYPE         mutex;      //global struct mutex
+static int                   hwaccel;    //use hardware acceleration
+static int                   bpp;        //current bytes per pixel
+static char *                caption;    //title bar caption
+static gboolean              signalquit;
+static	int                  desktop_w;  //Desktop width
+static	int                  desktop_h;  //Desktop height
+static	int                  framewidth; //frame width
+static	int                  frameheight;//frame height
+static VDIN_T *              videoIn;
+static struct GWIDGET *      gwidget;
+static __THREAD_TYPE         video_thread;
+static const SDL_VideoInfo * info;
+static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; static int initGlobals (void)
 {
 	__INIT_MUTEX( __GMUTEX );
 
@@ -181,8 +178,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     }
     //use requested resolution for overlay even if not available as video mode
     SDL_Overlay* overlay=NULL;
-    overlay = SDL_CreateYUVOverlay(framewidth, frameheight,
-        SDL_YUY2_OVERLAY, *pscreen);
+    overlay = SDL_CreateYUVOverlay(framewidth, frameheight, SDL_YUY2_OVERLAY, *pscreen);
 
     SDL_ShowCursor(SDL_DISABLE);
     return (overlay);
