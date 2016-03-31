@@ -47,8 +47,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	int desktop_w;         //Desktop width
-	int desktop_h;         //Desktop height
 	int width;             //frame width
 	int height;            //frame height
 	int winwidth;          //control windoe width
@@ -61,6 +59,8 @@ static int hwaccel;           //use hardware acceleration
 static int bpp;               //current bytes per pixel
 static char *caption;       //title bar caption
 static gboolean signalquit;
+static	int desktop_w;         //Desktop width
+static	int desktop_h;         //Desktop height
 
 #define MEDIUM
 
@@ -102,8 +102,8 @@ static int initGlobals (void)
 
 	bpp = 0; //current bytes per pixel
 	hwaccel = 1; //use hardware acceleration
-	global.desktop_w = 0;
-	global.desktop_h = 0;
+	desktop_w = 0;
+	desktop_h = 0;
 	global.width = DEFAULT_WIDTH;
 	global.height = DEFAULT_HEIGHT;
 	global.winwidth=WINSIZEX;
@@ -198,8 +198,8 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
             SDL_VIDEO_Flags |= SDL_ASYNCBLIT;
         }
 
-        if(!global.desktop_w) global.desktop_w = info->current_w; //get desktop width
-        if(!global.desktop_h) global.desktop_h = info->current_h; //get desktop height
+        if(!desktop_w) desktop_w = info->current_w; //get desktop width
+        if(!desktop_h) desktop_h = info->current_h; //get desktop height
 
         SDL_WM_SetCaption(caption, NULL);
 
@@ -219,10 +219,10 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     {
         g_print("Not available \n");
         /*resize video mode*/
-        if ((width > global.desktop_w) || (height > global.desktop_h))
+        if ((width > desktop_w) || (height > desktop_h))
         {
-            width = global.desktop_w; /*use desktop video resolution*/
-            height = global.desktop_h;
+            width = desktop_w; /*use desktop video resolution*/
+            height = desktop_h;
         }
         else
         {
@@ -459,17 +459,17 @@ int main(int argc, char *argv[])
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
     //get screen resolution
-    if((!global.desktop_w) || (!global.desktop_h))
+    if((!desktop_w) || (!desktop_h))
     {
         GdkScreen* screen = NULL;
-        global.desktop_w = gdk_screen_get_width(screen);
-        global.desktop_h = gdk_screen_get_height(screen);
+        desktop_w = gdk_screen_get_width(screen);
+        desktop_h = gdk_screen_get_height(screen);
     }
 
-    if((global.winwidth > global.desktop_w) && (global.desktop_w > 0))
-        global.winwidth = global.desktop_w;
-    if((global.winheight > global.desktop_h) && (global.desktop_h > 0))
-        global.winheight = global.desktop_h;
+    if((global.winwidth > desktop_w) && (desktop_w > 0))
+        global.winwidth = desktop_w;
+    if((global.winheight > desktop_h) && (desktop_h > 0))
+        global.winheight = desktop_h;
 
 
     /*----------------------- init videoIn structure --------------------------*/
