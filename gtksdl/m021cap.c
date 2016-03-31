@@ -1,15 +1,7 @@
-#include <SDL/SDL.h>
-#include <glib.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
-#include <locale.h>
-#include <signal.h>
-#include <fcntl.h>		
 #include <gtk/gtk.h>
-#include <inttypes.h>
-#include <sys/types.h>
-#include <pthread.h>
-
+#include <SDL/SDL.h>
+#include <glib/gi18n.h>
+#include <fcntl.h>		
 
 #include "../m021_v4l2.h"
 
@@ -288,7 +280,7 @@ static int initGlobals (struct GLOBAL *global)
 
 	global->WVcaption = g_new(char, 32);
 
-	g_snprintf(global->WVcaption,10,"GUVCVIdeo");
+	g_sprintf(global->WVcaption,"LI-USB30-M021");
 
 	//global->videoBuff = NULL;
 	//global->video_buff_size = VIDBUFF_SIZE;
