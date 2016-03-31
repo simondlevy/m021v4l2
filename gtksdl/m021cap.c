@@ -48,7 +48,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	char *vidfile;         //video filename passed through argument options with -n
 	char *WVcaption;       //video preview title bar caption
 	char *mode;            //mjpg (default)
 	pchar* vidFPath;       //video path [0] - filename  [1] - dir
@@ -195,7 +194,6 @@ static int initGlobals (struct GLOBAL *global)
 	global->vid_inc = 1;   //increment filename by default
 
 	global->vid_sleep=0;
-	global->vidfile=NULL; /*vid filename passed through argument options with -n */
 	global->Capture_time=0; /*vid capture time passed through argument options with -t */
 	global->lprofile=0; /* flag for -l command line option*/
 
