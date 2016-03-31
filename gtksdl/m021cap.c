@@ -620,14 +620,10 @@ static void *main_loop(void *data)
 
     fflush(NULL);//flush all output buffers
 
-    if(!global->no_display)
-    {
-        if(overlay)
-            SDL_FreeYUVOverlay(overlay);
-        //SDL_FreeSurface(pscreen);
+    if(overlay)
+        SDL_FreeYUVOverlay(overlay);
 
-        SDL_Quit();
-    }
+    SDL_Quit();
 
 
     global = NULL;
