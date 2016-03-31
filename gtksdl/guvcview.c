@@ -41,7 +41,6 @@
 #include "config.h"
 #include "ms_time.h"
 #include "close.h"
-#include "timers.h"
 #include "globals.h"
 
 #define VDIN_DYNCTRL_OK            3
@@ -50,6 +49,14 @@ static Uint32 SDL_VIDEO_Flags =
         SDL_ANYFORMAT | SDL_RESIZABLE;
 
 static const SDL_VideoInfo *info;
+
+static int shutd_timer(gpointer data)
+{
+    /*stop video capture*/
+    shutd (0, data);
+    
+    return (FALSE);/*destroys the timer*/
+}
 
 static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
 {
@@ -643,13 +650,6 @@ int main(int argc, char *argv[])
 		{
 			g_printerr("Video thread creation failed\n");
 
-		}
-		//all_data.video_thread = video_thread;
-
-		if (global->FpsCount>0)
-		{
-			/*sets the Fps counter timer function every 2 sec*/
-			global->timer_id = g_timeout_add(2*1000,FpsCount_callback,&all_data);
 		}
 
 	}/*end of control_only exclusion*/
