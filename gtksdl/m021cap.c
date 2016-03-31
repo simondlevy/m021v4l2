@@ -49,7 +49,6 @@ struct GLOBAL
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
 	char *caption;       //title bar caption
-	pchar* imgFPath;       //image path [0] - filename  [1] - dir
 	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
 	BYTE *jpeg;            // jpeg buffer
@@ -119,7 +118,6 @@ struct GLOBAL
 	gboolean flg_hwaccel;  //flag hwaccel if set in args
 	gboolean flg_res;      //flag resol if set in args
 	gboolean flg_mode;     //flag mode if set in args
-	gboolean flg_imgFPath; //flag imgFPath if set in args
 	gboolean flg_FpsCount; //flag FpsCount if set in args
 	gboolean VidButtPress;
 	gboolean change_res;   //flag for reseting resolution
@@ -166,15 +164,9 @@ static int initGlobals (struct GLOBAL *global)
 
 	const gchar *home = g_get_home_dir();
 
-	global->imgFPath = g_new(pchar, 2);
-
 	global->profile_FPath = g_new(pchar, 2);
 
-	global->imgFPath[1] = g_strdup(home);
-
 	global->profile_FPath[1] = g_strdup(home);
-
-	global->imgFPath[0] = g_strdup("guvcview_image.jpg");
 
 	global->profile_FPath[0] = g_strdup("default.gpfl");
 
