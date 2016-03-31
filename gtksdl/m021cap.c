@@ -6,14 +6,7 @@
 
 #include "../m021_v4l2.h"
 
-#define __THREAD_TYPE pthread_t
-#define __THREAD_CREATE(t,f,d) (pthread_create(t,NULL,f,d))
-#define __THREAD_JOIN(t) (pthread_join(t, NULL))
-
-#define __MUTEX_TYPE pthread_mutex_t
-#define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
-#define __GMUTEX &mutex
-
+// Other possibilities are 800x460 and 640x480 ----------------
 
 #define VDIN_T vdIn_1280x720_t
 #define WIDTH 1280
@@ -21,11 +14,18 @@
 #define VD_INIT m021_init_1280x720
 #define VD_GRAB m021_grab_1280x720_yuyv
 
-#define WINSIZEX 560
-#define WINSIZEY 560
+#define DEFAULT_WIDTH 1280
+#define DEFAULT_HEIGHT 720
 
-#define DEFAULT_WIDTH 640
-#define DEFAULT_HEIGHT 480
+// -------------------------------------------------------------
+
+#define __THREAD_TYPE pthread_t
+#define __THREAD_CREATE(t,f,d) (pthread_create(t,NULL,f,d))
+#define __THREAD_JOIN(t) (pthread_join(t, NULL))
+
+#define __MUTEX_TYPE pthread_mutex_t
+#define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
+#define __GMUTEX &mutex
 
 static	__MUTEX_TYPE mutex;      //global struct mutex
 
@@ -35,8 +35,6 @@ static char *caption;           //title bar caption
 static gboolean signalquit;
 static	int desktop_w;          //Desktop width
 static	int desktop_h;          //Desktop height
-static	int winwidth;           //control windoe width
-static	int winheight;          //control window height
 static	int framewidth;         //frame width
 static	int frameheight;        //frame height
 static VDIN_T *videoIn;
@@ -59,8 +57,6 @@ static int initGlobals (void)
 	desktop_h = 0;
 	framewidth = DEFAULT_WIDTH;
 	frameheight = DEFAULT_HEIGHT;
-	winwidth=WINSIZEX;
-	winheight=WINSIZEY;
 
 	/* reset with videoIn parameters */
 	return (0);
@@ -85,8 +81,6 @@ static void shutdown (void)
 	/* wait for the video thread */
     signalquit = TRUE;
     __THREAD_JOIN(video_thread);
-
-    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(winwidth),&(winheight));//mainwin or widget
 
 	gtk_main_quit();
 
@@ -405,12 +399,6 @@ int main(int argc, char *argv[])
         desktop_w = gdk_screen_get_width(screen);
         desktop_h = gdk_screen_get_height(screen);
     }
-
-    if((winwidth > desktop_w) && (desktop_w > 0))
-        winwidth = desktop_w;
-    if((winheight > desktop_h) && (desktop_h > 0))
-        winheight = desktop_h;
-
 
     /*----------------------- init videoIn structure --------------------------*/
     videoIn = g_new0(VDIN_T, 1);
