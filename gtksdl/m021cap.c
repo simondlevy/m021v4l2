@@ -120,9 +120,6 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	/*Paned containers*/
-	GtkWidget *boxh;
-
 	//group list for menu video codecs
 	GSList *vgroup;
 
@@ -591,10 +588,6 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    gwidget->boxh = gtk_notebook_new();
-
-    gtk_widget_show (gwidget->boxh);
-
     scroll1=gtk_scrolled_window_new(NULL,NULL);
     gtk_scrolled_window_set_placement(GTK_SCROLLED_WINDOW(scroll1), GTK_CORNER_TOP_LEFT);
 
@@ -621,7 +614,6 @@ int main(int argc, char *argv[])
 
     gtk_widget_show (Tab1);
 
-    gtk_notebook_append_page(GTK_NOTEBOOK(gwidget->boxh),scroll1,Tab1);
 
     /*---------------------- Add  Buttons ---------------------------------*/
     HButtonBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
