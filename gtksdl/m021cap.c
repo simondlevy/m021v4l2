@@ -38,7 +38,6 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 // -------------------------------------------------------------
 
-static int                   bpp;        
 static gboolean              signalquit;
 static pthread_t             video_thread;
 static VDIN_T *              videoIn;
@@ -152,12 +151,6 @@ static void *main_loop()
 
         while( SDL_PollEvent(&event) )
         {
-            if(event.type==SDL_VIDEORESIZE)
-            {
-                pscreen = SDL_SetVideoMode(event.resize.w, event.resize.h, bpp, SDL_VIDEO_Flags);
-                drect.w = event.resize.w;
-                drect.h = event.resize.h;
-            }
             if(event.type==SDL_QUIT)
             {
                 g_timeout_add(200, shutdown_timer, NULL);
@@ -280,8 +273,6 @@ int main(int argc, char *argv[])
 
     pthread_mutex_t mutex;      
     pthread_mutex_init(&mutex, NULL);
-
-    bpp = 0; //current bytes per pixel
 
     if(!gtk_init_check(&argc, &argv))
     {
