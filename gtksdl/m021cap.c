@@ -43,7 +43,6 @@ typedef char* pchar;
 
 struct GLOBAL
 {
-
 	__MUTEX_TYPE mutex;    //global struct mutex
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
@@ -57,7 +56,6 @@ struct GLOBAL
 	int height;            //frame height
 	int winwidth;          //control windoe width
 	int winheight;         //control window height
-
     gboolean signalquit;
 };
 
@@ -123,14 +121,17 @@ struct GWIDGET
 
 	/* The main window*/
 	GtkWidget *mainwin;
+
 	/* A restart Dialog */
 	GtkWidget *restartdialog;
+
 	/*Paned containers*/
 	GtkWidget *maintable;
 	GtkWidget *boxh;
 
 	//group list for menu video codecs
 	GSList *vgroup;
+
 	//group list for menu audio codecs
 	GSList *agroup;
 
@@ -161,58 +162,6 @@ struct GWIDGET
 	int status_warning_id;
 };
 
-/* uvc H264 control widgets */
-struct uvc_h264_gtkcontrols
-{
-	GtkWidget* FrameInterval;
-	GtkWidget* BitRate;
-	GtkWidget* Hints_res;
-	GtkWidget* Hints_prof;
-	GtkWidget* Hints_ratecontrol;
-	GtkWidget* Hints_usage;
-	GtkWidget* Hints_slicemode;
-	GtkWidget* Hints_sliceunit;
-	GtkWidget* Hints_view;
-	GtkWidget* Hints_temporal;
-	GtkWidget* Hints_snr;
-	GtkWidget* Hints_spatial;
-	GtkWidget* Hints_spatiallayer;
-	GtkWidget* Hints_frameinterval;
-	GtkWidget* Hints_leakybucket;
-	GtkWidget* Hints_bitrate;
-	GtkWidget* Hints_cabac;
-	GtkWidget* Hints_iframe;
-	GtkWidget* Resolution;
-	GtkWidget* SliceUnits;
-	GtkWidget* SliceMode;
-	GtkWidget* Profile;
-	GtkWidget* Profile_flags;
-	GtkWidget* IFramePeriod;
-	GtkWidget* EstimatedVideoDelay;
-	GtkWidget* EstimatedMaxConfigDelay;
-	GtkWidget* UsageType;
-	//GtkWidget* UCConfig;
-	GtkWidget* RateControlMode;
-	GtkWidget* RateControlMode_cbr_flag;
-	GtkWidget* TemporalScaleMode;
-	GtkWidget* SpatialScaleMode;
-	GtkWidget* SNRScaleMode;
-	GtkWidget* StreamMuxOption;
-	GtkWidget* StreamMuxOption_aux;
-	GtkWidget* StreamMuxOption_mjpgcontainer;
-	GtkWidget* StreamFormat;
-	GtkWidget* EntropyCABAC;
-	GtkWidget* Timestamp;
-	GtkWidget* NumOfReorderFrames;
-	GtkWidget* PreviewFlipped;
-	GtkWidget* View;
-	GtkWidget* StreamID;
-	GtkWidget* SpatialLayerRatio;
-	GtkWidget* LeakyBucketSize;
-	GtkWidget* probe_button;
-	GtkWidget* commit_button;
-};
-
 struct ALL_DATA
 {
 	struct paRecordData *pdata;
@@ -221,7 +170,6 @@ struct ALL_DATA
 	VDIN_T *videoIn;
 	struct VideoFormatData *videoF;
 	struct GWIDGET *gwidget;
-	struct uvc_h264_gtkcontrols  *h264_controls;
 	struct VidState *s;
 	__THREAD_TYPE video_thread;
 	__THREAD_TYPE audio_thread;
@@ -642,7 +590,6 @@ int main(int argc, char *argv[])
     all_data.videoIn = videoIn;
     all_data.videoF = videoF;
     all_data.gwidget = gwidget;
-    all_data.h264_controls = NULL; /*filled by add_uvc_h264_controls_tab */
     all_data.s = s;
 
     global->width =  WIDTH;
@@ -829,8 +776,6 @@ int main(int argc, char *argv[])
 
     //free all_data allocations
     free(all_data.gwidget);
-    if(all_data.h264_controls != NULL)
-        free(all_data.h264_controls);
 
     g_print("Closing GTK... OK\n");
     return 0;
