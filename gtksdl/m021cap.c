@@ -14,9 +14,6 @@
 #define VD_INIT m021_init_1280x720
 #define VD_GRAB m021_grab_1280x720_yuyv
 
-#define DEFAULT_WIDTH 1280
-#define DEFAULT_HEIGHT 720
-
 // -------------------------------------------------------------
 
 #define __THREAD_TYPE pthread_t
@@ -55,8 +52,8 @@ static int initGlobals (void)
 	hwaccel = 1; //use hardware acceleration
 	desktop_w = 0;
 	desktop_h = 0;
-	framewidth = DEFAULT_WIDTH;
-	frameheight = DEFAULT_HEIGHT;
+	framewidth = WIDTH;
+	frameheight = HEIGHT;
 
 	/* reset with videoIn parameters */
 	return (0);
