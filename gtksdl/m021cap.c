@@ -49,8 +49,6 @@ struct GLOBAL
 
 	int width;             //frame width
 	int height;            //frame height
-	int winwidth;          //control windoe width
-	int winheight;         //control window height
 };
 
 static struct GLOBAL global;
@@ -61,6 +59,8 @@ static char *caption;       //title bar caption
 static gboolean signalquit;
 static	int desktop_w;         //Desktop width
 static	int desktop_h;         //Desktop height
+static	int winwidth;          //control windoe width
+static	int winheight;         //control window height
 
 #define MEDIUM
 
@@ -106,8 +106,8 @@ static int initGlobals (void)
 	desktop_h = 0;
 	global.width = DEFAULT_WIDTH;
 	global.height = DEFAULT_HEIGHT;
-	global.winwidth=WINSIZEX;
-	global.winheight=WINSIZEY;
+	winwidth=WINSIZEX;
+	winheight=WINSIZEY;
 
 	/* reset with videoIn parameters */
 	return (0);
@@ -142,7 +142,7 @@ static void shutdown (void)
     signalquit = TRUE;
     __THREAD_JOIN(video_thread);
 
-    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global.winwidth),&(global.winheight));//mainwin or widget
+    gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(winwidth),&(winheight));//mainwin or widget
 
 	gtk_main_quit();
 
@@ -466,10 +466,10 @@ int main(int argc, char *argv[])
         desktop_h = gdk_screen_get_height(screen);
     }
 
-    if((global.winwidth > desktop_w) && (desktop_w > 0))
-        global.winwidth = desktop_w;
-    if((global.winheight > desktop_h) && (desktop_h > 0))
-        global.winheight = desktop_h;
+    if((winwidth > desktop_w) && (desktop_w > 0))
+        winwidth = desktop_w;
+    if((winheight > desktop_h) && (desktop_h > 0))
+        winheight = desktop_h;
 
 
     /*----------------------- init videoIn structure --------------------------*/
