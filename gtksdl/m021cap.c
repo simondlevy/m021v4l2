@@ -39,7 +39,6 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 // -------------------------------------------------------------
 
 static int                   bpp;        
-static char *                caption;    
 static gboolean              signalquit;
 static pthread_t             video_thread;
 static VDIN_T *              videoIn;
@@ -92,8 +91,6 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
         }
 
         SDL_WM_SetCaption("LI-USB30-M021", NULL);
-        //g_sprintf(caption,"LI-USB30-M021");
-
 
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
     }
@@ -283,10 +280,6 @@ int main(int argc, char *argv[])
 
     pthread_mutex_t mutex;      
     pthread_mutex_init(&mutex, NULL);
-
-    caption = g_new(char, 32);
-
-    g_sprintf(caption,"LI-USB30-M021");
 
     bpp = 0; //current bytes per pixel
 
