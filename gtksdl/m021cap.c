@@ -29,8 +29,8 @@ static int                   hwaccel;    //use hardware acceleration
 static int                   bpp;        //current bytes per pixel
 static char *                caption;    //title bar caption
 static gboolean              signalquit;
-static	int                  desktop_w;  //Desktop width
-static	int                  desktop_h;  //Desktop height
+//static	int                  desktop_w;  //Desktop width
+//static	int                  desktop_h;  //Desktop height
 static	int                  framewidth; //frame width
 static	int                  frameheight;//frame height
 static VDIN_T *              videoIn;
@@ -100,8 +100,8 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
             SDL_VIDEO_Flags |= SDL_ASYNCBLIT;
         }
 
-        if(!desktop_w) desktop_w = info->current_w; //get desktop width
-        if(!desktop_h) desktop_h = info->current_h; //get desktop height
+        //if(!desktop_w) desktop_w = info->current_w; //get desktop width
+        //if(!desktop_h) desktop_h = info->current_h; //get desktop height
 
         SDL_WM_SetCaption(caption, NULL);
 
@@ -116,10 +116,11 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     if(!bpp)
     {
         g_print("Not available \n");
-        /*resize video mode*/
+
+        /*
         if ((width > desktop_w) || (height > desktop_h))
         {
-            width = desktop_w; /*use desktop video resolution*/
+            width = desktop_w; 
             height = desktop_h;
         }
         else
@@ -128,7 +129,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
             height = 600;
         }
         g_print("Resizing to %ix%i\n", width, height);
-
+        */
     }
     else
     {
@@ -343,8 +344,8 @@ int main(int argc, char *argv[])
 
 	bpp = 0; //current bytes per pixel
 	hwaccel = 1; //use hardware acceleration
-	desktop_w = 0;
-	desktop_h = 0;
+	//desktop_w = 0;
+	//desktop_h = 0;
 	framewidth = WIDTH;
 	frameheight = HEIGHT;
 
@@ -367,12 +368,14 @@ int main(int argc, char *argv[])
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
     //get screen resolution
+    /*
     if((!desktop_w) || (!desktop_h))
     {
         GdkScreen* screen = NULL;
         desktop_w = gdk_screen_get_width(screen);
         desktop_h = gdk_screen_get_height(screen);
     }
+    */
 
     /*----------------------- init videoIn structure --------------------------*/
     videoIn = g_new0(VDIN_T, 1);
