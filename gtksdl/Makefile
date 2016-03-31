@@ -1,10 +1,6 @@
 CC = gcc
 
-guvcview_OBJECTS = \
-	guvcview-globals.o \
-	guvcview-guvcview.o \
-	guvcview-ms_time.o \
-	guvcview-m021_v4l2.o \
+guvcview_OBJECTS = globals.o guvcview.o ms_time.o m021_v4l2.o
 
 guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
 	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
@@ -58,17 +54,17 @@ all: guvcview
 guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
 	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
 
-guvcview-globals.o: globals.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-globals.o globals.c
+globals.o: globals.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o globals.o globals.c
 
-guvcview-guvcview.o: guvcview.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-guvcview.o guvcview.c
+guvcview.o: guvcview.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
 
-guvcview-ms_time.o: ms_time.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-ms_time.o ms_time.c
+ms_time.o: ms_time.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o ms_time.o ms_time.c
 
-guvcview-m021_v4l2.o: ../m021_v4l2.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-m021_v4l2.o ../m021_v4l2.c
+m021_v4l2.o: ../m021_v4l2.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
 
 clean:
 	rm -f guvcview *.o
