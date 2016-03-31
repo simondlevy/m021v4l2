@@ -34,21 +34,11 @@ static	int                  desktop_h;  //Desktop height
 static	int                  framewidth; //frame width
 static	int                  frameheight;//frame height
 static VDIN_T *              videoIn;
-static struct GWIDGET *      gwidget;
 static __THREAD_TYPE         video_thread;
 static const SDL_VideoInfo * info;
+static	gboolean             vid_widget_state;
+
 static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
-
-struct GWIDGET
-{
-	GMainLoop *main_loop;
-
-	/* The main window*/
-	GtkWidget *mainwin;
-
-	gboolean vid_widget_state;
-	int status_warning_id;
-};
 
 static void shutdown (void)
 {
@@ -361,8 +351,7 @@ int main(int argc, char *argv[])
 
 	/*---------------------------------- Allocations -------------------------*/
 
-	gwidget = g_new0(struct GWIDGET, 1);
-	gwidget->vid_widget_state = TRUE;
+	vid_widget_state = TRUE;
 
     if(!gtk_init_check(&argc, &argv))
     {
@@ -458,8 +447,6 @@ int main(int argc, char *argv[])
 
 
     gtk_main();
-
-    free(gwidget);
 
     g_print("Closing GTK... OK\n");
     return 0;
