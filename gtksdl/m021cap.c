@@ -875,163 +875,159 @@ int main(int argc, char *argv[])
     gchar* icon1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/guvcview.png",NULL);
     g_free(icon1path);
 
-    if(!control_only)/*control_only exclusion Image and video buttons*/
-    {
-        if(global->image_timer)
-        {	/*image auto capture*/
-            gwidget->CapImageButt=gtk_button_new_with_label (_("Stop Auto (I)"));
-        }
-        else
-        {
-            gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
-        }
-
-        if (global->Capture_time > 0)
-        {	/*vid capture enabled from start*/
-            gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Stop Video (V)"));
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), TRUE);
-        }
-        else
-        {
-            gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Cap. Video (V)"));
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), FALSE);
-        }
-
-        /*add images to Buttons and top window*/
-        /*check for files*/
-
-        gchar* pix1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/movie.png",NULL);
-        if (g_file_test(pix1path,G_FILE_TEST_EXISTS))
-        {
-            VidButton_Img = gtk_image_new_from_file (pix1path);
-
-            gtk_button_set_image(GTK_BUTTON(gwidget->CapVidButt),VidButton_Img);
-            gtk_button_set_image_position(GTK_BUTTON(gwidget->CapVidButt),GTK_POS_TOP);
-            //gtk_widget_show (gwidget->VidButton_Img);
-        }
-        //else g_print("couldn't load %s\n", pix1path);
-        gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
-        if (g_file_test(pix2path,G_FILE_TEST_EXISTS))
-        {
-            ImgButton_Img = gtk_image_new_from_file (pix2path);
-
-            gtk_button_set_image(GTK_BUTTON(gwidget->CapImageButt),ImgButton_Img);
-            gtk_button_set_image_position(GTK_BUTTON(gwidget->CapImageButt),GTK_POS_TOP);
-            //gtk_widget_show (ImgButton_Img);
-        }
-        g_free(pix1path);
-        g_free(pix2path);
-            gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapImageButt,TRUE,TRUE,2);
-            gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapVidButt,TRUE,TRUE,2);
-            gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (gwidget->CapVidButt), FALSE);
-            gtk_widget_show (gwidget->CapImageButt);
-            gtk_widget_show (gwidget->CapVidButt);
-
-        }/*end of control_only exclusion*/
-
-        gchar* pix3path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/close.png",NULL);
-        if (g_file_test(pix3path,G_FILE_TEST_EXISTS))
-        {
-            QButton_Img = gtk_image_new_from_file (pix3path);
-
-            gtk_button_set_image(GTK_BUTTON(gwidget->quitButton),QButton_Img);
-            gtk_button_set_image_position(GTK_BUTTON(gwidget->quitButton),GTK_POS_TOP);
-        }
-
-        /*must free path strings*/
-        g_free(pix3path);
-
-        gtk_box_pack_start(GTK_BOX(HButtonBox), gwidget->quitButton,TRUE,TRUE,2);
-
-        gtk_widget_show_all (gwidget->quitButton);
-
-
-		gwidget->status_bar = gtk_statusbar_new();
-		gwidget->status_warning_id = gtk_statusbar_get_context_id (GTK_STATUSBAR(gwidget->status_bar), "warning");
-
-        gtk_widget_show(gwidget->status_bar);
-
-        gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->status_bar, FALSE, FALSE, 2);
-
-
-	if (!control_only) /*control_only exclusion*/
-	{
-		/*------------------ Creating the video thread ---------------*/
-		if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
-		{
-			g_printerr("Video thread creation failed\n");
-
-		}
-
-	}/*end of control_only exclusion*/
-
-	/*
-   	* Set the unix signal handling up.
-   	* First create a pipe.
-   	*/
-  	if(pipe(signal_pipe))
-  	{
-    	perror("pipe");
-   	 	exit(1);
-  	}
-
-  	/*
-   	* put the write end of the pipe into nonblocking mode,
-   	* need to read the flags first, otherwise we would clear other flags too.
-   	*/
-  	fd_flags = fcntl(signal_pipe[1], F_GETFL);
-  	if(fd_flags == -1)
-    {
-      	perror("read descriptor flags");
+    if(global->image_timer)
+    {	/*image auto capture*/
+        gwidget->CapImageButt=gtk_button_new_with_label (_("Stop Auto (I)"));
     }
-  	if(fcntl(signal_pipe[1], F_SETFL, fd_flags | O_NONBLOCK) == -1)
+    else
     {
-      	perror("write descriptor flags");
+        gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
     }
 
-  	/* Install the unix signal handler pipe_signals for the signals of interest */
-  	signal(SIGINT, pipe_signals);
-  	signal(SIGUSR1, pipe_signals);
-  	signal(SIGUSR2, pipe_signals);
+    if (global->Capture_time > 0)
+    {	/*vid capture enabled from start*/
+        gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Stop Video (V)"));
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), TRUE);
+    }
+    else
+    {
+        gwidget->CapVidButt=gtk_toggle_button_new_with_label (_("Cap. Video (V)"));
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gwidget->CapVidButt), FALSE);
+    }
 
-  	/* convert the reading end of the pipe into a GIOChannel */
-  	g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
+    /*add images to Buttons and top window*/
+    /*check for files*/
 
-  	/*
-   	* we only read raw binary data from the pipe,
-   	* therefore clear any encoding on the channel
-   	*/
-  	g_io_channel_set_encoding(g_signal_in, NULL, &error);
-  	if(error != NULL)
-  	{
-  		/* handle potential errors */
-    	fprintf(stderr, "g_io_channel_set_encoding failed %s\n",
-	    	error->message);
-  	}
+    gchar* pix1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/movie.png",NULL);
+    if (g_file_test(pix1path,G_FILE_TEST_EXISTS))
+    {
+        VidButton_Img = gtk_image_new_from_file (pix1path);
 
-  	/* put the reading end also into non-blocking mode */
-  	g_io_channel_set_flags(g_signal_in,
-    	g_io_channel_get_flags(g_signal_in) | G_IO_FLAG_NONBLOCK, &error);
+        gtk_button_set_image(GTK_BUTTON(gwidget->CapVidButt),VidButton_Img);
+        gtk_button_set_image_position(GTK_BUTTON(gwidget->CapVidButt),GTK_POS_TOP);
+        //gtk_widget_show (gwidget->VidButton_Img);
+    }
+    //else g_print("couldn't load %s\n", pix1path);
+    gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
+    if (g_file_test(pix2path,G_FILE_TEST_EXISTS))
+    {
+        ImgButton_Img = gtk_image_new_from_file (pix2path);
 
-  	if(error != NULL)
-  	{		/* tread errors */
-    	fprintf(stderr, "g_io_set_flags failed %s\n",
-	    	error->message);
-  	}
+        gtk_button_set_image(GTK_BUTTON(gwidget->CapImageButt),ImgButton_Img);
+        gtk_button_set_image_position(GTK_BUTTON(gwidget->CapImageButt),GTK_POS_TOP);
+        //gtk_widget_show (ImgButton_Img);
+    }
+    g_free(pix1path);
+    g_free(pix2path);
+    gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapImageButt,TRUE,TRUE,2);
+    gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapVidButt,TRUE,TRUE,2);
+    gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (gwidget->CapVidButt), FALSE);
+    gtk_widget_show (gwidget->CapImageButt);
+    gtk_widget_show (gwidget->CapVidButt);
 
-  	/* register the reading end with the event loop */
-  	g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, &all_data);
+    gchar* pix3path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/close.png",NULL);
+    if (g_file_test(pix3path,G_FILE_TEST_EXISTS))
+    {
+        QButton_Img = gtk_image_new_from_file (pix3path);
+
+        gtk_button_set_image(GTK_BUTTON(gwidget->quitButton),QButton_Img);
+        gtk_button_set_image_position(GTK_BUTTON(gwidget->quitButton),GTK_POS_TOP);
+    }
+
+    /*must free path strings*/
+    g_free(pix3path);
+
+    gtk_box_pack_start(GTK_BOX(HButtonBox), gwidget->quitButton,TRUE,TRUE,2);
+
+    gtk_widget_show_all (gwidget->quitButton);
 
 
-	gtk_main();
+    gwidget->status_bar = gtk_statusbar_new();
+    gwidget->status_warning_id = gtk_statusbar_get_context_id (GTK_STATUSBAR(gwidget->status_bar), "warning");
 
-	//free all_data allocations
-	free(all_data.gwidget);
-	if(all_data.h264_controls != NULL)
-		free(all_data.h264_controls);
+    gtk_widget_show(gwidget->status_bar);
 
-	g_print("Closing GTK... OK\n");
-	return 0;
+    gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->status_bar, FALSE, FALSE, 2);
+
+
+    if (!control_only) /*control_only exclusion*/
+    {
+        /*------------------ Creating the video thread ---------------*/
+        if( __THREAD_CREATE(&all_data.video_thread, main_loop, (void *) &all_data))
+        {
+            g_printerr("Video thread creation failed\n");
+
+        }
+
+    }/*end of control_only exclusion*/
+
+    /*
+     * Set the unix signal handling up.
+     * First create a pipe.
+     */
+    if(pipe(signal_pipe))
+    {
+        perror("pipe");
+        exit(1);
+    }
+
+    /*
+     * put the write end of the pipe into nonblocking mode,
+     * need to read the flags first, otherwise we would clear other flags too.
+     */
+    fd_flags = fcntl(signal_pipe[1], F_GETFL);
+    if(fd_flags == -1)
+    {
+        perror("read descriptor flags");
+    }
+    if(fcntl(signal_pipe[1], F_SETFL, fd_flags | O_NONBLOCK) == -1)
+    {
+        perror("write descriptor flags");
+    }
+
+    /* Install the unix signal handler pipe_signals for the signals of interest */
+    signal(SIGINT, pipe_signals);
+    signal(SIGUSR1, pipe_signals);
+    signal(SIGUSR2, pipe_signals);
+
+    /* convert the reading end of the pipe into a GIOChannel */
+    g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
+
+    /*
+     * we only read raw binary data from the pipe,
+     * therefore clear any encoding on the channel
+     */
+    g_io_channel_set_encoding(g_signal_in, NULL, &error);
+    if(error != NULL)
+    {
+        /* handle potential errors */
+        fprintf(stderr, "g_io_channel_set_encoding failed %s\n",
+                error->message);
+    }
+
+    /* put the reading end also into non-blocking mode */
+    g_io_channel_set_flags(g_signal_in,
+            g_io_channel_get_flags(g_signal_in) | G_IO_FLAG_NONBLOCK, &error);
+
+    if(error != NULL)
+    {		/* tread errors */
+        fprintf(stderr, "g_io_set_flags failed %s\n",
+                error->message);
+    }
+
+    /* register the reading end with the event loop */
+    g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, &all_data);
+
+
+    gtk_main();
+
+    //free all_data allocations
+    free(all_data.gwidget);
+    if(all_data.h264_controls != NULL)
+        free(all_data.h264_controls);
+
+    g_print("Closing GTK... OK\n");
+    return 0;
 }
 
- 
+
