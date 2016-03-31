@@ -120,9 +120,6 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	GtkWidget *ImageType;
-	GtkWidget *CapImageButt;
-	GtkWidget *CapVidButt;
 	GtkWidget *Resolution;
 	GtkWidget *InpType;
 	GtkWidget *FrameRate;
@@ -617,9 +614,6 @@ int main(int argc, char *argv[])
     {
         VidButton_Img = gtk_image_new_from_file (pix1path);
 
-        gtk_button_set_image(GTK_BUTTON(gwidget->CapVidButt),VidButton_Img);
-        gtk_button_set_image_position(GTK_BUTTON(gwidget->CapVidButt),GTK_POS_TOP);
-        //gtk_widget_show (gwidget->VidButton_Img);
     }
     //else g_print("couldn't load %s\n", pix1path);
     gchar* pix2path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/camera.png",NULL);
@@ -627,17 +621,9 @@ int main(int argc, char *argv[])
     {
         ImgButton_Img = gtk_image_new_from_file (pix2path);
 
-        gtk_button_set_image(GTK_BUTTON(gwidget->CapImageButt),ImgButton_Img);
-        gtk_button_set_image_position(GTK_BUTTON(gwidget->CapImageButt),GTK_POS_TOP);
-        //gtk_widget_show (ImgButton_Img);
     }
     g_free(pix1path);
     g_free(pix2path);
-    gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapImageButt,TRUE,TRUE,2);
-    gtk_box_pack_start(GTK_BOX(HButtonBox),gwidget->CapVidButt,TRUE,TRUE,2);
-    gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (gwidget->CapVidButt), FALSE);
-    gtk_widget_show (gwidget->CapImageButt);
-    gtk_widget_show (gwidget->CapVidButt);
 
     gchar* pix3path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/close.png",NULL);
     if (g_file_test(pix3path,G_FILE_TEST_EXISTS))
