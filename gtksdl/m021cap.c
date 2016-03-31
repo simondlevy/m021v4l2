@@ -168,8 +168,6 @@ static void *main_loop()
 
     SDL_Quit();
 
-    videoIn = NULL;
-
     return (void *) 0;
 }
 

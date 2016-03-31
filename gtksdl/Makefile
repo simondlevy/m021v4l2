@@ -56,5 +56,8 @@ clean:
 run: m021cap
 	./m021cap
 
+edit:
+	vim m021cap.c
+
 commit:
 	git commit -a --allow-empty-message -m ''; git push
