@@ -138,8 +138,6 @@ struct ALL_DATA
 };
 
 
-#define VDIN_DYNCTRL_OK            3
-
 static Uint32 SDL_VIDEO_Flags =
         SDL_ANYFORMAT | SDL_RESIZABLE;
 
@@ -161,7 +159,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
     gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
 
 	gwidget = NULL;
-	//pdata = NULL;
 	global = NULL;
 
 	gtk_main_quit();
@@ -379,11 +376,9 @@ struct VideoFormatData *videoF = NULL;
 
 /*controls data*/
 struct VidState *s = NULL;
+
 /*global widgets*/
 struct GWIDGET *gwidget = NULL;
-
-/*thread definitions*/
-//__THREAD_TYPE video_thread;
 
 /*
  * Unix signals that are cought are written to a pipe. The pipe connects
@@ -391,7 +386,7 @@ struct GWIDGET *gwidget = NULL;
  * hold the file descriptors for the two ends of the pipe (index 0 for
  * reading, 1 for writing).
  */
-int signal_pipe[2];
+static int signal_pipe[2];
 
 /*
  * The unix signal handler.
