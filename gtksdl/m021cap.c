@@ -1,24 +1,24 @@
 /*
-   m021cap :  Capture and display YUYV images from LI-USB30-M021 using V4L2
+m021cap :  Capture and display YUYV images from LI-USB30-M021 using V4L2
 
-   Copyright (C) 2016 Simon D. Levy
+Copyright (C) 2016 Simon D. Levy
 
-   Adapted from GUVCView: http://guvcview.sourceforge.net
+Adapted from GUVCView: http://guvcview.sourceforge.net
 
-   This file is part of M021_V4L2.
+This file is part of M021_V4L2.
 
-   M021_V4L2 is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+M021_V4L2 is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-   M021_V4L2 is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU General Public License
-   along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
- */
+M021_V4L2 is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include <gtk/gtk.h>
 #include <SDL/SDL.h>
@@ -110,7 +110,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
         SDL_WM_SetCaption(caption, NULL);
 
-        
+
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
     }
 
@@ -118,16 +118,16 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     int bpp = SDL_VideoModeOK( width, height, 32, SDL_VIDEO_Flags);
 
     *pscreen = SDL_SetVideoMode(
-        width,
-        height,
-        bpp,
-        SDL_VIDEO_Flags);
+            width,
+            height,
+            bpp,
+            SDL_VIDEO_Flags);
 
     if(*pscreen == NULL)
     {
         return NULL;
     }
-    
+
     SDL_Overlay* overlay=NULL;
     overlay = SDL_CreateYUVOverlay(framewidth, frameheight, SDL_YUY2_OVERLAY, *pscreen);
 
@@ -218,101 +218,101 @@ static int signal_pipe[2];
  */
 static void pipe_signals(int signal)
 {
-  if(write(signal_pipe[1], &signal, sizeof(int)) != sizeof(int))
+    if(write(signal_pipe[1], &signal, sizeof(int)) != sizeof(int))
     {
-      fprintf(stderr, "unix signal %d lost\n", signal);
+        fprintf(stderr, "unix signal %d lost\n", signal);
     }
 }
 
 /*
    The event loop callback that handles the unix signals. Must be a GIOFunc.
    The source is the reading end of our pipe, cond is one of
-     G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
+   G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
    the pointer d is always NULL
  */
 static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer data)
 {
-  GError *error = NULL;		/* for error handling */
+    GError *error = NULL;		/* for error handling */
 
-  /*
-     There is no g_io_channel_read or g_io_channel_read_int, so we read
-     char's and use a union to recover the unix signal number.
-   */
-  union {
-    gchar chars[sizeof(int)];
-    int signal;
-  } buf;
-  GIOStatus status;		// save the reading status 
-  gsize bytes_read;		//* save the number of chars read 
+    /*
+       There is no g_io_channel_read or g_io_channel_read_int, so we read
+       char's and use a union to recover the unix signal number.
+     */
+    union {
+        gchar chars[sizeof(int)];
+        int signal;
+    } buf;
+    GIOStatus status;		// save the reading status 
+    gsize bytes_read;		//* save the number of chars read 
 
-  /*
-     Read from the pipe as long as data is available. The reading end is
-     also in non-blocking mode, so if we have consumed all unix signals,
-     the read returns G_IO_STATUS_AGAIN.
-   */
-  while((status = g_io_channel_read_chars(source, buf.chars,
-		     sizeof(int), &bytes_read, &error)) == G_IO_STATUS_NORMAL)
+    /*
+       Read from the pipe as long as data is available. The reading end is
+       also in non-blocking mode, so if we have consumed all unix signals,
+       the read returns G_IO_STATUS_AGAIN.
+     */
+    while((status = g_io_channel_read_chars(source, buf.chars,
+                    sizeof(int), &bytes_read, &error)) == G_IO_STATUS_NORMAL)
     {
-      g_assert(error == NULL);	/* no error if reading returns normal */
+        g_assert(error == NULL);	/* no error if reading returns normal */
 
-      // There might be some problem resulting in too few char's read.  Check it.
-      if(bytes_read != sizeof(int)){
-	fprintf(stderr, "lost data in signal pipe (expected %lu, received %lu)\n",
-		(long unsigned int) sizeof(int), (long unsigned int) bytes_read);
-	continue;	      /* discard the garbage and keep fingers crossed */
-      }
+        // There might be some problem resulting in too few char's read.  Check it.
+        if(bytes_read != sizeof(int)){
+            fprintf(stderr, "lost data in signal pipe (expected %lu, received %lu)\n",
+                    (long unsigned int) sizeof(int), (long unsigned int) bytes_read);
+            continue;	      /* discard the garbage and keep fingers crossed */
+        }
 
-      // Ok, we read a unix signal number, so let the label reflect it!
-     switch (buf.signal)
-     {
-     	case SIGINT:
-     		shutdown();
-     		break;
-    	default:
-    		printf("guvcview signal %d caught\n", buf.signal);
-    		break;
-     }
+        // Ok, we read a unix signal number, so let the label reflect it!
+        switch (buf.signal)
+        {
+            case SIGINT:
+                shutdown();
+                break;
+            default:
+                printf("guvcview signal %d caught\n", buf.signal);
+                break;
+        }
     }
 
-  /*
-     Reading from the pipe has not returned with normal status. Check for
-     potential errors and return from the callback.
-   */
-  if(error != NULL){
-    fprintf(stderr, "reading signal pipe failed: %s\n", error->message);
-    exit(1);
-  }
-  if(status == G_IO_STATUS_EOF){
-    fprintf(stderr, "signal pipe has been closed\n");
-    exit(1);
-  }
+    /*
+       Reading from the pipe has not returned with normal status. Check for
+       potential errors and return from the callback.
+     */
+    if(error != NULL){
+        fprintf(stderr, "reading signal pipe failed: %s\n", error->message);
+        exit(1);
+    }
+    if(status == G_IO_STATUS_EOF){
+        fprintf(stderr, "signal pipe has been closed\n");
+        exit(1);
+    }
 
-  g_assert(status == G_IO_STATUS_AGAIN);
-  return TRUE;		/* keep the event source */
+    g_assert(status == G_IO_STATUS_AGAIN);
+    return TRUE;		/* keep the event source */
 }
 
 int main(int argc, char *argv[])
 {
-	/*
-   	  In order to register the reading end of the pipe with the event loop
-   	  we must convert it into a GIOChannel.
-   	*/
-  	GIOChannel *g_signal_in;
-  	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
-  	GError *error = NULL;	/* handle errors */
+    /*
+       In order to register the reading end of the pipe with the event loop
+       we must convert it into a GIOChannel.
+     */
+    GIOChannel *g_signal_in;
+    long fd_flags; 	    /* used to change the pipe into non-blocking mode */
+    GError *error = NULL;	/* handle errors */
 
     pthread_mutex_init(&mutex, NULL);
 
-	caption = g_new(char, 32);
+    caption = g_new(char, 32);
 
-	g_sprintf(caption,"LI-USB30-M021");
+    g_sprintf(caption,"LI-USB30-M021");
 
-	bpp = 0; //current bytes per pixel
-	hwaccel = 1; //use hardware acceleration
-	framewidth = WIDTH;
-	frameheight = HEIGHT;
+    bpp = 0; //current bytes per pixel
+    hwaccel = 1; //use hardware acceleration
+    framewidth = WIDTH;
+    frameheight = HEIGHT;
 
-	vid_widget_state = TRUE;
+    vid_widget_state = TRUE;
 
     if(!gtk_init_check(&argc, &argv))
     {
@@ -387,6 +387,6 @@ int main(int argc, char *argv[])
 
 
     gtk_main();
-    
+
     return 0;
 }
