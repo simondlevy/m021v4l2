@@ -11,17 +11,17 @@ int main()
     uint8_t buf[800*460*3];
 
     vdIn_800x460_t cap;
-    m021_init_800x460("/dev/video0", &cap);
+    m021_800x460_init("/dev/video0", &cap);
 
-    cvNamedWindow("window",CV_WINDOW_AUTOSIZE);
+    cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
     while (true) {
 
-        m021_grab_800x460_bgr(&cap, buf);
+        m021_800x460_grab_bgr(&cap, buf);
 
         memcpy(mat.data, buf, 460*800*3);
 
-        imshow("window", mat);
+        imshow("LI-USB30-M021", mat);
 
         if (cvWaitKey(1) == 27)
             break;
