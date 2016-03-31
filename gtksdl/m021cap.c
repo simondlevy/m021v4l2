@@ -58,7 +58,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     int width = framewidth;
     int height = frameheight;
 
-    if (*pscreen == NULL) //init SDL
+    if (*pscreen == NULL) 
     {
     
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
@@ -126,7 +126,6 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 static void *main_loop()
 {
     SDL_Event event;
-    /*the main SDL surface*/
     SDL_Surface *pscreen = NULL;
     SDL_Overlay *overlay = NULL;
     SDL_Rect drect;
@@ -140,7 +139,7 @@ static void *main_loop()
     if(overlay == NULL)
     {
         g_print("FATAL: Couldn't create yuv overlay - please disable hardware accelaration\n");
-        signalquit = TRUE; /*exit video thread*/
+        signalquit = TRUE; // exit video thread
     }
     else
     {
@@ -164,7 +163,6 @@ static void *main_loop()
 
         while( SDL_PollEvent(&event) )
         {
-            //printf("event type:%i  event key:%i\n", event.type, event.key.keysym.scancode);
             if(event.type==SDL_VIDEORESIZE)
             {
                 pscreen = SDL_SetVideoMode(event.resize.w, event.resize.h, bpp, SDL_VIDEO_Flags);
@@ -173,17 +171,14 @@ static void *main_loop()
             }
             if(event.type==SDL_QUIT)
             {
-                //shutDown
                 g_timeout_add(200, shutdown_timer, NULL);
             }
         }
 
-    }/*loop end*/
+    } // loop end
 
 
     p = NULL;
-
-    fflush(NULL);//flush all output buffers
 
     if(overlay)
         SDL_FreeYUVOverlay(overlay);
@@ -287,7 +282,6 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
   return (TRUE);		/* keep the event source */
 }
 
-/*--------------------------------- MAIN -------------------------------------*/
 int main(int argc, char *argv[])
 {
 	/*
@@ -310,8 +304,6 @@ int main(int argc, char *argv[])
 	frameheight = HEIGHT;
 
 
-	/*---------------------------------- Allocations -------------------------*/
-
 	vid_widget_state = TRUE;
 
     if(!gtk_init_check(&argc, &argv))
@@ -324,10 +316,10 @@ int main(int argc, char *argv[])
 
     /* make sure the type is realized so that we can change the properties*/
     g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
+
     /* make sure gtk-button-images property is set to true (defaults to false in karmic)*/
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
-    /*----------------------- init videoIn structure --------------------------*/
     videoIn = g_new0(VDIN_T, 1);
 
     framewidth =  WIDTH;
@@ -341,10 +333,6 @@ int main(int argc, char *argv[])
 
     }
 
-    /*
-     * Set the unix signal handling up.
-     * First create a pipe.
-     */
     if(pipe(signal_pipe))
     {
         perror("pipe");
