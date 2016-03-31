@@ -765,12 +765,6 @@ int main(int argc, char *argv[])
 	//sets local control_only flag - prevents several initializations/allocations
 	gboolean control_only = (global->control_only || global->add_ctrls) ;
 
-    if(global->no_display && global->control_only )
-    {
-	g_printerr("incompatible options (control_only and no_display): enabling display");
-	global->no_display = FALSE;
-    }
-
 	/*---------------------------------- Allocations -------------------------*/
 
 	gwidget = g_new0(struct GWIDGET, 1);
