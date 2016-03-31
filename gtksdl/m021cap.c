@@ -50,14 +50,6 @@ struct GLOBAL
 
 	char *caption;       //title bar caption
 
-	int PanStep;           //step angle for Pan
-	int TiltStep;          //step angle for Tilt
-	int FpsCount;          //frames counter for fps calc
-	int timer_id;          //fps count timer
-	int image_timer_id;    //auto image capture timer
-    int udev_timer_id;     //timer id for udev device events check
-	int disk_timer_id;     //timer id for disk check (free space)
-	int image_timer;       //auto image capture time
 	int image_npics;       //number of captures
 	int image_picn;        //capture number
 	int bpp;               //current bytes per pixel
@@ -87,7 +79,6 @@ struct GLOBAL
 	gboolean flg_hwaccel;  //flag hwaccel if set in args
 	gboolean flg_res;      //flag resol if set in args
 	gboolean flg_mode;     //flag mode if set in args
-	gboolean flg_FpsCount; //flag FpsCount if set in args
 	gboolean VidButtPress;
 	gboolean change_res;   //flag for reseting resolution
 	gboolean add_ctrls;    //flag for exiting after adding extension controls
@@ -142,16 +133,8 @@ static int initGlobals (struct GLOBAL *global)
 	global->w_ind=0;
 	global->r_ind=0;
 
-	global->FpsCount=0;
-
-	global->disk_timer_id=0;
-	global->timer_id=0;
-	global->image_timer_id=0;
-	global->image_timer=0;
 	global->image_npics=9999;/*default max number of captures*/
 	global->image_picn =0;
-	global->PanStep=2;/*2 degree step for Pan*/
-	global->TiltStep=2;/*2 degree step for Tilt*/
 	global->DispFps=0;
 	global->bpp = 0; //current bytes per pixel
 	global->hwaccel = 1; //use hardware acceleration
@@ -314,11 +297,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	/* wait for the video thread */
     global->signalquit = TRUE;
     __THREAD_JOIN(all_data->video_thread);
-
-    /* destroys fps timer*/
-    if (global->timer_id > 0) g_source_remove(global->timer_id);
-    /* destroys udev device event check timer*/
-    if (global->udev_timer_id > 0) g_source_remove(global->udev_timer_id);
 
     gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global->winwidth),&(global->winheight));//mainwin or widget
 
@@ -775,15 +753,6 @@ int main(int argc, char *argv[])
 
     gchar* icon1path = g_strconcat (PACKAGE_DATA_DIR,"/pixmaps/guvcview/guvcview.png",NULL);
     g_free(icon1path);
-
-    if(global->image_timer)
-    {	/*image auto capture*/
-        gwidget->CapImageButt=gtk_button_new_with_label (_("Stop Auto (I)"));
-    }
-    else
-    {
-        gwidget->CapImageButt=gtk_button_new_with_label (_("Cap. Image (I)"));
-    }
 
     /*add images to Buttons and top window*/
     /*check for files*/
