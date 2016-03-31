@@ -45,7 +45,7 @@
 #define __MUTEX_TYPE pthread_mutex_t
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
 
-static	__MUTEX_TYPE         mutex;      
+static	pthread_mutex_t      mutex;      
 static int                   hwaccel;    
 static int                   bpp;        
 static char *                caption;    
