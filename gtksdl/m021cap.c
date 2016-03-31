@@ -1030,13 +1030,7 @@ int main(int argc, char *argv[])
   	g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, &all_data);
 
 
-	if(!global->no_display)
-		gtk_main();
-	else
-	{
-		gwidget->main_loop = g_main_loop_new(NULL, TRUE);
-		g_main_loop_run(gwidget->main_loop);
-	}
+	gtk_main();
 
 	//free all_data allocations
 	free(all_data.gwidget);
