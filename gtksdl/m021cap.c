@@ -56,9 +56,10 @@ struct GLOBAL
 	int height;            //frame height
 	int winwidth;          //control windoe width
 	int winheight;         //control window height
-    gboolean signalquit;
 };
 
+static struct GLOBAL global;
+static gboolean signalquit;
 
 #define MEDIUM
 
@@ -84,7 +85,6 @@ struct GLOBAL
 #endif
 #endif
 
-static struct GLOBAL global;
 
 #define __AMUTEX &pdata->mutex
 #define __GMUTEX &global.mutex
@@ -138,7 +138,7 @@ static const SDL_VideoInfo *info;
 static void shutdown (void)
 {
 	/* wait for the video thread */
-    global.signalquit = TRUE;
+    signalquit = TRUE;
     __THREAD_JOIN(video_thread);
 
     gtk_window_get_size(GTK_WINDOW(gwidget->mainwin),&(global.winwidth),&(global.winheight));//mainwin or widget
@@ -270,14 +270,14 @@ static void *main_loop()
 
     BYTE *p = NULL;
 
-    global.signalquit = FALSE;
+    signalquit = FALSE;
 
     overlay = video_init(&(pscreen));
 
     if(overlay == NULL)
     {
         g_print("FATAL: Couldn't create yuv overlay - please disable hardware accelaration\n");
-        global.signalquit = TRUE; /*exit video thread*/
+        signalquit = TRUE; /*exit video thread*/
     }
     else
     {
@@ -289,7 +289,7 @@ static void *main_loop()
         drect.h = pscreen->h;
     }
 
-    while (!global.signalquit)
+    while (!signalquit)
     {
         SDL_LockYUVOverlay(overlay);
         if (VD_GRAB(videoIn, p) < 0) {
