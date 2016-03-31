@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <SDL/SDL.h>
 #include <glib/gi18n.h>
+#include <glib/gprintf.h>
 #include <fcntl.h>		
 
 #include "../m021_v4l2.h"
@@ -12,48 +13,27 @@
 #define __MUTEX_TYPE pthread_mutex_t
 #define __COND_TYPE pthread_cond_t
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
-#define __CLOSE_MUTEX(m) ( pthread_mutex_destroy(m) )
-#define __LOCK_MUTEX(m) ( pthread_mutex_lock(m) )
-#define __UNLOCK_MUTEX(m) ( pthread_mutex_unlock(m) )
 
 #define __INIT_COND(c)  ( pthread_cond_init (c, NULL) )
-#define __CLOSE_COND(c) ( pthread_cond_destroy(c) )
-#define __COND_BCAST(c) ( pthread_cond_broadcast(c) )
-#define __COND_TIMED_WAIT(c,m,t) ( pthread_cond_timedwait(c,m,t) )
 
-/*next index of ring buffer with size elements*/
-#define NEXT_IND(ind,size) ind++;if(ind>=size) ind=0
-/*previous index of ring buffer with size elements*/
-//#define PREV_IND(ind,size) ind--;if(ind<0) ind=size-1
-
-#define VIDBUFF_SIZE 45    //number of video frames in the ring buffer
-
-#define MPG_NUM_SAMP 1152  //number of samples in a audio MPEG frame
-#define AUDBUFF_SIZE 2     //number of audio mpeg frames in each audio buffer
-                           // direct impact on latency as buffer is only processed when full
-#define AUDBUFF_NUM  80    //number of audio buffers
-//#define MPG_NUM_FRAMES 2   //number of MPEG frames in a audio frame
-
+typedef int8_t   INT8;
+typedef uint8_t  UINT8;
+typedef int16_t  INT16;
+typedef uint16_t UINT16;
+typedef int32_t  INT32;
+typedef uint32_t UINT32;
+typedef int64_t  INT64;
+typedef uint64_t UINT64;
 typedef uint64_t QWORD;
 typedef uint32_t DWORD;
 typedef uint16_t WORD;
 typedef uint8_t  BYTE;
 typedef unsigned int LONG;
 typedef unsigned int UINT;
-
 typedef unsigned long long ULLONG;
 typedef unsigned long      ULONG;
 
 typedef char* pchar;
-
-typedef int8_t     INT8;
-typedef uint8_t    UINT8;
-typedef int16_t    INT16;
-typedef uint16_t   UINT16;
-typedef int32_t    INT32;
-typedef uint32_t   UINT32;
-typedef int64_t    INT64;
-typedef uint64_t   UINT64;
 
 typedef float SAMPLE;
 
@@ -653,11 +633,6 @@ static void *main_loop(void *data)
     SDL_Surface *pscreen = NULL;
     SDL_Overlay *overlay = NULL;
     SDL_Rect drect;
-
-    SAMPLE vuPeak[2];  // The maximum vuLevel seen recently
-    int vuPeakFreeze[2]; // The vuPeak values will be frozen for this many frames.
-    vuPeak[0] = vuPeak[1] = 0;
-    vuPeakFreeze[0] = vuPeakFreeze[1] = 0;
 
     BYTE *p = NULL;
 
