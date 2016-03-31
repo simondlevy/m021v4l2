@@ -13,48 +13,11 @@
 #define __MUTEX_TYPE pthread_mutex_t
 #define __COND_TYPE pthread_cond_t
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
+#define __AMUTEX &pdata->mutex
+#define __GMUTEX &mutex
+#define __FMUTEX &file_mutex
 
 #define __INIT_COND(c)  ( pthread_cond_init (c, NULL) )
-
-typedef int8_t   INT8;
-typedef uint8_t  UINT8;
-typedef int16_t  INT16;
-typedef uint16_t UINT16;
-typedef int32_t  INT32;
-typedef uint32_t UINT32;
-typedef int64_t  INT64;
-typedef uint64_t UINT64;
-typedef uint64_t QWORD;
-typedef uint32_t DWORD;
-typedef uint16_t WORD;
-typedef uint8_t  BYTE;
-typedef unsigned int LONG;
-typedef unsigned int UINT;
-typedef unsigned long long ULLONG;
-typedef unsigned long      ULONG;
-
-typedef char* pchar;
-
-#define WINSIZEX 560
-#define WINSIZEY 560
-
-#define DEFAULT_WIDTH 640
-#define DEFAULT_HEIGHT 480
-
-static	__MUTEX_TYPE mutex;    //global struct mutex
-static	__MUTEX_TYPE file_mutex; //video file mutex
-static	__COND_TYPE  IO_cond;      //IO thread semaphore
-
-static int hwaccel;           //use hardware acceleration
-static int bpp;               //current bytes per pixel
-static char *caption;       //title bar caption
-static gboolean signalquit;
-static	int desktop_w;         //Desktop width
-static	int desktop_h;         //Desktop height
-static	int winwidth;          //control windoe width
-static	int winheight;         //control window height
-static	int framewidth;             //frame width
-static	int frameheight;            //frame height
 
 #define MEDIUM
 
@@ -81,9 +44,33 @@ static	int frameheight;            //frame height
 #endif
 
 
-#define __AMUTEX &pdata->mutex
-#define __GMUTEX &mutex
-#define __FMUTEX &file_mutex
+typedef char * pchar;
+
+#define WINSIZEX 560
+#define WINSIZEY 560
+
+#define DEFAULT_WIDTH 640
+#define DEFAULT_HEIGHT 480
+
+static	__MUTEX_TYPE mutex;      //global struct mutex
+static	__MUTEX_TYPE file_mutex; //video file mutex
+
+static int hwaccel;             //use hardware acceleration
+static int bpp;                 //current bytes per pixel
+static char *caption;           //title bar caption
+static gboolean signalquit;
+static	int desktop_w;          //Desktop width
+static	int desktop_h;          //Desktop height
+static	int winwidth;           //control windoe width
+static	int winheight;          //control window height
+static	int framewidth;         //frame width
+static	int frameheight;        //frame height
+
+static VDIN_T *videoIn;
+static struct GWIDGET *gwidget;
+static __THREAD_TYPE video_thread;
+static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE;
+static const SDL_VideoInfo *info;
 
 static int initGlobals (void)
 {
@@ -120,15 +107,6 @@ struct GWIDGET
 	gboolean vid_widget_state;
 	int status_warning_id;
 };
-
-static VDIN_T *videoIn;
-static struct GWIDGET *gwidget;
-static __THREAD_TYPE video_thread;
-
-static Uint32 SDL_VIDEO_Flags =
-        SDL_ANYFORMAT | SDL_RESIZABLE;
-
-static const SDL_VideoInfo *info;
 
 static void shutdown (void)
 {
@@ -263,7 +241,7 @@ static void *main_loop()
     SDL_Overlay *overlay = NULL;
     SDL_Rect drect;
 
-    BYTE *p = NULL;
+    uint8_t *p = NULL;
 
     signalquit = FALSE;
 
