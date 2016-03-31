@@ -11,13 +11,8 @@
 #define __THREAD_JOIN(t) (pthread_join(t, NULL))
 
 #define __MUTEX_TYPE pthread_mutex_t
-#define __COND_TYPE pthread_cond_t
 #define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
-#define __AMUTEX &pdata->mutex
 #define __GMUTEX &mutex
-#define __FMUTEX &file_mutex
-
-#define __INIT_COND(c)  ( pthread_cond_init (c, NULL) )
 
 #define MEDIUM
 
@@ -53,7 +48,6 @@ typedef char * pchar;
 #define DEFAULT_HEIGHT 480
 
 static	__MUTEX_TYPE mutex;      //global struct mutex
-static	__MUTEX_TYPE file_mutex; //video file mutex
 
 static int hwaccel;             //use hardware acceleration
 static int bpp;                 //current bytes per pixel
@@ -75,7 +69,6 @@ static const SDL_VideoInfo *info;
 static int initGlobals (void)
 {
 	__INIT_MUTEX( __GMUTEX );
-	__INIT_MUTEX( __FMUTEX );
 
 	caption = g_new(char, 32);
 
