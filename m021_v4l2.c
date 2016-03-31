@@ -781,7 +781,7 @@ static int m021_init_common(const char * devname, vdIn_t * common, int width, in
 
 	ret = 0; //clean ret code
 
-    common->format = 0x56595559;
+    common->format = 0x56595559; // YUYV
 
     if ((ret=init_v4l2(common, &common->format, width, height)) < 0)
     {
@@ -825,7 +825,7 @@ int m021_grab_common(vdIn_t * common)
 
 // =============================================================================================
 
-int m021_init_1280x720(const char * devname, vdIn_1280x720_t * videoIn)
+int m021_1280x720_init(const char * devname, vdIn_1280x720_t * videoIn)
 {
 	int ret = m021_init_common(devname, &videoIn->common, 1280, 720);
 
@@ -835,7 +835,7 @@ int m021_init_1280x720(const char * devname, vdIn_1280x720_t * videoIn)
     return ret;
 }
 
-int m021_grab_1280x720_yuyv(vdIn_1280x720_t * vd, uint8_t * frame)
+int m021_1280x720_grab_yuyv(vdIn_1280x720_t * vd, uint8_t * frame)
 {
     int ret = m021_grab_common(&vd->common);
 
@@ -845,7 +845,7 @@ int m021_grab_1280x720_yuyv(vdIn_1280x720_t * vd, uint8_t * frame)
     return ret;
 }
 
-int m021_grab_1280x720_bgr(vdIn_1280x720_t * vd, uint8_t *frame)
+int m021_1280x720_grab_bgr(vdIn_1280x720_t * vd, uint8_t *frame)
 {
     int ret = m021_grab_common(&vd->common);
 
@@ -855,7 +855,7 @@ int m021_grab_1280x720_bgr(vdIn_1280x720_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_init_800x460(const char * devname, vdIn_800x460_t * videoIn)
+int m021_800x460_init(const char * devname, vdIn_800x460_t * videoIn)
 {
 	int ret = m021_init_common(devname, &videoIn->common, 800, 460);
 
@@ -865,7 +865,7 @@ int m021_init_800x460(const char * devname, vdIn_800x460_t * videoIn)
     return ret;
 }
 
-int m021_grab_800x460_yuyv(vdIn_800x460_t * vd, uint8_t *frame)
+int m021_800x460_grab_yuyv(vdIn_800x460_t * vd, uint8_t *frame)
 {
     int ret = m021_grab_common(&vd->common);
 
@@ -875,7 +875,7 @@ int m021_grab_800x460_yuyv(vdIn_800x460_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_grab_800x460_bgr(vdIn_800x460_t * vd, uint8_t *frame)
+int m021_800x460_grab_bgr(vdIn_800x460_t * vd, uint8_t *frame)
 {
     int ret = m021_grab_common(&vd->common);
 
@@ -885,7 +885,7 @@ int m021_grab_800x460_bgr(vdIn_800x460_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_init_640x480(const char * devname, vdIn_640x480_t * videoIn)
+int m021_640x480_init(const char * devname, vdIn_640x480_t * videoIn)
 {
 	int ret = m021_init_common(devname, &videoIn->common, 640, 480);
 
@@ -895,7 +895,7 @@ int m021_init_640x480(const char * devname, vdIn_640x480_t * videoIn)
     return ret;
 }
 
-int m021_grab_640x480_yuyv(vdIn_640x480_t * vd, uint8_t *frame)
+int m021_640x480_grab_yuyv(vdIn_640x480_t * vd, uint8_t *frame)
 {
     int ret = m021_grab_common(&vd->common);
 
@@ -905,7 +905,7 @@ int m021_grab_640x480_yuyv(vdIn_640x480_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_grab_640x480_bgr(vdIn_640x480_t * vd, uint8_t *frame)
+int m021_640x480_grab_bgr(vdIn_640x480_t * vd, uint8_t *frame)
 {
     int ret = m021_grab_common(&vd->common);
 

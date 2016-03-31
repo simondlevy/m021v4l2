@@ -33,8 +33,8 @@
 #define VDIN_T vdIn_1280x720_t
 #define WIDTH 1280
 #define HEIGHT 720
-#define VD_INIT m021_init_1280x720
-#define VD_GRAB m021_grab_1280x720_yuyv
+#define VD_INIT m021_1280x720_init
+#define VD_GRAB m021_1280x720_grab_yuyv
 
 // -------------------------------------------------------------
 
