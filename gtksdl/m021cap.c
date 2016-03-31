@@ -402,8 +402,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	//struct paRecordData *pdata = all_data->pdata;
 	struct GLOBAL *global = all_data->global;
 
-	gboolean control_only = (global->control_only || global->add_ctrls);
-
 	/* wait for the video thread */
     global->signalquit = TRUE;
     __THREAD_JOIN(all_data->video_thread);
@@ -447,7 +445,7 @@ static SDL_Overlay * video_init(void *data, SDL_Surface **pscreen)
         if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
         {
             g_printerr("Couldn't initialize SDL: %s\n", SDL_GetError());
-            return 1;
+            exit(1);
         }
 
         /* For this version, we will use hardware acceleration as default*/
