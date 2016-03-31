@@ -111,7 +111,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     return overlay;
 }
 
-static void *main_loop()
+static void * main_loop(VDIN_T * videoIn)
 {
     SDL_Event event;
     SDL_Surface *pscreen = NULL;
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    if(pthread_create(&video_thread, NULL, main_loop, NULL))
+    if(pthread_create(&video_thread, NULL, main_loop, videoIn))
     {
         g_printerr("Video thread creation failed\n");
     }
