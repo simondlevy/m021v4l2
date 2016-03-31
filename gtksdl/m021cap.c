@@ -185,24 +185,24 @@ static void *main_loop()
 
     SDL_Quit();
 
-
     videoIn = NULL;
-    return ((void *) 0);
+
+    return (void *) 0;
 }
 
 /*
- * Unix signals that are cought are written to a pipe. The pipe connects
- * the unix signal handler with GTK's event loop. The array signal_pipe will
- * hold the file descriptors for the two ends of the pipe (index 0 for
- * reading, 1 for writing).
+   Unix signals that are cought are written to a pipe. The pipe connects
+   the unix signal handler with GTK's event loop. The array signal_pipe will
+   hold the file descriptors for the two ends of the pipe (index 0 for
+   reading, 1 for writing).
  */
 static int signal_pipe[2];
 
 /*
- * The unix signal handler.
- * Write any unix signal into the pipe. The writing end of the pipe is in
- * non-blocking mode. If it is full (which can only happen when the
- * event loop stops working) signals will be dropped.
+   The unix signal handler.
+   Write any unix signal into the pipe. The writing end of the pipe is in
+   non-blocking mode. If it is full (which can only happen when the
+   event loop stops working) signals will be dropped.
  */
 static void pipe_signals(int signal)
 {
@@ -213,47 +213,44 @@ static void pipe_signals(int signal)
 }
 
 /*
- * The event loop callback that handles the unix signals. Must be a GIOFunc.
- * The source is the reading end of our pipe, cond is one of
- *   G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
- * the pointer d is always NULL
+   The event loop callback that handles the unix signals. Must be a GIOFunc.
+   The source is the reading end of our pipe, cond is one of
+     G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
+   the pointer d is always NULL
  */
 static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer data)
 {
   GError *error = NULL;		/* for error handling */
 
   /*
-   * There is no g_io_channel_read or g_io_channel_read_int, so we read
-   * char's and use a union to recover the unix signal number.
+     There is no g_io_channel_read or g_io_channel_read_int, so we read
+     char's and use a union to recover the unix signal number.
    */
   union {
     gchar chars[sizeof(int)];
     int signal;
   } buf;
-  GIOStatus status;		/* save the reading status */
-  gsize bytes_read;		/* save the number of chars read */
+  GIOStatus status;		// save the reading status 
+  gsize bytes_read;		//* save the number of chars read 
 
   /*
-   * Read from the pipe as long as data is available. The reading end is
-   * also in non-blocking mode, so if we have consumed all unix signals,
-   * the read returns G_IO_STATUS_AGAIN.
+     Read from the pipe as long as data is available. The reading end is
+     also in non-blocking mode, so if we have consumed all unix signals,
+     the read returns G_IO_STATUS_AGAIN.
    */
   while((status = g_io_channel_read_chars(source, buf.chars,
 		     sizeof(int), &bytes_read, &error)) == G_IO_STATUS_NORMAL)
     {
       g_assert(error == NULL);	/* no error if reading returns normal */
 
-      /*
-       * There might be some problem resulting in too few char's read.
-       * Check it.
-       */
+      // There might be some problem resulting in too few char's read.  Check it.
       if(bytes_read != sizeof(int)){
 	fprintf(stderr, "lost data in signal pipe (expected %lu, received %lu)\n",
 		(long unsigned int) sizeof(int), (long unsigned int) bytes_read);
 	continue;	      /* discard the garbage and keep fingers crossed */
       }
 
-      /* Ok, we read a unix signal number, so let the label reflect it! */
+      // Ok, we read a unix signal number, so let the label reflect it!
      switch (buf.signal)
      {
      	case SIGINT:
@@ -266,8 +263,8 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
     }
 
   /*
-   * Reading from the pipe has not returned with normal status. Check for
-   * potential errors and return from the callback.
+     Reading from the pipe has not returned with normal status. Check for
+     potential errors and return from the callback.
    */
   if(error != NULL){
     fprintf(stderr, "reading signal pipe failed: %s\n", error->message);
@@ -285,8 +282,8 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
 int main(int argc, char *argv[])
 {
 	/*
-   	* In order to register the reading end of the pipe with the event loop
-   	* we must convert it into a GIOChannel.
+   	  In order to register the reading end of the pipe with the event loop
+   	  we must convert it into a GIOChannel.
    	*/
   	GIOChannel *g_signal_in;
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
@@ -314,10 +311,10 @@ int main(int argc, char *argv[])
 
     g_set_application_name(_("LEOPARD Video Capture"));
 
-    /* make sure the type is realized so that we can change the properties*/
+    // make sure the type is realized so that we can change the properties
     g_type_class_unref (g_type_class_ref (GTK_TYPE_BUTTON));
 
-    /* make sure gtk-button-images property is set to true (defaults to false in karmic)*/
+    // make sure gtk-button-images property is set to true (defaults to false in karmic)
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
     videoIn = g_new0(VDIN_T, 1);
@@ -340,8 +337,8 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * put the write end of the pipe into nonblocking mode,
-     * need to read the flags first, otherwise we would clear other flags too.
+       put the write end of the pipe into nonblocking mode,
+       need to read the flags first, otherwise we would clear other flags too.
      */
     fd_flags = fcntl(signal_pipe[1], F_GETFL);
     if(fd_flags == -1)
@@ -353,42 +350,35 @@ int main(int argc, char *argv[])
         perror("write descriptor flags");
     }
 
-    /* Install the unix signal handler pipe_signals for the signals of interest */
+    // Install the unix signal handler pipe_signals for the signals of interest 
     signal(SIGINT, pipe_signals);
     signal(SIGUSR1, pipe_signals);
     signal(SIGUSR2, pipe_signals);
 
-    /* convert the reading end of the pipe into a GIOChannel */
+    //  convert the reading end of the pipe into a GIOChannel
     g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
 
-    /*
-     * we only read raw binary data from the pipe,
-     * therefore clear any encoding on the channel
-     */
+    // we only read raw binary data from the pipe, therefore clear any encoding on the channel
     g_io_channel_set_encoding(g_signal_in, NULL, &error);
     if(error != NULL)
     {
-        /* handle potential errors */
+        // handle potential errors 
         fprintf(stderr, "g_io_channel_set_encoding failed %s\n",
                 error->message);
     }
 
-    /* put the reading end also into non-blocking mode */
+    // put the reading end also into non-blocking mode 
     g_io_channel_set_flags(g_signal_in,
             g_io_channel_get_flags(g_signal_in) | G_IO_FLAG_NONBLOCK, &error);
 
     if(error != NULL)
-    {		/* tread errors */
-        fprintf(stderr, "g_io_set_flags failed %s\n",
-                error->message);
-    }
+        fprintf(stderr, "g_io_set_flags failed %s\n", error->message);
 
-    /* register the reading end with the event loop */
+    // register the reading end with the event loop 
     g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
 
 
     gtk_main();
-
-    g_print("Closing GTK... OK\n");
+    
     return 0;
 }
