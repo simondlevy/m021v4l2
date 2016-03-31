@@ -42,8 +42,6 @@ static gboolean  signalquit;
 static pthread_t video_thread;
 static VDIN_T *  videoIn;
 
-static Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
-
 static void shutdown (void)
 {
     signalquit = TRUE;
@@ -59,6 +57,7 @@ static int shutdown_timer(gpointer data)
 
 static SDL_Overlay * video_init(SDL_Surface **pscreen)
 {
+    Uint32 SDL_VIDEO_Flags = SDL_ANYFORMAT | SDL_RESIZABLE; 
 
     if (*pscreen == NULL) 
     {
