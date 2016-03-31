@@ -53,8 +53,8 @@ int initGlobals (struct GLOBAL *global)
 
 	g_snprintf(global->WVcaption,10,"GUVCVIdeo");
 
-	global->videoBuff = NULL;
-	global->video_buff_size = VIDBUFF_SIZE;
+	//global->videoBuff = NULL;
+	//global->video_buff_size = VIDBUFF_SIZE;
 
 	global->image_inc = 1; //increment filename by default
 	global->vid_inc = 1;   //increment filename by default
