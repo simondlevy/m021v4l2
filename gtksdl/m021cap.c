@@ -131,7 +131,6 @@ struct GLOBAL
 	gboolean flg_imgFPath; //flag imgFPath if set in args
 	gboolean flg_FpsCount; //flag FpsCount if set in args
 	gboolean VidButtPress;
-	gboolean control_only; //if set don't stream video (enables image control in other apps e.g. ekiga, skype, mplayer)
 	gboolean change_res;   //flag for reseting resolution
 	gboolean add_ctrls;    //flag for exiting after adding extension controls
 	gboolean monotonic_pts;//flag if we are using monotonic or real pts
@@ -752,11 +751,6 @@ int main(int argc, char *argv[])
 	/*allocate global variables*/
 	global = g_new0(struct GLOBAL, 1);
 	initGlobals(global);
-
-	/*------------------------- reads configuration file ---------------------*/
-
-	//sets local control_only flag - prevents several initializations/allocations
-	gboolean control_only = (global->control_only || global->add_ctrls) ;
 
 	/*---------------------------------- Allocations -------------------------*/
 
