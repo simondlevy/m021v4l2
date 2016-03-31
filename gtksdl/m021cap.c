@@ -50,7 +50,6 @@ struct GLOBAL
 
 	char *WVcaption;       //video preview title bar caption
 	char *mode;            //mjpg (default)
-	pchar* vidFPath;       //video path [0] - filename  [1] - dir
 	pchar* imgFPath;       //image path [0] - filename  [1] - dir
 	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
 
@@ -168,19 +167,13 @@ static int initGlobals (struct GLOBAL *global)
 
 	const gchar *home = g_get_home_dir();
 
-	global->vidFPath = g_new(pchar, 2);
-
 	global->imgFPath = g_new(pchar, 2);
 
 	global->profile_FPath = g_new(pchar, 2);
 
-	global->vidFPath[1] = g_strdup(home);
-
 	global->imgFPath[1] = g_strdup(home);
 
 	global->profile_FPath[1] = g_strdup(home);
-
-	global->vidFPath[0] = g_strdup("guvcview_video.mkv");
 
 	global->imgFPath[0] = g_strdup("guvcview_image.jpg");
 
