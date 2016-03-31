@@ -5,9 +5,6 @@
 
 #include "../m021_v4l2.h"
 
-#define IO_MMAP 1
-#define IO_READ 2
-
 #define ODD(x) ((x%2)?TRUE:FALSE)
 
 #define __THREAD_TYPE pthread_t
@@ -133,7 +130,6 @@ struct GLOBAL
 	uint64_t image_inc;    //image name increment
 
 	int vid_sleep;         //video thread sleep time (0 by default)
-	int cap_meth;          //capture method: 1-mmap 2-read
 	int Capture_time;      //video capture time passed through argument options with -t
 	int imgFormat;         //image format: 0-"jpg", 1-"png", 2-"bmp"
 	int VidCodec;          //0-"MJPG"  1-"YUY2" 2-"DIB "(rgb32) 3-....
@@ -192,7 +188,6 @@ struct GLOBAL
 	gboolean flg_mode;     //flag mode if set in args
 	gboolean flg_imgFPath; //flag imgFPath if set in args
 	gboolean flg_FpsCount; //flag FpsCount if set in args
-	gboolean flg_cap_meth; //flag if cap_meth is set in args
 	gboolean debug;        //debug mode flag (--verbose)
 	gboolean VidButtPress;
 	gboolean control_only; //if set don't stream video (enables image control in other apps e.g. ekiga, skype, mplayer)
@@ -308,8 +303,6 @@ static int initGlobals (struct GLOBAL *global)
 	global->hwaccel = 1; //use hardware acceleration
 	global->desktop_w = 0;
 	global->desktop_h = 0;
-	global->cap_meth = IO_MMAP;//default mmap(1) or read(0)
-	global->flg_cap_meth = FALSE;
 	global->width = DEFAULT_WIDTH;
 	global->height = DEFAULT_HEIGHT;
 	global->winwidth=WINSIZEX;
