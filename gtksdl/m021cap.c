@@ -50,8 +50,6 @@ struct GLOBAL
 
 	char *caption;       //title bar caption
 
-	BYTE *jpeg;            // jpeg buffer
-
 	int64_t av_drift;      // amount of A/V time correction
 	UINT64 Vidstarttime;   //video start time
 	UINT64 Vidstoptime;    //video stop time
@@ -209,7 +207,6 @@ static int initGlobals (struct GLOBAL *global)
 
 	global->exit_on_close = FALSE;
 	global->skip_n=0;
-	global->jpeg=NULL;
 	global->uvc_h264_unit = 0; //not supported by default
 
 	/* reset with videoIn parameters */
@@ -263,7 +260,6 @@ struct GWIDGET
 	GtkWidget *InpType;
 	GtkWidget *FrameRate;
 	GtkWidget *Devices;
-	GtkWidget *jpeg_comp;
 	GtkWidget *quitButton;
 
 	gboolean vid_widget_state;
