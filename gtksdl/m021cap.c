@@ -44,8 +44,6 @@ static pthread_t             video_thread;
 static int                   bpp;        
 static char *                caption;    
 static gboolean              signalquit;
-static	int                  framewidth; 
-static	int                  frameheight;
 static VDIN_T *              videoIn;
 static gboolean              vid_widget_state;
 
@@ -66,8 +64,6 @@ static int shutdown_timer(gpointer data)
 
 static SDL_Overlay * video_init(SDL_Surface **pscreen)
 {
-    int width = framewidth;
-    int height = frameheight;
 
     if (*pscreen == NULL) 
     {
@@ -104,10 +100,10 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
         SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
     }
 
-    g_print("Checking video mode %ix%i@32bpp : ", width, height);
-    int bpp = SDL_VideoModeOK( width, height, 32, SDL_VIDEO_Flags);
+    g_print("Checking video mode %ix%i@32bpp : ", WIDTH, HEIGHT);
+    int bpp = SDL_VideoModeOK( WIDTH, HEIGHT, 32, SDL_VIDEO_Flags);
 
-    *pscreen = SDL_SetVideoMode(width, height, bpp, SDL_VIDEO_Flags);
+    *pscreen = SDL_SetVideoMode(WIDTH, HEIGHT, bpp, SDL_VIDEO_Flags);
 
     if(*pscreen == NULL)
     {
@@ -294,8 +290,6 @@ int main(int argc, char *argv[])
     g_sprintf(caption,"LI-USB30-M021");
 
     bpp = 0; //current bytes per pixel
-    framewidth = WIDTH;
-    frameheight = HEIGHT;
 
     vid_widget_state = TRUE;
 
@@ -314,9 +308,6 @@ int main(int argc, char *argv[])
     g_object_set (gtk_settings_get_default (), "gtk-button-images", TRUE, NULL);
 
     videoIn = g_new0(VDIN_T, 1);
-
-    framewidth =  WIDTH;
-    frameheight = HEIGHT;
 
     VD_INIT("/dev/video0", videoIn);
 
