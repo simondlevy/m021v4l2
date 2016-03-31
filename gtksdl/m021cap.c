@@ -49,8 +49,7 @@ static void shutdown (void)
 static int shutdown_timer(gpointer data)
 {
     shutdown ();
-    
-    return (FALSE);
+    return FALSE;
 }
 
 static SDL_Overlay * video_init(SDL_Surface **pscreen)
@@ -113,14 +112,14 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
 
     if(*pscreen == NULL)
     {
-        return (NULL);
+        return NULL;
     }
     
     SDL_Overlay* overlay=NULL;
     overlay = SDL_CreateYUVOverlay(framewidth, frameheight, SDL_YUY2_OVERLAY, *pscreen);
 
     SDL_ShowCursor(SDL_DISABLE);
-    return (overlay);
+    return overlay;
 }
 
 static void *main_loop()
@@ -276,7 +275,7 @@ static gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d
   }
 
   g_assert(status == G_IO_STATUS_AGAIN);
-  return (TRUE);		/* keep the event source */
+  return TRUE;		/* keep the event source */
 }
 
 int main(int argc, char *argv[])
