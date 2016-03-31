@@ -88,8 +88,6 @@ struct GLOBAL
 #define __GMUTEX &global->mutex
 #define __FMUTEX &global->file_mutex
 
-#define LIST_CTL_METHOD_NEXT_FLAG 1
-
 static int initGlobals (struct GLOBAL *global)
 {
 	__INIT_MUTEX( __GMUTEX );
@@ -122,11 +120,7 @@ struct GWIDGET
 	/* The main window*/
 	GtkWidget *mainwin;
 
-	/* A restart Dialog */
-	GtkWidget *restartdialog;
-
 	/*Paned containers*/
-	GtkWidget *maintable;
 	GtkWidget *boxh;
 
 	//group list for menu video codecs
@@ -597,10 +591,6 @@ int main(int argc, char *argv[])
 
     VD_INIT("/dev/video0", videoIn);
 
-    gwidget->maintable = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-
-    gtk_widget_show (gwidget->maintable);
-
     gwidget->boxh = gtk_notebook_new();
 
     gtk_widget_show (gwidget->boxh);
@@ -641,11 +631,6 @@ int main(int argc, char *argv[])
     gtk_box_set_homogeneous(GTK_BOX(HButtonBox),TRUE);
 
     gtk_widget_show(HButtonBox);
-
-    /** Attach the buttons */
-    gtk_box_pack_start(GTK_BOX(gwidget->maintable), HButtonBox, FALSE, TRUE, 2);
-    /** Attach the notebook (tabs) */
-    gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->boxh, TRUE, TRUE, 2);
 
     //gwidget->quitButton=gtk_button_new_from_stock(GTK_STOCK_QUIT);
 
@@ -703,8 +688,6 @@ int main(int argc, char *argv[])
     gwidget->status_warning_id = gtk_statusbar_get_context_id (GTK_STATUSBAR(gwidget->status_bar), "warning");
 
     gtk_widget_show(gwidget->status_bar);
-
-    gtk_box_pack_start(GTK_BOX(gwidget->maintable), gwidget->status_bar, FALSE, FALSE, 2);
 
 
     /*------------------ Creating the video thread ---------------*/
