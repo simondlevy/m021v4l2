@@ -39,14 +39,14 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 // -------------------------------------------------------------
 
 static	pthread_mutex_t      mutex;      
-static int                   hwaccel;    
+static pthread_t             video_thread;
+
 static int                   bpp;        
 static char *                caption;    
 static gboolean              signalquit;
 static	int                  framewidth; 
 static	int                  frameheight;
 static VDIN_T *              videoIn;
-static pthread_t             video_thread;
 static const SDL_VideoInfo * info;
 static gboolean              vid_widget_state;
 
@@ -79,17 +79,8 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
             exit(1);
         }
 
-
-        if(hwaccel)
-        {
-            if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
-            if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=1");
-        }
-        else
-        {
-            if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=0");
-            if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=0");
-        }
+        if ( ! getenv("SDL_VIDEO_YUV_HWACCEL") ) putenv("SDL_VIDEO_YUV_HWACCEL=1");
+        if ( ! getenv("SDL_VIDEO_YUV_DIRECT") ) putenv("SDL_VIDEO_YUV_DIRECT=1");
 
         info = SDL_GetVideoInfo();
 
@@ -117,11 +108,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     g_print("Checking video mode %ix%i@32bpp : ", width, height);
     int bpp = SDL_VideoModeOK( width, height, 32, SDL_VIDEO_Flags);
 
-    *pscreen = SDL_SetVideoMode(
-            width,
-            height,
-            bpp,
-            SDL_VIDEO_Flags);
+    *pscreen = SDL_SetVideoMode(width, height, bpp, SDL_VIDEO_Flags);
 
     if(*pscreen == NULL)
     {
@@ -308,7 +295,6 @@ int main(int argc, char *argv[])
     g_sprintf(caption,"LI-USB30-M021");
 
     bpp = 0; //current bytes per pixel
-    hwaccel = 1; //use hardware acceleration
     framewidth = WIDTH;
     frameheight = HEIGHT;
 
