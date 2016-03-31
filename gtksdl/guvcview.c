@@ -1,49 +1,478 @@
-/*******************************************************************************#
-#           guvcview              http://guvcview.sourceforge.net               #
-#                                                                               #
-#           Paulo Assis <pj.assis@gmail.com>                                    #
-#           Nobuhiro Iwamatsu <iwamatsu@nigauri.org>                            #
-#           Dr. Alexander K. Seewald <alex@seewald.at>                          #
-#                             Autofocus algorithm                               #
-#           Flemming Frandsen <dren.dk@gmail.com>                               #
-#           George Sedov <radist.morse@gmail.com>                               #
-#                                                                               #
-# This program is free software; you can redistribute it and/or modify          #
-# it under the terms of the GNU General Public License as published by          #
-# the Free Software Foundation; either version 2 of the License, or             #
-# (at your option) any later version.                                           #
-#                                                                               #
-# This program is distributed in the hope that it will be useful,               #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of                #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                 #
-# GNU General Public License for more details.                                  #
-#                                                                               #
-# You should have received a copy of the GNU General Public License             #
-# along with this program; if not, write to the Free Software                   #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA     #
-#                                                                               #
-********************************************************************************/
-
-
 #include <SDL/SDL.h>
 #include <glib.h>
 #include <glib/gprintf.h>
-/* support for internationalization - i18n */
 #include <glib/gi18n.h>
-/* locale.h is needed if -O0 used (no optimiztions)  */
-/* otherwise included from libintl.h on glib/gi18n.h */
 #include <locale.h>
 #include <signal.h>
-#include <fcntl.h>		/* for fcntl, O_NONBLOCK */
+#include <fcntl.h>		
 #include <gtk/gtk.h>
-#include <portaudio.h>
+#include <inttypes.h>
+#include <sys/types.h>
+#include <pthread.h>
 
-#include "config.h"
-#include "globals.h"
-#include "guvcview.h"
+
+#include "../m021_v4l2.h"
+
+#ifdef WORDS_BIGENDIAN
+  #define BIGENDIAN 1
+#else
+  #define BIGENDIAN 0
+#endif
+
+#define IO_MMAP 1
+#define IO_READ 2
+
+#define ODD(x) ((x%2)?TRUE:FALSE)
+
+#define __THREAD_TYPE pthread_t
+#define __THREAD_CREATE(t,f,d) (pthread_create(t,NULL,f,d))
+#define __THREAD_JOIN(t) (pthread_join(t, NULL))
+
+
+#define __MUTEX_TYPE pthread_mutex_t
+#define __COND_TYPE pthread_cond_t
+#define __INIT_MUTEX(m) ( pthread_mutex_init(m, NULL) )
+#define __CLOSE_MUTEX(m) ( pthread_mutex_destroy(m) )
+#define __LOCK_MUTEX(m) ( pthread_mutex_lock(m) )
+#define __UNLOCK_MUTEX(m) ( pthread_mutex_unlock(m) )
+
+#define __INIT_COND(c)  ( pthread_cond_init (c, NULL) )
+#define __CLOSE_COND(c) ( pthread_cond_destroy(c) )
+#define __COND_BCAST(c) ( pthread_cond_broadcast(c) )
+#define __COND_TIMED_WAIT(c,m,t) ( pthread_cond_timedwait(c,m,t) )
+
+/*next index of ring buffer with size elements*/
+#define NEXT_IND(ind,size) ind++;if(ind>=size) ind=0
+/*previous index of ring buffer with size elements*/
+//#define PREV_IND(ind,size) ind--;if(ind<0) ind=size-1
+
+#define VIDBUFF_SIZE 45    //number of video frames in the ring buffer
+
+#define MPG_NUM_SAMP 1152  //number of samples in a audio MPEG frame
+#define AUDBUFF_SIZE 2     //number of audio mpeg frames in each audio buffer
+                           // direct impact on latency as buffer is only processed when full
+#define AUDBUFF_NUM  80    //number of audio buffers
+//#define MPG_NUM_FRAMES 2   //number of MPEG frames in a audio frame
+
+typedef uint64_t QWORD;
+typedef uint32_t DWORD;
+typedef uint16_t WORD;
+typedef uint8_t  BYTE;
+typedef unsigned int LONG;
+typedef unsigned int UINT;
+
+typedef unsigned long long ULLONG;
+typedef unsigned long      ULONG;
+
+typedef char* pchar;
+
+typedef int8_t     INT8;
+typedef uint8_t    UINT8;
+typedef int16_t    INT16;
+typedef uint16_t   UINT16;
+typedef int32_t    INT32;
+typedef uint32_t   UINT32;
+typedef int64_t    INT64;
+typedef uint64_t   UINT64;
+
+typedef float SAMPLE;
+
+/* 0 is device default*/
+static const int stdSampleRates[] =
+{
+	0, 8000,  9600, 11025, 12000,
+	16000, 22050, 24000,
+	32000, 44100, 48000,
+	88200, 96000,
+	-1   /* Negative terminated list. */
+};
+
+#define DEBUG (0)
+
+#define INCPANTILT 64 // 1°
+
+#define WINSIZEX 560
+#define WINSIZEY 560
+
+#define AUTO_EXP 8
+#define MAN_EXP	1
+
+#define DHT_SIZE 432
+
+#define DEFAULT_WIDTH 640
+#define DEFAULT_HEIGHT 480
+
+#define DEFAULT_FPS	25
+#define DEFAULT_FPS_NUM 1
+#define SDL_WAIT_TIME 30 /*SDL - Thread loop sleep time */
+
+/*clip value between 0 and 255*/
+#define CLIP(value) (BYTE)(((value)>0xFF)?0xff:(((value)<0)?0:(value)))
+
+/*MAX macro - gets the bigger value*/
+#ifndef MAX
+#define MAX(a,b) (((a) < (b)) ? (b) : (a))
+#endif
+
+
+struct GLOBAL
+{
+
+	__MUTEX_TYPE mutex;    //global struct mutex
+	__MUTEX_TYPE file_mutex; //video file mutex
+	__COND_TYPE  IO_cond;      //IO thread semaphore
+
+	//VidBuff *videoBuff;    //video Buffer
+	int video_buff_size;   //size in frames of video buffer
+
+	char *videodevice;     // video device (def. /dev/video0)
+	char *confPath;        //configuration file path
+	char *vidfile;         //video filename passed through argument options with -n
+	char *WVcaption;       //video preview title bar caption
+	char *mode;            //mjpg (default)
+	pchar* vidFPath;       //video path [0] - filename  [1] - dir
+	pchar* imgFPath;       //image path [0] - filename  [1] - dir
+	pchar* profile_FPath;  //profile path [0] - filename  [1] - dir
+
+	BYTE *jpeg;            // jpeg buffer
+
+	int64_t av_drift;      // amount of A/V time correction
+	UINT64 Vidstarttime;   //video start time
+	UINT64 Vidstoptime;    //video stop time
+	QWORD v_ts;            //video time stamp
+	QWORD a_ts;            //audio time stamp
+	uint64_t vid_inc;      //video name increment
+	uint64_t framecount;   //video frame count
+	DWORD frmCount;        //frame count for fps display calc
+	uint64_t image_inc;    //image name increment
+
+	int vid_sleep;         //video thread sleep time (0 by default)
+	int cap_meth;          //capture method: 1-mmap 2-read
+	int Capture_time;      //video capture time passed through argument options with -t
+	int imgFormat;         //image format: 0-"jpg", 1-"png", 2-"bmp"
+	int VidCodec;          //0-"MJPG"  1-"YUY2" 2-"DIB "(rgb32) 3-....
+	int VidCodec_ID;       //lavc codec ID
+	int AudCodec;          //0-PCM 1-MPG2 3-...
+	int VidFormat;         //0-AVI 1-MKV ....
+	int Sound_API;         //audio API: 0-PORTAUDIO 1-PULSEAUDIO
+	int Sound_SampRate;    //audio sample rate
+	int Sound_SampRateInd; //audio sample rate combo index
+	int Sound_numInputDev; //number of audio input devices
+	int Sound_DefDev;      //audio default device index
+	int Sound_UseDev;      //audio used device index
+	int Sound_NumChan;     //audio number of channels
+	int Sound_NumChanInd;  //audio number of channels combo index
+	WORD Sound_Format;     //audio codec - fourcc (avilib.h)
+	uint64_t Sound_delay;  //added sound delay (in nanosec)
+	int PanStep;           //step angle for Pan
+	int TiltStep;          //step angle for Tilt
+	int FpsCount;          //frames counter for fps calc
+	int timer_id;          //fps count timer
+	int image_timer_id;    //auto image capture timer
+    int udev_timer_id;     //timer id for udev device events check
+	int disk_timer_id;     //timer id for disk check (free space)
+	int image_timer;       //auto image capture time
+	int image_npics;       //number of captures
+	int image_picn;        //capture number
+	int bpp;               //current bytes per pixel
+	int hwaccel;           //use hardware acceleration
+	int desktop_w;         //Desktop width
+	int desktop_h;         //Desktop height
+	int width;             //frame width
+	int height;            //frame height
+	int winwidth;          //control windoe width
+	int winheight;         //control window height
+	int Frame_Flags;       //frame filter flags
+	int osdFlags;          // Flags to control onscreen display
+	int skip_n;            //initial frames to skip
+	int w_ind;             //write frame index
+	int r_ind;             //read  frame index
+	int default_action;    // 0 for taking picture, 1 for video
+	int lctl_method;       // 0 for control id loop, 1 for next_ctrl flag method
+	int uvc_h264_unit;     //uvc h264 unit id, if <= 0 then uvc h264 is not supported
+
+	float DispFps;         //fps value
+
+    gboolean no_display;   //flag if guvcview will present the gui or not.
+	gboolean exit_on_close;//exit guvcview after closing video when capturing from start
+	gboolean Sound_enable; //Enable/disable Sound (Def. enable)
+	gboolean AFcontrol;    //Autofocus control flag (exists or not)
+	gboolean autofocus;    //autofocus flag (enable/disable)
+	gboolean flg_config;   //flag confPath if set in args
+	gboolean lprofile;     //flag for command line -l option
+	gboolean flg_npics;    //flag npics if set in args
+	gboolean flg_hwaccel;  //flag hwaccel if set in args
+	gboolean flg_res;      //flag resol if set in args
+	gboolean flg_mode;     //flag mode if set in args
+	gboolean flg_imgFPath; //flag imgFPath if set in args
+	gboolean flg_FpsCount; //flag FpsCount if set in args
+	gboolean flg_cap_meth; //flag if cap_meth is set in args
+	gboolean debug;        //debug mode flag (--verbose)
+	gboolean VidButtPress;
+	gboolean control_only; //if set don't stream video (enables image control in other apps e.g. ekiga, skype, mplayer)
+	gboolean change_res;   //flag for reseting resolution
+	gboolean add_ctrls;    //flag for exiting after adding extension controls
+	gboolean monotonic_pts;//flag if we are using monotonic or real pts
+    gboolean signalquit;
+};
+
+
+#define MEDIUM
+
+#ifdef SMALL
+#define VDIN_T vdIn_640x480_t
+#define WIDTH 640
+#define HEIGHT 480
+#define VD_INIT m021_init_640x480
+#define VD_GRAB m021_grab_640x480_yuyv
+#else
+#ifdef MEDIUM
+#define VDIN_T vdIn_800x460_t
+#define WIDTH 800
+#define HEIGHT 460
+#define VD_INIT m021_init_800x460
+#define VD_GRAB m021_grab_800x460_yuyv
+#else
+#define VDIN_T vdIn_1280x720_t
+#define WIDTH 1280
+#define HEIGHT 720
+#define VD_INIT m021_init_1280x720
+#define VD_GRAB m021_grab_1280x720_yuyv
+#endif
+#endif
+
+#define __AMUTEX &pdata->mutex
+#define __GMUTEX &global->mutex
+#define __FMUTEX &global->file_mutex
+#define __GCOND  &global->IO_cond
+
+#define LIST_CTL_METHOD_NEXT_FLAG 1
+
+static int initGlobals (struct GLOBAL *global)
+{
+	__INIT_MUTEX( __GMUTEX );
+	__INIT_MUTEX( __FMUTEX );
+	__INIT_COND( __GCOND );   /* Initialized video buffer semaphore */
+
+	global->debug = DEBUG;
+
+	const gchar *home = g_get_home_dir();
+
+	global->videodevice = g_strdup("/dev/video0");
+
+	global->confPath = g_strjoin("/", home, ".config", "guvcview", NULL);
+	int ret = g_mkdir_with_parents(global->confPath, 0777);
+	if(ret)
+		fprintf(stderr, "Couldn't create configuration dir: %s \n", global->confPath);
+
+	g_free(global->confPath);
+	global->confPath = g_strjoin("/", home, ".config", "guvcview", "video0", NULL);
+
+	global->vidFPath = g_new(pchar, 2);
+
+	global->imgFPath = g_new(pchar, 2);
+
+	global->profile_FPath = g_new(pchar, 2);
+
+	global->vidFPath[1] = g_strdup(home);
+
+	global->imgFPath[1] = g_strdup(home);
+
+	global->profile_FPath[1] = g_strdup(home);
+
+	global->vidFPath[0] = g_strdup("guvcview_video.mkv");
+
+	global->imgFPath[0] = g_strdup("guvcview_image.jpg");
+
+	global->profile_FPath[0] = g_strdup("default.gpfl");
+
+	global->WVcaption = g_new(char, 32);
+
+	g_snprintf(global->WVcaption,10,"GUVCVIdeo");
+
+	//global->videoBuff = NULL;
+	//global->video_buff_size = VIDBUFF_SIZE;
+
+	global->image_inc = 1; //increment filename by default
+	global->vid_inc = 1;   //increment filename by default
+
+	global->vid_sleep=0;
+	global->vidfile=NULL; /*vid filename passed through argument options with -n */
+	global->Capture_time=0; /*vid capture time passed through argument options with -t */
+	global->lprofile=0; /* flag for -l command line option*/
+
+
+	global->av_drift=0;
+	global->Vidstarttime=0;
+	global->Vidstoptime=0;
+	global->framecount=0;
+	global->w_ind=0;
+	global->r_ind=0;
+
+	global->FpsCount=0;
+
+	global->disk_timer_id=0;
+	global->timer_id=0;
+	global->image_timer_id=0;
+	global->image_timer=0;
+	global->image_npics=9999;/*default max number of captures*/
+	global->image_picn =0;
+	global->frmCount=0;
+	global->PanStep=2;/*2 degree step for Pan*/
+	global->TiltStep=2;/*2 degree step for Tilt*/
+	global->DispFps=0;
+	global->bpp = 0; //current bytes per pixel
+	global->hwaccel = 1; //use hardware acceleration
+	global->desktop_w = 0;
+	global->desktop_h = 0;
+	global->cap_meth = IO_MMAP;//default mmap(1) or read(0)
+	global->flg_cap_meth = FALSE;
+	global->width = DEFAULT_WIDTH;
+	global->height = DEFAULT_HEIGHT;
+	global->winwidth=WINSIZEX;
+	global->winheight=WINSIZEY;
+
+	global->default_action=0;
+
+	global->mode = g_new(char, 6);
+	g_snprintf(global->mode, 5, "mjpg");
+
+	global->osdFlags = 0;
+
+    global->no_display = FALSE;
+	global->exit_on_close = FALSE;
+	global->skip_n=0;
+	global->jpeg=NULL;
+	global->uvc_h264_unit = 0; //not supported by default
+
+	/* reset with videoIn parameters */
+	global->autofocus = FALSE;
+	global->AFcontrol = FALSE;
+	global->VidButtPress = FALSE;
+	global->change_res = FALSE;
+	global->add_ctrls = FALSE;
+	global->lctl_method = LIST_CTL_METHOD_NEXT_FLAG; //next_ctrl flag method
+	return (0);
+}
+
+/* Must set this as global so they */
+/* can be set from any callback.   */
+
+struct GWIDGET
+{
+	/*the main loop : only needed for no_display option*/
+	GMainLoop *main_loop;
+
+	/* The main window*/
+	GtkWidget *mainwin;
+	/* A restart Dialog */
+	GtkWidget *restartdialog;
+	/*Paned containers*/
+	GtkWidget *maintable;
+	GtkWidget *boxh;
+
+	//group list for menu video codecs
+	GSList *vgroup;
+	//group list for menu audio codecs
+	GSList *agroup;
+
+	//menu top widgets
+	GtkWidget *menu_photo_top;
+	GtkWidget *menu_video_top;
+
+	GtkWidget *status_bar;
+
+	GtkWidget *label_SndAPI;
+	GtkWidget *SndAPI;
+	GtkWidget *SndEnable;
+	GtkWidget *SndSampleRate;
+	GtkWidget *SndDevice;
+	GtkWidget *SndNumChan;
+	GtkWidget *SndComp;
+	/*must be called from main loop if capture timer enabled*/
+	GtkWidget *ImageType;
+	GtkWidget *CapImageButt;
+	GtkWidget *CapVidButt;
+	GtkWidget *Resolution;
+	GtkWidget *InpType;
+	GtkWidget *FrameRate;
+	GtkWidget *Devices;
+	GtkWidget *jpeg_comp;
+	GtkWidget *quitButton;
+
+	gboolean vid_widget_state;
+	int status_warning_id;
+};
+
+/* uvc H264 control widgets */
+struct uvc_h264_gtkcontrols
+{
+	GtkWidget* FrameInterval;
+	GtkWidget* BitRate;
+	GtkWidget* Hints_res;
+	GtkWidget* Hints_prof;
+	GtkWidget* Hints_ratecontrol;
+	GtkWidget* Hints_usage;
+	GtkWidget* Hints_slicemode;
+	GtkWidget* Hints_sliceunit;
+	GtkWidget* Hints_view;
+	GtkWidget* Hints_temporal;
+	GtkWidget* Hints_snr;
+	GtkWidget* Hints_spatial;
+	GtkWidget* Hints_spatiallayer;
+	GtkWidget* Hints_frameinterval;
+	GtkWidget* Hints_leakybucket;
+	GtkWidget* Hints_bitrate;
+	GtkWidget* Hints_cabac;
+	GtkWidget* Hints_iframe;
+	GtkWidget* Resolution;
+	GtkWidget* SliceUnits;
+	GtkWidget* SliceMode;
+	GtkWidget* Profile;
+	GtkWidget* Profile_flags;
+	GtkWidget* IFramePeriod;
+	GtkWidget* EstimatedVideoDelay;
+	GtkWidget* EstimatedMaxConfigDelay;
+	GtkWidget* UsageType;
+	//GtkWidget* UCConfig;
+	GtkWidget* RateControlMode;
+	GtkWidget* RateControlMode_cbr_flag;
+	GtkWidget* TemporalScaleMode;
+	GtkWidget* SpatialScaleMode;
+	GtkWidget* SNRScaleMode;
+	GtkWidget* StreamMuxOption;
+	GtkWidget* StreamMuxOption_aux;
+	GtkWidget* StreamMuxOption_mjpgcontainer;
+	GtkWidget* StreamFormat;
+	GtkWidget* EntropyCABAC;
+	GtkWidget* Timestamp;
+	GtkWidget* NumOfReorderFrames;
+	GtkWidget* PreviewFlipped;
+	GtkWidget* View;
+	GtkWidget* StreamID;
+	GtkWidget* SpatialLayerRatio;
+	GtkWidget* LeakyBucketSize;
+	GtkWidget* probe_button;
+	GtkWidget* commit_button;
+};
+
+struct ALL_DATA
+{
+	struct paRecordData *pdata;
+	struct GLOBAL *global;
+	struct focusData *AFdata;
+	VDIN_T *videoIn;
+	struct VideoFormatData *videoF;
+	struct GWIDGET *gwidget;
+	struct uvc_h264_gtkcontrols  *h264_controls;
+	struct VidState *s;
+	__THREAD_TYPE video_thread;
+	__THREAD_TYPE audio_thread;
+	__THREAD_TYPE IO_thread;
+};
+
 
 #define VDIN_DYNCTRL_OK            3
-#define __VMUTEX &videoIn->common.mutex
 
 static Uint32 SDL_VIDEO_Flags =
         SDL_ANYFORMAT | SDL_RESIZABLE;
@@ -59,7 +488,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
 
 	//struct paRecordData *pdata = all_data->pdata;
 	struct GLOBAL *global = all_data->global;
-	VDIN_T *videoIn = all_data->videoIn;
 
 	gboolean control_only = (global->control_only || global->add_ctrls);
 	gboolean no_display = global->no_display;
@@ -69,10 +497,7 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	if(!(control_only))
 	{
 		if (global->debug) g_print("Shuting Down Thread\n");
-		__LOCK_MUTEX(__VMUTEX);
-            global->signalquit = TRUE;
-			//videoIn->common.signalquit=TRUE;
-		__UNLOCK_MUTEX(__VMUTEX);
+        global->signalquit = TRUE;
 		__THREAD_JOIN(all_data->video_thread);
 		if (global->debug) g_print("Video Thread finished\n");
 	}
@@ -92,7 +517,6 @@ shutd (gint restart, struct ALL_DATA *all_data)
 	gwidget = NULL;
 	//pdata = NULL;
 	global = NULL;
-	videoIn = NULL;
 
 	//end gtk or glib main loop
 	if(!no_display)
@@ -464,9 +888,6 @@ int main(int argc, char *argv[])
   	GIOChannel *g_signal_in;
   	long fd_flags; 	    /* used to change the pipe into non-blocking mode */
   	GError *error = NULL;	/* handle errors */
-
-	/*print package name and version*/
-	g_print("%s\n", PACKAGE_STRING);
 
 	/*structure containing all shared data - passed in callbacks*/
 	struct ALL_DATA all_data;

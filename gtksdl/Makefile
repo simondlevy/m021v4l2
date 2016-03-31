@@ -1,6 +1,6 @@
 CC = gcc
 
-guvcview_OBJECTS = globals.o guvcview.o m021_v4l2.o
+guvcview_OBJECTS = guvcview.o m021_v4l2.o
 
 guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
 	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
@@ -26,8 +26,6 @@ DEPS_LIBS = -lgtk-3 -lgdk-3 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lSDL -lpthread
 
 guvcview_SOURCES = \
 	defs.h \
-	globals.h \
-	globals.c \
 	guvcview.h \
 	guvcview.c \
 	jdatatype.h \
@@ -51,9 +49,6 @@ all: guvcview
 
 guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
 	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
-
-globals.o: globals.c *.h
-	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o globals.o globals.c
 
 guvcview.o: guvcview.c *.h
 	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview.o guvcview.c
