@@ -47,8 +47,6 @@ struct GLOBAL
 	__MUTEX_TYPE file_mutex; //video file mutex
 	__COND_TYPE  IO_cond;      //IO thread semaphore
 
-	int framewidth;             //frame width
-	int frameheight;            //frame height
 };
 
 static struct GLOBAL global;
@@ -61,6 +59,8 @@ static	int desktop_w;         //Desktop width
 static	int desktop_h;         //Desktop height
 static	int winwidth;          //control windoe width
 static	int winheight;         //control window height
+static	int framewidth;             //frame width
+static	int frameheight;            //frame height
 
 #define MEDIUM
 
@@ -104,8 +104,8 @@ static int initGlobals (void)
 	hwaccel = 1; //use hardware acceleration
 	desktop_w = 0;
 	desktop_h = 0;
-	global.framewidth = DEFAULT_WIDTH;
-	global.frameheight = DEFAULT_HEIGHT;
+	framewidth = DEFAULT_WIDTH;
+	frameheight = DEFAULT_HEIGHT;
 	winwidth=WINSIZEX;
 	winheight=WINSIZEY;
 
@@ -157,8 +157,8 @@ static int shutdown_timer(gpointer data)
 
 static SDL_Overlay * video_init(SDL_Surface **pscreen)
 {
-    int width = global.framewidth;
-    int height = global.frameheight;
+    int width = framewidth;
+    int height = frameheight;
 
     if (*pscreen == NULL) //init SDL
     {
@@ -250,7 +250,7 @@ static SDL_Overlay * video_init(SDL_Surface **pscreen)
     }
     //use requested resolution for overlay even if not available as video mode
     SDL_Overlay* overlay=NULL;
-    overlay = SDL_CreateYUVOverlay(global.framewidth, global.frameheight,
+    overlay = SDL_CreateYUVOverlay(framewidth, frameheight,
         SDL_YUY2_OVERLAY, *pscreen);
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -475,8 +475,8 @@ int main(int argc, char *argv[])
     /*----------------------- init videoIn structure --------------------------*/
     videoIn = g_new0(VDIN_T, 1);
 
-    global.framewidth =  WIDTH;
-    global.frameheight = HEIGHT;
+    framewidth =  WIDTH;
+    frameheight = HEIGHT;
 
     VD_INIT("/dev/video0", videoIn);
 
