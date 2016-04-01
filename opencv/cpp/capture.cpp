@@ -7,6 +7,8 @@ using namespace cv;
 
 #include "../../m021_v4l2.h"
 
+static pthread_t video_thread;
+
 // http://www.firstobject.com/getmillicount-milliseconds-portable-c++.htm
 static int getMilliCount(){
     timeb tb;
@@ -15,8 +17,10 @@ static int getMilliCount(){
     return nCount;
 }
 
-int main()
+static void * main_loop(void * arg)
 {
+    bool * quit = (bool *)arg;
+
     Mat mat(460, 800, CV_8UC3);
 
     vdIn_t * cap = (vdIn_t *)malloc(sizeof(vdIn_t));
@@ -38,7 +42,7 @@ int main()
 
         imshow("LI-USB30-M021", mat);
 
-        if (cvWaitKey(1) == 27)
+        if (cvWaitKey(1) == 27) 
             break;
     }
 
@@ -48,5 +52,22 @@ int main()
 
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 
-    return 0;
+    *quit = true;
+
+    return (void *)0;
+}
+
+int main()
+{
+    bool quit = false;
+
+    if(pthread_create(&video_thread, NULL, main_loop, &quit)) {
+        fprintf(stderr, "Failed to create thread\n");
+        exit(1);
+    }
+
+    while (!quit)
+        ;
+    
+   return 0;
 }
