@@ -875,5 +875,4 @@ int m021_grab_bgr(vdIn_t * videoIn, uint8_t *frame)
 void m021_free(vdIn_t * videoIn)
 {
     free(videoIn->framebuffer); // also frees tmpbuffer, tmpbuffer1
-    free(videoIn);
 }
