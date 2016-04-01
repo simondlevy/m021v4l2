@@ -23,9 +23,10 @@ static void * main_loop(void * arg)
 
     Mat mat(460, 800, CV_8UC3);
 
-    vdIn_t * cap = (vdIn_t *)malloc(sizeof(vdIn_t));
+    //vdIn_t * cap = (vdIn_t *)malloc(sizeof(vdIn_t));
+    vdIn_t cap;
 
-    m021_init_800x460("/dev/video0", cap);
+    m021_init_800x460("/dev/video0", &cap);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
@@ -34,7 +35,7 @@ static void * main_loop(void * arg)
 
     while (true) {
 
-        m021_grab_bgr(cap, mat.data);
+        m021_grab_bgr(&cap, mat.data);
 
         mat *= 1.5;
 
@@ -46,7 +47,7 @@ static void * main_loop(void * arg)
             break;
     }
 
-    m021_free(cap);
+    //m021_free(cap);
 
     double duration = (getMilliCount() - start) / 1000.;
 
