@@ -77,19 +77,19 @@ typedef struct vdIn {
     uint8_t * tmpbuffer;
     uint8_t * tmpbuffer1;
 
-} vdIn_t;
+} m021_t;
 
-int m021_init_1280x720(const char * devname, vdIn_t * videoIn);
+int m021_init_1280x720(const char * devname, m021_t * videoIn);
 
-int m021_init_800x460(const char * devname, vdIn_t * videoIn);
+int m021_init_800x460(const char * devname, m021_t * videoIn);
 
-int m021_init_640x480(const char * devname, vdIn_t * videoIn);
+int m021_init_640x480(const char * devname, m021_t * videoIn);
 
-int m021_grab_yuyv(vdIn_t * vdIn, uint8_t * frame);
+int m021_grab_yuyv(m021_t * vdIn, uint8_t * frame);
 
-int m021_grab_bgr(vdIn_t * vdIn, uint8_t * frame);
+int m021_grab_bgr(m021_t * vdIn, uint8_t * frame);
 
-void m021_free(vdIn_t * vdIn);
+void m021_free(m021_t * vdIn);
 
 #endif
 

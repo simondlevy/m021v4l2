@@ -446,7 +446,7 @@ static int xioctl(int fd, int IOCTL_X, void *arg)
 	return ret;
 }
 
-static int check_videoIn(const char * devicename, vdIn_t *vd)
+static int check_videoIn(const char * devicename, m021_t *vd)
 {
 	if (vd == NULL)
 		return VDIN_ALLOC_ERR;
@@ -475,7 +475,7 @@ static int check_videoIn(const char * devicename, vdIn_t *vd)
 	return VDIN_OK;
 }
 
-static int unmap_buff(vdIn_t *vd)
+static int unmap_buff(m021_t *vd)
 {
 	int i=0;
     int ret=0;
@@ -492,7 +492,7 @@ static int unmap_buff(vdIn_t *vd)
     return ret;
 }
 
-static int map_buff(vdIn_t *vd)
+static int map_buff(m021_t *vd)
 {
     int i = 0;
     // map new buffer
@@ -514,7 +514,7 @@ static int map_buff(vdIn_t *vd)
 	return (0);
 }
 
-static int query_buff(vdIn_t *vd)
+static int query_buff(m021_t *vd)
 {
     int i=0;
     int ret=0;
@@ -547,7 +547,7 @@ static int query_buff(vdIn_t *vd)
     return map_buff(vd);
 }
 
-static int queue_buff(vdIn_t *vd)
+static int queue_buff(m021_t *vd)
 {
     int i=0;
     int ret=0;
@@ -567,7 +567,7 @@ static int queue_buff(vdIn_t *vd)
     return VDIN_OK;
 }
 
-static int video_enable(vdIn_t *vd)
+static int video_enable(m021_t *vd)
 {
     int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     int ret=0;
@@ -581,7 +581,7 @@ static int video_enable(vdIn_t *vd)
     return 0;
 }
 
-static int init_v4l2(vdIn_t *vd, int *format, int width, int height)
+static int init_v4l2(m021_t *vd, int *format, int width, int height)
 {
 	int ret = 0;
 
@@ -663,7 +663,7 @@ static void frame_init(uint8_t *framebuffer, int width, int height)
     }
 }
 
-static void clear_v4l2(vdIn_t *videoIn)
+static void clear_v4l2(m021_t *videoIn)
 {
 	v4l2_close(videoIn->fd);
 	videoIn->fd=0;
@@ -684,13 +684,13 @@ static void bayer16_convert_bayer8(int16_t *inbuf, uint8_t *outbuf, int width, i
 	}
 }
 
-static void frame_decode_bgr(vdIn_t * vd, uint8_t * frame) {
+static void frame_decode_bgr(m021_t * vd, uint8_t * frame) {
     bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
     bayer_to_bgr24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
     memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
 }
 
-static void frame_decode_yuyv(vdIn_t * vd, uint8_t * frame)
+static void frame_decode_yuyv(m021_t * vd, uint8_t * frame)
 {
     bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
     bayer_to_rgb24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
@@ -698,7 +698,7 @@ static void frame_decode_yuyv(vdIn_t * vd, uint8_t * frame)
     memcpy(frame, vd->framebuffer, vd->width * vd->height * 2);
 }
 
-static int check_frame_available(vdIn_t *vd)
+static int check_frame_available(m021_t *vd)
 {
     int ret = VDIN_OK;
     fd_set rdset;
@@ -734,7 +734,7 @@ static int check_frame_available(vdIn_t *vd)
 }
 
 
-static int m021_init(const char * devname, vdIn_t * vd, int width, int height)
+static int m021_init(const char * devname, m021_t * vd, int width, int height)
 {
     vd->width = width;
     vd->height = height;
@@ -805,7 +805,7 @@ static int m021_init(const char * devname, vdIn_t * vd, int width, int height)
     return ret;
  }
 
-int m021_grab(vdIn_t * vd)
+int m021_grab(m021_t * vd)
 {
     int ret = check_frame_available(vd);
 
@@ -837,22 +837,22 @@ int m021_grab(vdIn_t * vd)
 
 // =============================================================================================
 
-int m021_init_1280x720(const char * devname, vdIn_t * videoIn)
+int m021_init_1280x720(const char * devname, m021_t * videoIn)
 {
 	return m021_init(devname, videoIn, 1280, 720);
 }
 
-int m021_init_800x460(const char * devname, vdIn_t * videoIn)
+int m021_init_800x460(const char * devname, m021_t * videoIn)
 {
 	return m021_init(devname, videoIn, 800, 460);
 }
 
-int m021_init_640x480(const char * devname, vdIn_t * videoIn)
+int m021_init_640x480(const char * devname, m021_t * videoIn)
 {
 	return m021_init(devname, videoIn, 640, 480);
 }
 
-int m021_grab_yuyv(vdIn_t * videoIn, uint8_t * frame)
+int m021_grab_yuyv(m021_t * videoIn, uint8_t * frame)
 {
     int ret = m021_grab(videoIn);
 
@@ -862,7 +862,7 @@ int m021_grab_yuyv(vdIn_t * videoIn, uint8_t * frame)
     return ret;
 }
 
-int m021_grab_bgr(vdIn_t * videoIn, uint8_t *frame)
+int m021_grab_bgr(m021_t * videoIn, uint8_t *frame)
 {
     int ret = m021_grab(videoIn);
 
@@ -872,7 +872,7 @@ int m021_grab_bgr(vdIn_t * videoIn, uint8_t *frame)
     return ret;
 }
 
-void m021_free(vdIn_t * videoIn)
+void m021_free(m021_t * videoIn)
 {
     free(videoIn->framebuffer); // also frees tmpbuffer, tmpbuffer1
 }

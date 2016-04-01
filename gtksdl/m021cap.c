@@ -38,7 +38,7 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct {
 
-    vdIn_t * videoIn;
+    m021_t * videoIn;
     gboolean signalquit;
     pthread_t video_thread;
 
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
 
     shared_t * shared = g_new0(shared_t, 1);
 
-    shared->videoIn = g_new0(vdIn_t, 1);
+    shared->videoIn = g_new0(m021_t, 1);
 
     VD_INIT("/dev/video0", shared->videoIn);
 
