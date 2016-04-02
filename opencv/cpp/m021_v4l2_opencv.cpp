@@ -7,10 +7,9 @@ typedef struct {
 
     Mat mat;
     pthread_mutex_t lock;
-    int count;
+    unsigned long long count;
 
 } data_t;
-
 
 static void * loop(void * arg)
 {
@@ -66,7 +65,7 @@ M021_800x460_Capture::~M021_800x460_Capture(void)
     free(this->data);
 }
 
-int M021_800x460_Capture::getCount(void) 
+unsigned long long M021_800x460_Capture::getCount(void) 
 {
     data_t * data = (data_t *)this->data;
 

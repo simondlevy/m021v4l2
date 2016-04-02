@@ -10,7 +10,7 @@ class M021_800x460_Capture {
 
         ~M021_800x460_Capture(void);
 
-        int getCount(void);
+        unsigned long long getCount(void);
 
     private: 
 
