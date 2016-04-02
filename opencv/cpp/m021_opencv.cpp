@@ -3,20 +3,29 @@
 
 #include <stdio.h>
 
-static pthread_mutex_t lock;
+typedef struct {
+
+    Mat mat;
+    pthread_mutex_t lock;
+
+} data_t;
+
 
 static void * loop(void * arg)
 {
+
     m021_800x460_t cap;
     m021_800x460_init(0, &cap);
 
-    Mat * mat = (Mat *)arg;
+    data_t * data = (data_t *)arg;
+    pthread_mutex_t lock = data->lock;
+    Mat mat = data->mat;
 
     while (true) {
 
         pthread_mutex_lock(&lock);
 
-        m021_800x460_grab_bgr(&cap, mat->data);
+        m021_800x460_grab_bgr(&cap, mat.data);
 
         pthread_mutex_unlock(&lock);
     }
@@ -30,12 +39,18 @@ M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
 
     this->count = 0;
 
-    if (pthread_mutex_init(&this->lock, NULL) != 0) {
+    pthread_mutex_t lock;
+
+    if (pthread_mutex_init(&lock, NULL) != 0) {
         printf("\n mutex init failed\n");
         exit(1);
     }
 
-    if (pthread_create(&this->video_thread, NULL, loop, &mat)) {
+    data_t * data = new data_t;
+    data->mat = mat;
+    data->lock = lock;
+
+    if (pthread_create(&this->video_thread, NULL, loop, data)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }

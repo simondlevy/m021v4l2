@@ -17,7 +17,6 @@ class M021_800x460_Capture {
     private: 
 
         pthread_t video_thread;
-        pthread_mutex_t lock;
 
         int count;
 };
