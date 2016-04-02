@@ -12,6 +12,8 @@ class M021_800x460_Capture {
 
         M021_800x460_Capture(Mat & mat);
 
+        ~M021_800x460_Capture(void);
+
         int getCount(void);
 
     private: 

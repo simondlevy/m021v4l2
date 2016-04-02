@@ -61,8 +61,13 @@ M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
     }
 }
         
-int M021_800x460_Capture::getCount(void) {
+M021_800x460_Capture::~M021_800x460_Capture(void)
+{
+    printf("DESTROY\n");
+}
 
+int M021_800x460_Capture::getCount(void) 
+{
     data_t * data = (data_t *)this->data;
 
     return data->count;
