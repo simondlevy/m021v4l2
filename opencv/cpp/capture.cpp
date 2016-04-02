@@ -5,7 +5,7 @@ using namespace cv;
 #include <stdio.h>
 #include <sys/timeb.h>
 
-#include "../../m021_v4l2.h"
+#include "M021_Capture.hpp"
 
 static pthread_t video_thread;
 
