@@ -37,7 +37,7 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
+M021_Capture::M021_Capture(Mat & mat) {
 
     mat = Mat(460, 800, CV_8UC3);
 
@@ -60,14 +60,17 @@ M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
     }
 }
         
-M021_800x460_Capture::~M021_800x460_Capture(void)
+M021_Capture::~M021_Capture(void)
 {
     free(this->data);
 }
 
-unsigned long long M021_800x460_Capture::getCount(void) 
+unsigned long long M021_Capture::getCount(void) 
 {
     data_t * data = (data_t *)this->data;
 
     return data->count;
+}
+
+M021_800x460_Capture::M021_800x460_Capture(Mat & mat) : M021_Capture(mat) {
 }
