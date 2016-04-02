@@ -20,14 +20,7 @@ static int getMilliCount(){
     return nCount;
 }
 
-typedef struct {
-
-    m021_800x460_t *cap;
-    Mat mat;
-
-} foo_t;
-
-static void * main_loop(void * arg)
+static void * loop(void * arg)
 {
     m021_800x460_t cap;
     m021_800x460_init(0, &cap);
@@ -57,7 +50,7 @@ static void run(Mat & mat)
         exit(1);
     }
 
-    if (pthread_create(&video_thread, NULL, main_loop, &mat)) {
+    if (pthread_create(&video_thread, NULL, loop, &mat)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
