@@ -25,7 +25,7 @@ static void * main_loop(void * arg)
 
     vdIn_800x460_t cap;
 
-    m021_init_800x460("/dev/video0", &cap);
+    m021_800x460_init("/dev/video0", &cap);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
@@ -34,7 +34,7 @@ static void * main_loop(void * arg)
 
     while (true) {
 
-        m021_grab_800x460_bgr(&cap, mat.data);
+        m021_800x460_grab_bgr(&cap, mat.data);
 
         count++;
 
