@@ -68,8 +68,6 @@ int main()
 
     }
 
-    //pthread_join(video_thread, NULL);
-
     double duration = (getMilliCount() - start) / 1000.;
 
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
