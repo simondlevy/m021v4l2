@@ -13,7 +13,17 @@ class M021_800x460_Capture {
 
     public:
 
-        M021_800x460_Capture(int id);
+        M021_800x460_Capture(int id) {
 
-        void grab(Mat & mat);
+            m021_800x460_init(id, &this->cap);
+        }
+
+        void grab(Mat & mat) {
+
+            if (!mat.data) {
+                mat = Mat(460, 800, CV_8UC3);
+            }
+
+            m021_800x460_grab_bgr(&this->cap, mat.data);
+        }
 };
