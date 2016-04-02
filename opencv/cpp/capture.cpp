@@ -5,7 +5,7 @@ using namespace cv;
 #include <stdio.h>
 #include <sys/timeb.h>
 
-#include "M021_Capture.hpp"
+#include "m021_v4l2.h"
 
 static pthread_t video_thread;
 static pthread_mutex_t lock;
@@ -13,23 +13,32 @@ static int count;
 
 // http://www.firstobject.com/getmillicount-milliseconds-portable-c++.htm
 static int getMilliCount(){
+
     timeb tb;
     ftime(&tb);
     int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
     return nCount;
 }
 
+typedef struct {
+
+    m021_800x460_t *cap;
+    Mat mat;
+
+} foo_t;
+
 static void * main_loop(void * arg)
 {
-    Mat * mat = (Mat *)arg;
+    m021_800x460_t cap;
+    m021_800x460_init(0, &cap);
 
-    M021_800x460_Capture cap(0);
+    Mat * mat = (Mat *)arg;
 
     while (true) {
 
         pthread_mutex_lock(&lock);
 
-        cap.grab(*mat);
+        m021_800x460_grab_bgr(&cap, mat->data);
 
         pthread_mutex_unlock(&lock);
 
@@ -41,7 +50,7 @@ static void * main_loop(void * arg)
 
 int main()
 {
-    Mat mat;
+    Mat mat = Mat(460, 800, CV_8UC3);
 
     if (pthread_mutex_init(&lock, NULL) != 0)
     {
