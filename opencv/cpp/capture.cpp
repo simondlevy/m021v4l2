@@ -22,9 +22,8 @@ static void * main_loop(void * arg)
     bool * quit = (bool *)arg;
 
     Mat mat;
-    //Mat mat(460, 800, CV_8UC3);
 
-    M021_800x460_Capture cap(0);
+    M021_1280x720_Capture cap(0);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
