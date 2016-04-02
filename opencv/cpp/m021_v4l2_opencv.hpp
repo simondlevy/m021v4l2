@@ -2,10 +2,6 @@
 #include <opencv2/highgui/highgui.hpp>
 using namespace cv;
 
-void m021_800x460_capture(Mat & mat);
-
-int m021_800x460_getcount(void);
-
 class M021_800x460_Capture {
 
     public:
