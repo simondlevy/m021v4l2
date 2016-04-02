@@ -1,3 +1,5 @@
+#include <opencv2/core/core.hpp>
+
 #include "m021_v4l2.h"
 
 class M021_640x480_Capture {
@@ -11,5 +13,8 @@ class M021_640x480_Capture {
         M021_640x480_Capture(int id) {
 
             m021_640x480_init(id, &cap);
+        }
+
+        void grab(Mat & mat) {
         }
 };
