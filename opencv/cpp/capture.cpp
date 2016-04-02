@@ -23,9 +23,7 @@ static void * main_loop(void * arg)
 
     Mat mat(460, 800, CV_8UC3);
 
-    m021_800x460_t cap;
-
-    m021_800x460_init(0, &cap);
+    M021_800x460_Capture cap(0);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
@@ -34,7 +32,7 @@ static void * main_loop(void * arg)
 
     while (true) {
 
-        m021_800x460_grab_bgr(&cap, mat.data);
+        cap.grab(mat);
 
         count++;
 

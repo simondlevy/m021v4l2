@@ -2,19 +2,21 @@
 
 #include "m021_v4l2.h"
 
-class M021_640x480_Capture {
+class M021_800x460_Capture {
 
     private:
 
-        m021_640x480_t cap;
+        m021_800x460_t cap;
 
     public:
 
-        M021_640x480_Capture(int id) {
+        M021_800x460_Capture(int id) {
 
-            m021_640x480_init(id, &cap);
+            m021_800x460_init(id, &cap);
         }
 
         void grab(Mat & mat) {
+
+            m021_800x460_grab_bgr(&this->cap, mat.data);
         }
 };
