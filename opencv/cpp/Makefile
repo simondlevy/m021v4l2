@@ -1,7 +1,7 @@
 LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lpthread -lv4l2 -ludev
 
-capture: capture.cpp M021_Capture.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
-	g++ -I ../.. -Wall -o capture capture.cpp ../../m021_v4l2.c $(LIBS)
+capture: capture.cpp M021_Capture.cpp M021_Capture.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
+	g++ -I ../.. -Wall -o capture M021_Capture.cpp capture.cpp ../../m021_v4l2.c $(LIBS)
 
 run: capture
 	./capture
