@@ -69,8 +69,7 @@ int main()
 
     while (true) {
 
-        if (mat.data)
-            imshow("LI-USB30-M021", mat);
+        imshow("LI-USB30-M021", mat);
 
         if (cvWaitKey(1) == 27) 
             break;
