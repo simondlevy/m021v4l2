@@ -6,7 +6,7 @@ class M021_Capture {
 
     protected:
 
-        M021_Capture(Mat & mat);
+        M021_Capture(Mat & mat, int width, int height);
 
         ~M021_Capture(void);
 

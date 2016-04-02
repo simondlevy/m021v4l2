@@ -37,9 +37,9 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-M021_Capture::M021_Capture(Mat & mat) {
+M021_Capture::M021_Capture(Mat & mat, int width, int height) {
 
-    mat = Mat(460, 800, CV_8UC3);
+    mat = Mat(height, width, CV_8UC3);
 
     pthread_mutex_t lock;
 
@@ -72,5 +72,5 @@ unsigned long long M021_Capture::getCount(void)
     return data->count;
 }
 
-M021_800x460_Capture::M021_800x460_Capture(Mat & mat) : M021_Capture(mat) {
+M021_800x460_Capture::M021_800x460_Capture(Mat & mat) : M021_Capture(mat, 800, 460) {
 }
