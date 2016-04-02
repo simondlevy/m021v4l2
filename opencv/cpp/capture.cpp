@@ -23,7 +23,7 @@ static void * main_loop(void * arg)
 
     Mat mat(460, 800, CV_8UC3);
 
-    m021_t cap;
+    vdIn_800x460_t cap;
 
     m021_init_800x460("/dev/video0", &cap);
 
@@ -34,9 +34,7 @@ static void * main_loop(void * arg)
 
     while (true) {
 
-        m021_grab_bgr(&cap, mat.data);
-
-        mat *= 1.5;
+        m021_grab_800x460_bgr(&cap, mat.data);
 
         count++;
 
@@ -45,8 +43,6 @@ static void * main_loop(void * arg)
         if (cvWaitKey(1) == 27) 
             break;
     }
-
-    m021_free(&cap);
 
     double duration = (getMilliCount() - start) / 1000.;
 

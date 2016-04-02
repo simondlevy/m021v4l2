@@ -1,9 +1,16 @@
 CC = gcc
 
-m021cap_OBJECTS = m021cap.o m021_v4l2.o
+guvcview_OBJECTS = \
+	guvcview-close.o \
+	guvcview-globals.o \
+	guvcview-guvcview.o \
+	guvcview-ms_time.o \
+	guvcview-timers.o \
+	guvcview-m021_v4l2.o \
+	guvcview-video.o
 
-m021cap_LINK = $(CC) $(m021cap_CFLAGS) $(CFLAGS) \
-	$(m021cap_LDFLAGS) $(LDFLAGS) -o $@
+guvcview_LINK = $(CC) $(guvcview_CFLAGS) $(CFLAGS) \
+	$(guvcview_LDFLAGS) $(LDFLAGS) -o $@
 
 QUIET = @echo "  CC      " $@;
 
@@ -24,9 +31,25 @@ DEPS_CFLAGS = $(INCLUDES) -pthread -D_GNU_SOURCE=1 -D_REENTRANT -pthread
 
 DEPS_LIBS = -lgtk-3 -lgdk-3 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lSDL -lpthread -lv4l2 -ludev
 
-m021cap_SOURCES = m021cap.c ../m021_v4l2.h ../m021_v4l2.c 
+guvcview_SOURCES = \
+	close.h \
+	close.c \
+	defs.h \
+	globals.h \
+	globals.c \
+	guvcview.h \
+	guvcview.c \
+	jdatatype.h \
+	ms_time.h \
+	ms_time.c \
+	timers.h \
+	timers.c \
+	../m021_v4l2.h \
+	../m021_v4l2.c \
+	video.h \
+	video.c
 
-m021cap_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+guvcview_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 				  -DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 				  -DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 				  $(DEPS_CFLAGS) \
@@ -36,28 +59,43 @@ m021cap_CFLAGS = -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	 			  -D_FILE_OFFSET_BITS=64 \
 	 			  -Wall
 
-m021cap_LDFLAGS = $(LIBINTL)
-m021cap_LDADD = $(DEPS_LIBS) $(EXTRA_LIBS) $(PTHREAD_LIBS)
+guvcview_LDFLAGS = $(LIBINTL)
+guvcview_LDADD = $(DEPS_LIBS) $(EXTRA_LIBS) $(PTHREAD_LIBS)
 
-all: m021cap
+all: guvcview
 
-m021cap: $(m021cap_OBJECTS) $(m021cap_DEPENDENCIES) $(EXTRA_m021cap_DEPENDENCIES) 
-	$(m021cap_LINK) $(m021cap_OBJECTS) $(m021cap_LDADD) $(LIBS)
+guvcview: $(guvcview_OBJECTS) $(guvcview_DEPENDENCIES) $(EXTRA_guvcview_DEPENDENCIES) 
+	$(guvcview_LINK) $(guvcview_OBJECTS) $(guvcview_LDADD) $(LIBS)
 
-m021cap.o: m021cap.c ../m021_v4l2.h
-	 $(QUIET) $(CC)  $(m021cap_CFLAGS) -c -o m021cap.o m021cap.c
+guvcview-close.o: close.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-close.o close.c
 
-m021_v4l2.o: ../m021_v4l2.c ../m021_v4l2*.h
-	$(QUIET) $(CC)  $(m021cap_CFLAGS) -c -o m021_v4l2.o ../m021_v4l2.c
+guvcview-globals.o: globals.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-globals.o globals.c
+
+guvcview-guvcview.o: guvcview.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-guvcview.o guvcview.c
+
+guvcview-ms_time.o: ms_time.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-ms_time.o ms_time.c
+
+guvcview-timers.o: timers.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-timers.o timers.c
+
+guvcview-m021_v4l2.o: ../m021_v4l2.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-m021_v4l2.o ../m021_v4l2.c
+
+guvcview-video.o: video.c *.h
+	$(QUIET) $(CC)  $(guvcview_CFLAGS) -c -o guvcview-video.o video.c
 
 clean:
-	rm -f m021cap *.o
+	rm -f guvcview *.o
 
-run: m021cap
-	./m021cap
-
-edit:
-	vim m021cap.c
+run: guvcview
+	./guvcview
 
 commit:
 	git commit -a --allow-empty-message -m ''; git push
+
+count:
+	wc -l *.c | sort -nr

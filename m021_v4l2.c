@@ -23,7 +23,6 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
 #include <libv4l2.h>
@@ -446,7 +445,7 @@ static int xioctl(int fd, int IOCTL_X, void *arg)
 	return ret;
 }
 
-static int check_videoIn(const char * devicename, m021_t *vd)
+static int check_videoIn(const char * devicename, vdIn_t *vd)
 {
 	if (vd == NULL)
 		return VDIN_ALLOC_ERR;
@@ -475,7 +474,7 @@ static int check_videoIn(const char * devicename, m021_t *vd)
 	return VDIN_OK;
 }
 
-static int unmap_buff(m021_t *vd)
+static int unmap_buff(vdIn_t *vd)
 {
 	int i=0;
     int ret=0;
@@ -492,7 +491,7 @@ static int unmap_buff(m021_t *vd)
     return ret;
 }
 
-static int map_buff(m021_t *vd)
+static int map_buff(vdIn_t *vd)
 {
     int i = 0;
     // map new buffer
@@ -514,7 +513,7 @@ static int map_buff(m021_t *vd)
 	return (0);
 }
 
-static int query_buff(m021_t *vd)
+static int query_buff(vdIn_t *vd)
 {
     int i=0;
     int ret=0;
@@ -547,7 +546,7 @@ static int query_buff(m021_t *vd)
     return map_buff(vd);
 }
 
-static int queue_buff(m021_t *vd)
+static int queue_buff(vdIn_t *vd)
 {
     int i=0;
     int ret=0;
@@ -567,7 +566,7 @@ static int queue_buff(m021_t *vd)
     return VDIN_OK;
 }
 
-static int video_enable(m021_t *vd)
+static int video_enable(vdIn_t *vd)
 {
     int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     int ret=0;
@@ -581,7 +580,7 @@ static int video_enable(m021_t *vd)
     return 0;
 }
 
-static int init_v4l2(m021_t *vd, int *format, int width, int height)
+static int init_v4l2(vdIn_t *vd, int *format, int width, int height)
 {
 	int ret = 0;
 
@@ -663,7 +662,7 @@ static void frame_init(uint8_t *framebuffer, int width, int height)
     }
 }
 
-static void clear_v4l2(m021_t *videoIn)
+static void clear_v4l2(vdIn_t *videoIn)
 {
 	v4l2_close(videoIn->fd);
 	videoIn->fd=0;
@@ -684,21 +683,24 @@ static void bayer16_convert_bayer8(int16_t *inbuf, uint8_t *outbuf, int width, i
 	}
 }
 
-static void frame_decode_bgr(m021_t * vd, uint8_t * frame) {
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
-    bayer_to_bgr24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
-    memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
-}
-
-static void frame_decode_yuyv(m021_t * vd, uint8_t * frame)
+static void frame_decode_bgr(vdIn_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
+        uint8_t * frame, int width, int height)
 {
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
-    bayer_to_rgb24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
-    rgb2yuyv (vd->tmpbuffer, vd->framebuffer, vd->width, vd->height);
-    memcpy(frame, vd->framebuffer, vd->width * vd->height * 2);
+    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
+    bayer_to_bgr24 (tmpbuffer1, tmpbuffer, width, height);
+    memcpy(frame, tmpbuffer, width * height * 3);
 }
 
-static int check_frame_available(m021_t *vd)
+static void frame_decode(vdIn_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
+        uint8_t * frame, int width, int height)
+{
+    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
+    bayer_to_rgb24 (tmpbuffer1, tmpbuffer, width, height);
+    rgb2yuyv (tmpbuffer, framebuffer, width, height);
+    memcpy(frame, framebuffer, width * height * 2);
+}
+
+static int check_frame_available(vdIn_t *vd)
 {
     int ret = VDIN_OK;
     fd_set rdset;
@@ -734,90 +736,76 @@ static int check_frame_available(m021_t *vd)
 }
 
 
-static int m021_init(const char * devname, m021_t * vd, int width, int height)
+static int m021_init_common(const char * devname, vdIn_t * common, int width, int height)
 {
-    vd->width = width;
-    vd->height = height;
-
-    uint8_t * mem = (uint8_t *)malloc(width*height*7);
-
-    if (!mem)
-        return ALLOC_ERR;
-
-    vd->framebuffer = mem;
-    vd->tmpbuffer = mem + width*height*2;
-    vd->tmpbuffer1 = mem + width*height*4;
-
     int ret = VDIN_OK;
 
-    vd->udev = udev_new();
+    common->udev = udev_new();
 
-    pthread_mutex_init(&vd->mutex, NULL);
+    pthread_mutex_init(&common->mutex, NULL);
 
-	vd->available_exp[0]=-1;
-	vd->available_exp[1]=-1;
-	vd->available_exp[2]=-1;
-	vd->available_exp[3]=-1;
+	common->available_exp[0]=-1;
+	common->available_exp[1]=-1;
+	common->available_exp[2]=-1;
+	common->available_exp[3]=-1;
 
     /*start udev device monitoring*/
     /* Set up a monitor to monitor v4l2 devices */
-    if(vd->udev)
+    if(common->udev)
     {
-        vd->udev_mon = udev_monitor_new_from_netlink(vd->udev, "udev");
-        udev_monitor_filter_add_match_subsystem_devtype(vd->udev_mon, "video4linux", NULL);
-        udev_monitor_enable_receiving(vd->udev_mon);
-        vd->udev_fd = udev_monitor_get_fd(vd->udev_mon);
+        common->udev_mon = udev_monitor_new_from_netlink(common->udev, "udev");
+        udev_monitor_filter_add_match_subsystem_devtype(common->udev_mon, "video4linux", NULL);
+        udev_monitor_enable_receiving(common->udev_mon);
+        common->udev_fd = udev_monitor_get_fd(common->udev_mon);
     }
 
-    if ((vd->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
+    if ((common->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
         perror("ERROR opening V4L interface");
         ret = VDIN_DEVICE_ERR;
-        clear_v4l2(vd);
+        clear_v4l2(common);
         return ret;
     }
 
 	//reset v4l2_format
-	memset(&vd->fmt, 0, sizeof(struct v4l2_format));
+	memset(&common->fmt, 0, sizeof(struct v4l2_format));
 
 	// populate video capabilities structure array
 	// should only be called after all vdIn struct elements
 	// have been initialized
-	if((ret = check_videoIn(devname, vd)) != VDIN_OK)
+	if((ret = check_videoIn(devname, common)) != VDIN_OK)
 	{
-		clear_v4l2(vd);
+		clear_v4l2(common);
 		return ret;
 	}
 
 	ret = 0; //clean ret code
 
-    vd->format = 0x56595559; // YUYV
+    common->format = 0x56595559;
 
-    if ((ret=init_v4l2(vd, &vd->format, width, height)) < 0)
+    if ((ret=init_v4l2(common, &common->format, width, height)) < 0)
     {
         fprintf(stderr, "Init v4L2 failed !! \n");
-        clear_v4l2(vd);
+        clear_v4l2(common);
     }
 
-    if (!ret)
-      frame_init(vd->framebuffer, width, height);
-
     return ret;
+
  }
 
-int m021_grab(m021_t * vd)
+int m021_grab_common(vdIn_t * common)
 {
-    int ret = check_frame_available(vd);
+    int ret = check_frame_available(common);
 
     if (ret < 0)
         return ret;
 
     /* dequeue the buffers */
-    memset(&vd->buf, 0, sizeof(struct v4l2_buffer));
-    vd->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    vd->buf.memory = V4L2_MEMORY_MMAP;
+    memset(&common->buf, 0, sizeof(struct v4l2_buffer));
+    common->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    common->buf.memory = V4L2_MEMORY_MMAP;
 
-    ret = xioctl(vd->fd, VIDIOC_DQBUF, &vd->buf);
+    ret = xioctl(common->fd, VIDIOC_DQBUF, &common->buf);
     if (ret < 0)
     {
         perror("VIDIOC_DQBUF - Unable to dequeue buffer ");
@@ -825,7 +813,7 @@ int m021_grab(m021_t * vd)
         return ret;
     }
 
-    ret = xioctl(vd->fd, VIDIOC_QBUF, &vd->buf);
+    ret = xioctl(common->fd, VIDIOC_QBUF, &common->buf);
     if (ret < 0)
     {
         perror("VIDIOC_QBUF - Unable to queue buffer");
@@ -837,42 +825,92 @@ int m021_grab(m021_t * vd)
 
 // =============================================================================================
 
-int m021_init_1280x720(const char * devname, m021_t * videoIn)
+int m021_init_1280x720(const char * devname, vdIn_1280x720_t * videoIn)
 {
-	return m021_init(devname, videoIn, 1280, 720);
-}
-
-int m021_init_800x460(const char * devname, m021_t * videoIn)
-{
-	return m021_init(devname, videoIn, 800, 460);
-}
-
-int m021_init_640x480(const char * devname, m021_t * videoIn)
-{
-	return m021_init(devname, videoIn, 640, 480);
-}
-
-int m021_grab_yuyv(m021_t * videoIn, uint8_t * frame)
-{
-    int ret = m021_grab(videoIn);
+	int ret = m021_init_common(devname, &videoIn->common, 1280, 720);
 
     if (!ret)
-        frame_decode_yuyv(videoIn, frame);
+        frame_init(videoIn->framebuffer, 1280, 720);
 
     return ret;
 }
 
-int m021_grab_bgr(m021_t * videoIn, uint8_t *frame)
+int m021_grab_1280x720_yuyv(vdIn_1280x720_t * vd, uint8_t * frame)
 {
-    int ret = m021_grab(videoIn);
+    int ret = m021_grab_common(&vd->common);
 
     if (!ret)
-        frame_decode_bgr(videoIn, frame);
+        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
 
     return ret;
 }
 
-void m021_free(m021_t * videoIn)
+int m021_grab_1280x720_bgr(vdIn_1280x720_t * vd, uint8_t *frame)
 {
-    free(videoIn->framebuffer); // also frees tmpbuffer, tmpbuffer1
+    int ret = m021_grab_common(&vd->common);
+
+    if (!ret)
+        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
+
+    return ret;
+}
+
+int m021_init_800x460(const char * devname, vdIn_800x460_t * videoIn)
+{
+	int ret = m021_init_common(devname, &videoIn->common, 800, 460);
+
+    if (!ret)
+        frame_init(videoIn->framebuffer, 800, 460);
+
+    return ret;
+}
+
+int m021_grab_800x460_yuyv(vdIn_800x460_t * vd, uint8_t *frame)
+{
+    int ret = m021_grab_common(&vd->common);
+
+    if (!ret)
+        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
+
+    return ret;
+}
+
+int m021_grab_800x460_bgr(vdIn_800x460_t * vd, uint8_t *frame)
+{
+    int ret = m021_grab_common(&vd->common);
+
+    if (!ret)
+        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
+
+    return ret;
+}
+
+int m021_init_640x480(const char * devname, vdIn_640x480_t * videoIn)
+{
+	int ret = m021_init_common(devname, &videoIn->common, 640, 480);
+
+    if (!ret)
+        frame_init(videoIn->framebuffer, 640, 480);
+
+    return ret;
+}
+
+int m021_grab_640x480_yuyv(vdIn_640x480_t * vd, uint8_t *frame)
+{
+    int ret = m021_grab_common(&vd->common);
+
+    if (!ret)
+        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
+
+    return ret;
+}
+
+int m021_grab_640x480_bgr(vdIn_640x480_t * vd, uint8_t *frame)
+{
+    int ret = m021_grab_common(&vd->common);
+
+    if (!ret)
+        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
+
+    return ret;
 }
