@@ -48,20 +48,25 @@ static void * main_loop(void * arg)
     return (void *)0;
 }
 
-int main()
+static void run(Mat & mat)
 {
-    Mat mat = Mat(460, 800, CV_8UC3);
-
-    if (pthread_mutex_init(&lock, NULL) != 0)
-    {
+    if (pthread_mutex_init(&lock, NULL) != 0) {
         printf("\n mutex init failed\n");
-        return 1;
+        exit(1);
     }
 
     if (pthread_create(&video_thread, NULL, main_loop, &mat)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
+
+}
+
+int main()
+{
+    Mat mat = Mat(460, 800, CV_8UC3);
+
+    run(mat);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
