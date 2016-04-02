@@ -24,6 +24,7 @@
 #include <linux/videodev2.h>
 #include <libudev.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 #define NB_BUFFER 4
