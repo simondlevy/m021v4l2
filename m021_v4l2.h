@@ -101,17 +101,17 @@ typedef struct vdIn_640x480 {
 
 } vdIn_640x480_t;
 
-int m021_init_1280x720(const char * devname, vdIn_1280x720_t * videoIn);
-int m021_grab_1280x720_yuyv(vdIn_1280x720_t * vdIn, uint8_t * frame);
-int m021_grab_1280x720_bgr(vdIn_1280x720_t * vdIn, uint8_t * frame);
+int m021_1280x720_init(const char * devname, vdIn_1280x720_t * videoIn);
+int m021_1280x720_grab_yuyv(vdIn_1280x720_t * vdIn, uint8_t * frame);
+int m021_1280x720_grab_bgr(vdIn_1280x720_t * vdIn, uint8_t * frame);
 
-int m021_init_800x460(const char * devname, vdIn_800x460_t * videoIn);
-int m021_grab_800x460_yuyv(vdIn_800x460_t * vdIn, uint8_t * frame);
-int m021_grab_800x460_bgr(vdIn_800x460_t * vdIn, uint8_t * frame);
+int m021_800x460_init(const char * devname, vdIn_800x460_t * videoIn);
+int m021_800x460_grab_yuyv(vdIn_800x460_t * vdIn, uint8_t * frame);
+int m021_800x460_grab_bgr(vdIn_800x460_t * vdIn, uint8_t * frame);
 
-int m021_init_640x480(const char * devname, vdIn_640x480_t * videoIn);
-int m021_grab_640x480_yuyv(vdIn_640x480_t * vdIn, uint8_t * frame);
-int m021_grab_640x480_bgr(vdIn_640x480_t * vdIn, uint8_t * frame);
+int m021_640x480_init(const char * devname, vdIn_640x480_t * videoIn);
+int m021_640x480_grab_yuyv(vdIn_640x480_t * vdIn, uint8_t * frame);
+int m021_640x480_grab_bgr(vdIn_640x480_t * vdIn, uint8_t * frame);
 
 #endif
 
