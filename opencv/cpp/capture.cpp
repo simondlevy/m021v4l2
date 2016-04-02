@@ -21,7 +21,8 @@ static void * main_loop(void * arg)
 {
     bool * quit = (bool *)arg;
 
-    Mat mat(460, 800, CV_8UC3);
+    Mat mat;
+    //Mat mat(460, 800, CV_8UC3);
 
     M021_800x460_Capture cap(0);
 

@@ -2,6 +2,9 @@
 
 #include "m021_v4l2.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 class M021_800x460_Capture {
 
     private:
@@ -16,6 +19,10 @@ class M021_800x460_Capture {
         }
 
         void grab(Mat & mat) {
+
+            if (!mat.data) {
+                mat = Mat(460, 800, CV_8UC3);
+            }
 
             m021_800x460_grab_bgr(&this->cap, mat.data);
         }
