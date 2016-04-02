@@ -8,6 +8,8 @@ using namespace cv;
 #include "M021_Capture.hpp"
 
 static pthread_t video_thread;
+static pthread_mutex_t lock;
+static int count;
 
 // http://www.firstobject.com/getmillicount-milliseconds-portable-c++.htm
 static int getMilliCount(){
@@ -17,17 +19,11 @@ static int getMilliCount(){
     return nCount;
 }
 
-
-pthread_mutex_t lock;
-
 static void * main_loop(void * arg)
 {
     Mat * mat = (Mat *)arg;
 
     M021_800x460_Capture cap(0);
-
-    int count = 0;
-    int start = getMilliCount();
 
     while (true) {
 
@@ -38,12 +34,7 @@ static void * main_loop(void * arg)
         pthread_mutex_unlock(&lock);
 
         count++;
-
     }
-
-    double duration = (getMilliCount() - start) / 1000.;
-
-    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 
     return (void *)0;
 }
@@ -65,6 +56,8 @@ int main()
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
+    int start = getMilliCount();
+
     while (true) {
 
         if (mat.data)
@@ -75,7 +68,11 @@ int main()
 
     }
 
-    pthread_join(video_thread, NULL);
+    //pthread_join(video_thread, NULL);
+
+    double duration = (getMilliCount() - start) / 1000.;
+
+    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 
     return 0;
 }
