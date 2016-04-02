@@ -50,3 +50,26 @@ class M021_800x460_Capture {
             m021_800x460_grab_bgr(&this->cap, mat.data);
         }
 };
+
+class M021_640x480_Capture {
+
+    private:
+
+        m021_640x480_t cap;
+
+    public:
+
+        M021_640x480_Capture(int id) {
+
+            m021_640x480_init(id, &cap);
+        }
+
+        void grab(Mat & mat) {
+
+            if (!mat.data) {
+                mat = Mat(480, 640, CV_8UC3);
+            }
+
+            m021_640x480_grab_bgr(&this->cap, mat.data);
+        }
+};
