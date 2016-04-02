@@ -59,5 +59,5 @@ run: m021cap
 commit:
 	git commit -a --allow-empty-message -m ''; git push
 
-count:
-	wc -l *.c | sort -nr
+edit:
+	vim m021cap.c

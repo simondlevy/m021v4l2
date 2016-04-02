@@ -23,7 +23,7 @@ static void * main_loop(void * arg)
 
     Mat mat(460, 800, CV_8UC3);
 
-    vdIn_800x460_t cap;
+    m021_800x460_t cap;
 
     m021_800x460_init("/dev/video0", &cap);
 

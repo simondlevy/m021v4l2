@@ -32,7 +32,7 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 #define WIDTH 1280
 #define HEIGHT 720
-#define VD_TYPE vdIn_1280x720_t
+#define VD_TYPE m021_1280x720_t
 #define VD_INIT m021_1280x720_init
 #define VD_GRAB m021_1280x720_grab_yuyv
 
