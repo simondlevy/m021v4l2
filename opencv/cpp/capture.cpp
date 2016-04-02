@@ -19,7 +19,9 @@ int main()
 {
     Mat mat;
 
-    m021_800x460_capture(mat);
+    //m021_800x460_capture(mat);
+
+    M021_800x460_Capture cap(mat);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
@@ -34,11 +36,11 @@ int main()
 
     }
 
-    double duration = (getMilliCount() - start) / 1000.;
+    //double duration = (getMilliCount() - start) / 1000.;
 
-    int count = m021_800x460_getcount();
+    //int count = m021_800x460_getcount();
 
-    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
+    //printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 
     return 0;
 }

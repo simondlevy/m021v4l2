@@ -6,3 +6,16 @@ void m021_800x460_capture(Mat & mat);
 
 int m021_800x460_getcount(void);
 
+class M021_800x460_Capture {
+
+    public:
+
+        M021_800x460_Capture(Mat & mat);
+
+        int getCount(void);
+
+    private: 
+
+        int count;
+};
+
