@@ -7,6 +7,7 @@ using namespace cv;
 
 #include "m021_opencv.hpp"
 
+/*
 static int getMilliCount(){
 
     timeb tb;
@@ -14,6 +15,7 @@ static int getMilliCount(){
     int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
     return nCount;
 }
+*/
 
 int main()
 {
@@ -25,7 +27,7 @@ int main()
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
-    int start = getMilliCount();
+    //int start = getMilliCount();
 
     while (true) {
 

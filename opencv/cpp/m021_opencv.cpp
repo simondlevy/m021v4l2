@@ -55,12 +55,12 @@ M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
 
     this->count = 0;
 
-    if (pthread_mutex_init(&lock, NULL) != 0) {
+    if (pthread_mutex_init(&this->lock, NULL) != 0) {
         printf("\n mutex init failed\n");
         exit(1);
     }
 
-    if (pthread_create(&video_thread, NULL, loop, &mat)) {
+    if (pthread_create(&this->video_thread, NULL, loop, &mat)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
