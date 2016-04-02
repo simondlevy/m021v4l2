@@ -1,6 +1,13 @@
 #include "m021_v4l2.h"
 
-class M021_604x480_Capture {
+class M021_640x480_Capture {
 
+    private:
 
+        m021_640x480_t cap;
+
+    public:
+
+        M021_640x480_Capture(void) {
+        }
 };
