@@ -55,6 +55,8 @@ M021_800x460_Capture::M021_800x460_Capture(Mat & mat) {
     data->mat = mat;
     data->lock = lock;
 
+    this->data = data;
+
     if (pthread_create(&this->video_thread, NULL, loop, data)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);

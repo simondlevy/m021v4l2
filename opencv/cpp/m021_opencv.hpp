@@ -16,6 +16,8 @@ class M021_800x460_Capture {
 
     private: 
 
+        void * data;
+
         pthread_t video_thread;
 
         int count;
