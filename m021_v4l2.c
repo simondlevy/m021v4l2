@@ -736,7 +736,7 @@ static int check_frame_available(m021_t *vd)
 }
 
 
-static int m021_init_common(const char * devname, m021_t * common, int width, int height)
+static int m021_init_common(int id, m021_t * common, int width, int height)
 {
     int ret = VDIN_OK;
 
@@ -758,6 +758,9 @@ static int m021_init_common(const char * devname, m021_t * common, int width, in
         udev_monitor_enable_receiving(common->udev_mon);
         common->udev_fd = udev_monitor_get_fd(common->udev_mon);
     }
+
+    char devname[20];
+    sprintf(devname, "/dev/video%d", id);
 
     if ((common->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
@@ -825,9 +828,9 @@ int m021_grab_common(m021_t * common)
 
 // =============================================================================================
 
-int m021_1280x720_init(const char * devname, m021_1280x720_t * videoIn)
+int m021_1280x720_init(int id, m021_1280x720_t * videoIn)
 {
-	int ret = m021_init_common(devname, &videoIn->common, 1280, 720);
+	int ret = m021_init_common(id, &videoIn->common, 1280, 720);
 
     if (!ret)
         frame_init(videoIn->framebuffer, 1280, 720);
@@ -855,9 +858,9 @@ int m021_1280x720_grab_bgr(m021_1280x720_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_800x460_init(const char * devname, m021_800x460_t * videoIn)
+int m021_800x460_init(int id, m021_800x460_t * videoIn)
 {
-	int ret = m021_init_common(devname, &videoIn->common, 800, 460);
+	int ret = m021_init_common(id, &videoIn->common, 800, 460);
 
     if (!ret)
         frame_init(videoIn->framebuffer, 800, 460);
@@ -885,9 +888,9 @@ int m021_800x460_grab_bgr(m021_800x460_t * vd, uint8_t *frame)
     return ret;
 }
 
-int m021_640x480_init(const char * devname, m021_640x480_t * videoIn)
+int m021_640x480_init(int id, m021_640x480_t * videoIn)
 {
-	int ret = m021_init_common(devname, &videoIn->common, 640, 480);
+	int ret = m021_init_common(id, &videoIn->common, 640, 480);
 
     if (!ret)
         frame_init(videoIn->framebuffer, 640, 480);

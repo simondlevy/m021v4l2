@@ -101,15 +101,15 @@ typedef struct m021_640x480 {
 
 } m021_640x480_t;
 
-int m021_1280x720_init(const char * devname, m021_1280x720_t * videoIn);
+int m021_1280x720_init(int id, m021_1280x720_t * videoIn);
 int m021_1280x720_grab_yuyv(m021_1280x720_t * m021, uint8_t * frame);
 int m021_1280x720_grab_bgr(m021_1280x720_t * m021, uint8_t * frame);
 
-int m021_800x460_init(const char * devname, m021_800x460_t * videoIn);
+int m021_800x460_init(int id, m021_800x460_t * videoIn);
 int m021_800x460_grab_yuyv(m021_800x460_t * m021, uint8_t * frame);
 int m021_800x460_grab_bgr(m021_800x460_t * m021, uint8_t * frame);
 
-int m021_640x480_init(const char * devname, m021_640x480_t * videoIn);
+int m021_640x480_init(int id, m021_640x480_t * videoIn);
 int m021_640x480_grab_yuyv(m021_640x480_t * m021, uint8_t * frame);
 int m021_640x480_grab_bgr(m021_640x480_t * m021, uint8_t * frame);
 

@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
 
     shared->videoIn = g_new0(VD_TYPE, 1);
 
-    VD_INIT("/dev/video0", shared->videoIn);
+    VD_INIT(0, shared->videoIn);
 
     if(pthread_create(&shared->video_thread, NULL, main_loop, shared))
     {

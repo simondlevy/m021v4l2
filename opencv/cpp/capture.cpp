@@ -25,7 +25,7 @@ static void * main_loop(void * arg)
 
     m021_800x460_t cap;
 
-    m021_800x460_init("/dev/video0", &cap);
+    m021_800x460_init(0, &cap);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
