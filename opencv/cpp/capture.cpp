@@ -50,6 +50,8 @@ static void * main_loop(void * arg)
 
 static void run(Mat & mat)
 {
+    mat = Mat(460, 800, CV_8UC3);
+
     if (pthread_mutex_init(&lock, NULL) != 0) {
         printf("\n mutex init failed\n");
         exit(1);
@@ -59,12 +61,11 @@ static void run(Mat & mat)
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
-
 }
 
 int main()
 {
-    Mat mat = Mat(460, 800, CV_8UC3);
+    Mat mat;
 
     run(mat);
 
