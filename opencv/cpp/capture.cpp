@@ -41,7 +41,7 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-static void run(Mat & mat)
+static void m021_640x480_capture(Mat & mat)
 {
     mat = Mat(460, 800, CV_8UC3);
 
@@ -60,7 +60,7 @@ int main()
 {
     Mat mat;
 
-    run(mat);
+    m021_640x480_capture(mat);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
