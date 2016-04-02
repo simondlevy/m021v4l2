@@ -7,6 +7,7 @@ typedef struct {
 
     Mat mat;
     pthread_mutex_t lock;
+    int count;
 
 } data_t;
 
@@ -21,6 +22,8 @@ static void * loop(void * arg)
     pthread_mutex_t lock = data->lock;
     Mat mat = data->mat;
 
+    data->count = 0;
+
     while (true) {
 
         pthread_mutex_lock(&lock);
@@ -28,6 +31,8 @@ static void * loop(void * arg)
         m021_800x460_grab_bgr(&cap, mat.data);
 
         pthread_mutex_unlock(&lock);
+
+        data->count++;
     }
 
     return (void *)0;
