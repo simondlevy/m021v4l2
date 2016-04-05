@@ -736,7 +736,39 @@ static int check_frame_available(m021_t *vd)
 }
 
 
-static int m021_init_common(int id, m021_t * vd, int width, int height)
+int m021_grab_common(m021_t * common)
+{
+    int ret = check_frame_available(common);
+
+    if (ret < 0)
+        return ret;
+
+    /* dequeue the buffers */
+    memset(&common->buf, 0, sizeof(struct v4l2_buffer));
+    common->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    common->buf.memory = V4L2_MEMORY_MMAP;
+
+    ret = xioctl(common->fd, VIDIOC_DQBUF, &common->buf);
+    if (ret < 0)
+    {
+        perror("VIDIOC_DQBUF - Unable to dequeue buffer ");
+        ret = VDIN_DEQBUFS_ERR;
+        return ret;
+    }
+
+    ret = xioctl(common->fd, VIDIOC_QBUF, &common->buf);
+    if (ret < 0)
+    {
+        perror("VIDIOC_QBUF - Unable to queue buffer");
+        ret = VDIN_QBUF_ERR;
+    }
+
+    return ret;
+}
+
+// =============================================================================================
+
+int m021_init(int id, m021_t * vd, int width, int height)
 {
     int ret = VDIN_OK;
 
@@ -795,48 +827,9 @@ static int m021_init_common(int id, m021_t * vd, int width, int height)
         clear_v4l2(vd);
     }
 
-    return ret;
-
- }
-
-int m021_grab_common(m021_t * common)
-{
-    int ret = check_frame_available(common);
-
-    if (ret < 0)
-        return ret;
-
-    /* dequeue the buffers */
-    memset(&common->buf, 0, sizeof(struct v4l2_buffer));
-    common->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    common->buf.memory = V4L2_MEMORY_MMAP;
-
-    ret = xioctl(common->fd, VIDIOC_DQBUF, &common->buf);
-    if (ret < 0)
-    {
-        perror("VIDIOC_DQBUF - Unable to dequeue buffer ");
-        ret = VDIN_DEQBUFS_ERR;
-        return ret;
-    }
-
-    ret = xioctl(common->fd, VIDIOC_QBUF, &common->buf);
-    if (ret < 0)
-    {
-        perror("VIDIOC_QBUF - Unable to queue buffer");
-        ret = VDIN_QBUF_ERR;
-    }
-
-    return ret;
-}
-
-// =============================================================================================
-
-int m021_init(int id, m021_t * videoIn, int width, int height)
-{
-	int ret = m021_init_common(id, videoIn, width, height);
 
     if (!ret)
-        frame_init(videoIn->framebuffer, width, height);
+        frame_init(vd->framebuffer, width, height);
 
     return ret;
 }
