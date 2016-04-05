@@ -736,63 +736,63 @@ static int check_frame_available(m021_t *vd)
 }
 
 
-static int m021_init_common(int id, m021_t * common, int width, int height)
+static int m021_init_common(int id, m021_t * vd, int width, int height)
 {
     int ret = VDIN_OK;
 
-    common->width = width;
-    common->height = height;
+    vd->width = width;
+    vd->height = height;
 
-    common->udev = udev_new();
+    vd->udev = udev_new();
 
-    pthread_mutex_init(&common->mutex, NULL);
+    pthread_mutex_init(&vd->mutex, NULL);
 
-	common->available_exp[0]=-1;
-	common->available_exp[1]=-1;
-	common->available_exp[2]=-1;
-	common->available_exp[3]=-1;
+	vd->available_exp[0]=-1;
+	vd->available_exp[1]=-1;
+	vd->available_exp[2]=-1;
+	vd->available_exp[3]=-1;
 
     /*start udev device monitoring*/
     /* Set up a monitor to monitor v4l2 devices */
-    if(common->udev)
+    if(vd->udev)
     {
-        common->udev_mon = udev_monitor_new_from_netlink(common->udev, "udev");
-        udev_monitor_filter_add_match_subsystem_devtype(common->udev_mon, "video4linux", NULL);
-        udev_monitor_enable_receiving(common->udev_mon);
-        common->udev_fd = udev_monitor_get_fd(common->udev_mon);
+        vd->udev_mon = udev_monitor_new_from_netlink(vd->udev, "udev");
+        udev_monitor_filter_add_match_subsystem_devtype(vd->udev_mon, "video4linux", NULL);
+        udev_monitor_enable_receiving(vd->udev_mon);
+        vd->udev_fd = udev_monitor_get_fd(vd->udev_mon);
     }
 
     char devname[20];
     sprintf(devname, "/dev/video%d", id);
 
-    if ((common->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
+    if ((vd->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
         perror("ERROR opening V4L interface");
         ret = VDIN_DEVICE_ERR;
-        clear_v4l2(common);
+        clear_v4l2(vd);
         return ret;
     }
 
 	//reset v4l2_format
-	memset(&common->fmt, 0, sizeof(struct v4l2_format));
+	memset(&vd->fmt, 0, sizeof(struct v4l2_format));
 
 	// populate video capabilities structure array
 	// should only be called after all m021 struct elements
 	// have been initialized
-	if((ret = check_videoIn(devname, common)) != VDIN_OK)
+	if((ret = check_videoIn(devname, vd)) != VDIN_OK)
 	{
-		clear_v4l2(common);
+		clear_v4l2(vd);
 		return ret;
 	}
 
 	ret = 0; //clean ret code
 
-    common->format = 0x56595559;
+    vd->format = 0x56595559;
 
-    if ((ret=init_v4l2(common, &common->format, width, height)) < 0)
+    if ((ret=init_v4l2(vd, &vd->format, width, height)) < 0)
     {
         fprintf(stderr, "Init v4L2 failed !! \n");
-        clear_v4l2(common);
+        clear_v4l2(vd);
     }
 
     return ret;
