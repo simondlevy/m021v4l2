@@ -740,6 +740,9 @@ static int m021_init_common(int id, m021_t * common, int width, int height)
 {
     int ret = VDIN_OK;
 
+    common->width = width;
+    common->height = height;
+
     common->udev = udev_new();
 
     pthread_mutex_init(&common->mutex, NULL);
@@ -828,92 +831,33 @@ int m021_grab_common(m021_t * common)
 
 // =============================================================================================
 
-int m021_1280x720_init(int id, m021_1280x720_t * videoIn)
+int m021_init(int id, m021_t * videoIn, int width, int height)
 {
-	int ret = m021_init_common(id, &videoIn->common, 1280, 720);
+	int ret = m021_init_common(id, videoIn, width, height);
 
     if (!ret)
-        frame_init(videoIn->framebuffer, 1280, 720);
+        frame_init(videoIn->framebuffer, width, height);
 
     return ret;
 }
 
-int m021_1280x720_grab_yuyv(m021_1280x720_t * vd, uint8_t * frame)
+int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
 {
-    int ret = m021_grab_common(&vd->common);
+    int ret = m021_grab_common(vd);
 
     if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
+        frame_decode(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
 
     return ret;
 }
 
-int m021_1280x720_grab_bgr(m021_1280x720_t * vd, uint8_t *frame)
+int m021_grab_bgr(m021_t * vd, uint8_t *frame)
 {
-    int ret = m021_grab_common(&vd->common);
+    int ret = m021_grab_common(vd);
 
     if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 1280, 720);
+        frame_decode_bgr(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
 
     return ret;
 }
 
-int m021_800x460_init(int id, m021_800x460_t * videoIn)
-{
-	int ret = m021_init_common(id, &videoIn->common, 800, 460);
-
-    if (!ret)
-        frame_init(videoIn->framebuffer, 800, 460);
-
-    return ret;
-}
-
-int m021_800x460_grab_yuyv(m021_800x460_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
-
-    return ret;
-}
-
-int m021_800x460_grab_bgr(m021_800x460_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 800, 460);
-
-    return ret;
-}
-
-int m021_640x480_init(int id, m021_640x480_t * videoIn)
-{
-	int ret = m021_init_common(id, &videoIn->common, 640, 480);
-
-    if (!ret)
-        frame_init(videoIn->framebuffer, 640, 480);
-
-    return ret;
-}
-
-int m021_640x480_grab_yuyv(m021_640x480_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
-
-    return ret;
-}
-
-int m021_640x480_grab_bgr(m021_640x480_t * vd, uint8_t *frame)
-{
-    int ret = m021_grab_common(&vd->common);
-
-    if (!ret)
-        frame_decode_bgr(&vd->common, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, 640, 480);
-
-    return ret;
-}
