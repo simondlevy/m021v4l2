@@ -14,12 +14,12 @@ typedef struct {
 static void * loop(void * arg)
 {
 
-    m021_t cap;
-    m021_init(0, &cap, 800, 460);
-
     data_t * data = (data_t *)arg;
     pthread_mutex_t lock = data->lock;
     Mat mat = data->mat;
+
+    m021_t cap;
+    m021_init(0, &cap, mat.cols, mat.rows);
 
     data->count = 0;
 
