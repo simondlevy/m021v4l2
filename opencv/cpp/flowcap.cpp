@@ -28,30 +28,30 @@
 using namespace cv;
 using namespace std;
 
+#include "m021_v4l2_opencv.hpp"
+
 static void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
- for(int y = 0; y < cflowmap.rows; y += step)
+
+    for(int y = 0; y < cflowmap.rows; y += step)
         for(int x = 0; x < cflowmap.cols; x += step)
         {
             const Point2f& fxy = flow.at< Point2f>(y, x);
             line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)),
-                 color);
+                    color);
             circle(cflowmap, Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), 1, color, -1);
         }
-    }
-
+}
 
 int main()
 {
     Mat img;
     Mat prev, next; 
 
-    VideoCapture cap(0); 
+    M021_800x460_Capture cap(img);
 
     static const int SCALEDOWN = 1;
 
     while (true) {   
-
-        cap >> img;
 
         resize(img, next, Size(img.size().width>>SCALEDOWN, img.size().height>>SCALEDOWN) );
 

@@ -27,7 +27,7 @@ using namespace cv;
 
 #include "m021_v4l2_opencv.hpp"
 
-static int getMilliCount(){
+static int getMilliCount(void){
 
     timeb tb;
     ftime(&tb);
