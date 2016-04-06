@@ -89,12 +89,13 @@ WARN_FORMAT            = "$file:$line: $text"
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = m021_v4l2_opencv.h
+INPUT                  = m021_v4l2_opencv.hpp
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c  *.cc  *.cxx  *.cpp  *.c++ \
                         *.h  *.hh  *.hxx  *.hpp  *.h++ *.m  *.mm  *.dox \
 RECURSIVE              = YES
 EXCLUDE_SYMLINKS       = NO
+EXCLUDE_SYMBOLS        = M021_Capture
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 FILTER_SOURCE_FILES    = NO
