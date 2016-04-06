@@ -842,7 +842,7 @@ int m021_grab_bgr(m021_t * vd, uint8_t *frame)
 
     if (!ret) {
         bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
-        bayer_to_bgr24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+        bayer_to_bgr24(vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
         memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
     }
 
