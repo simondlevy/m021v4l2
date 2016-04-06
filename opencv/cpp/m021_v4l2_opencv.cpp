@@ -34,6 +34,8 @@ static void * loop(void * arg)
         data->count++;
     }
 
+    m021_free(&cap);
+
     return (void *)0;
 }
 
