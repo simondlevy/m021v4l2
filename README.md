@@ -29,6 +29,9 @@ shows,  the classes are extremely simple to use:
 
  </pre>
 
+To run the OpenCV capture demo, cd to opencv/cpp and type <b>make run</b>.  To run the GTK/SDL demo, cd to 
+gtksdl and type <b>make run</b>.
+
 I've also provided a C API (which is used by my C++ code) for capturing images in YUYV format, along with a demo 
 program (a cut-down version of Guvcview) that displays the images using GTK and SDL.  I'm working on a Python
 API as well.
