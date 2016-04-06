@@ -24,7 +24,6 @@ shows,  the classes are extremely simple to use:
 
         if (cvWaitKey(1) == 27) 
             break;
-
     }
 
  </pre>
