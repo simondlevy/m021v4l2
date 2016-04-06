@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
-LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lpthread -lv4l2 -ludev
+LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lpthread -lopencv_imgproc -lv4l2 -ludev
 
+all: capture flow
 
 cap: capture
 	./capture
