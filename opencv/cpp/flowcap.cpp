@@ -28,7 +28,7 @@
 using namespace cv;
 using namespace std;
 
-void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
+static void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
  for(int y = 0; y < cflowmap.rows; y += step)
         for(int x = 0; x < cflowmap.cols; x += step)
         {
