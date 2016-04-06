@@ -692,15 +692,6 @@ static void frame_decode_bgr(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbu
     memcpy(frame, tmpbuffer, width * height * 3);
 }
 
-static void frame_decode_yuyv(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
-        uint8_t * frame, int width, int height)
-{
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
-    bayer_to_rgb24 (tmpbuffer1, tmpbuffer, width, height);
-    rgb2yuyv (tmpbuffer, framebuffer, width, height);
-    memcpy(frame, framebuffer, width * height * 2);
-}
-
 static int check_frame_available(m021_t *vd)
 {
     int ret = VDIN_OK;
@@ -843,8 +834,12 @@ int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
 {
     int ret = m021_grab(vd);
 
-    if (!ret)
-        frame_decode_yuyv(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
+    if (!ret) {
+        bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
+        bayer_to_rgb24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+        rgb2yuyv (vd->tmpbuffer, vd->framebuffer, vd->width, vd->height);
+        memcpy(frame, vd->framebuffer, vd->width * vd->height * 2);
+    }
 
     return ret;
 }
