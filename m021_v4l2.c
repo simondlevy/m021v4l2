@@ -692,7 +692,7 @@ static void frame_decode_bgr(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbu
     memcpy(frame, tmpbuffer, width * height * 3);
 }
 
-static void frame_decode(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
+static void frame_decode_yuyv(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
         uint8_t * frame, int width, int height)
 {
     bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
@@ -844,7 +844,7 @@ int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
     int ret = m021_grab(vd);
 
     if (!ret)
-        frame_decode(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
+        frame_decode_yuyv(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
 
     return ret;
 }
