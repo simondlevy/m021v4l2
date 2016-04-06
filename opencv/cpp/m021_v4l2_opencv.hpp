@@ -26,21 +26,19 @@ class M021_1280x720_Capture : public M021_Capture{
 
     public:
 
-        M021_1280x720_Capture(Mat & mat);
+        M021_1280x720_Capture(Mat & mat) : M021_Capture(mat, 1280, 720) {}
 };
 
 class M021_800x460_Capture : public M021_Capture{
 
     public:
 
-        M021_800x460_Capture(Mat & mat);
+        M021_800x460_Capture(Mat & mat): M021_Capture(mat, 800, 460) {}
 };
 
 class M021_640x480_Capture : public M021_Capture{
 
     public:
 
-        M021_640x480_Capture(Mat & mat);
+        M021_640x480_Capture(Mat & mat) : M021_Capture(mat, 640, 480) {}
 };
-
-
