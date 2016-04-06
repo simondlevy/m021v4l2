@@ -1,3 +1,4 @@
 capture
-flow
+flowcap
 Doxyfile
+*.swp
