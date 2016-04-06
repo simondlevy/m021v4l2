@@ -44,8 +44,7 @@ static void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scal
 
 int main()
 {
-    Mat img;
-    Mat prev, next; 
+    Mat img, prevgray, gray; 
 
     M021_800x460_Capture cap(img);
 
@@ -53,26 +52,25 @@ int main()
 
     while (true) {   
 
-        resize(img, next, Size(img.size().width>>SCALEDOWN, img.size().height>>SCALEDOWN) );
+        resize(img, gray, Size(img.size().width>>SCALEDOWN, img.size().height>>SCALEDOWN) );
 
-        cvtColor(next, next, CV_BGR2GRAY);
+        cvtColor(gray, gray, CV_BGR2GRAY);
 
-        if (prev.data) {
+        if (prevgray.data) {
 
             Mat flow;
-            calcOpticalFlowFarneback(prev, next, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+            calcOpticalFlowFarneback(prevgray, gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
 
-            drawOptFlowMap(flow, next, 10, CV_RGB(0, 255, 0));
+            drawOptFlowMap(flow, gray, 10, CV_RGB(0, 255, 0));
         }
 
-        imshow("Optical Flow", next);
+        imshow("Optical Flow", gray);
 
         if (waitKey(5) >= 0)   
             break;
 
-        prev = next;
+        prevgray = gray;
     }
 }
-
 
 
