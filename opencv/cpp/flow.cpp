@@ -1,64 +1,61 @@
-/*
-   flow.cpp - OpenCV optical flow using Leopard Imageing M021 camear on Linux.
-  
-   Copyright (C) 2016 Simon D. Levy
+#include <stdio.h>
+#include <iostream>
 
-   This file is part of M021_V4L2.
-
-   M021_V4L2 is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   BreezySTM32 is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/video/background_segm.hpp>
+
 using namespace cv;
+using namespace std;
 
-#include <stdio.h>
-#include <sys/timeb.h>
+void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
+ for(int y = 0; y < cflowmap.rows; y += step)
+        for(int x = 0; x < cflowmap.cols; x += step)
+        {
+            const Point2f& fxy = flow.at< Point2f>(y, x);
+            line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)),
+                 color);
+            circle(cflowmap, Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), 1, color, -1);
+        }
+    }
 
-#include "m021_v4l2_opencv.hpp"
-
-static int getMilliCount(){
-
-    timeb tb;
-    ftime(&tb);
-    int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
-    return nCount;
-}
 
 int main()
 {
-    Mat mat;
+    int s=5;
+    //global variables
+    Mat GetImg;
+    Mat prvs, next; //current frame
 
-    M021_800x460_Capture cap(mat);
+    VideoCapture cap(0); 
 
-    cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
+    //unconditional loop   
+    while (true) {   
 
-    int start = getMilliCount();
+        cap >> GetImg;
 
-    while (true) {
+        resize(GetImg, next, Size(GetImg.size().width/s, GetImg.size().height/s) );
+        cvtColor(next, next, CV_BGR2GRAY);
+        
+        Mat flow;
+        calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
 
-        imshow("LI-USB30-M021", mat);
+        Mat cflow;
+        cvtColor(prvs, cflow, CV_GRAY2BGR);
+        drawOptFlowMap(flow, cflow, 10, CV_RGB(0, 255, 0));
+        imshow("OpticalFlowFarneback", cflow);
 
-        if (cvWaitKey(1) == 27) 
+        imshow("prvs", prvs);
+        imshow("next", next);
+
+        if (waitKey(5) >= 0)   
             break;
 
+        prvs = next.clone();
     }
 
-    double duration = (getMilliCount() - start) / 1000.;
-
-    int count = cap.getCount();
-
-    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
-
-    return 0;
 }
+
+
+
