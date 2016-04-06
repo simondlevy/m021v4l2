@@ -737,7 +737,7 @@ static int check_frame_available(m021_t *vd)
 }
 
 
-int m021_grab_common(m021_t * common)
+int m021_grab(m021_t * common)
 {
     int ret = check_frame_available(common);
 
@@ -841,7 +841,7 @@ int m021_init(int id, m021_t * vd, int width, int height)
 
 int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
 {
-    int ret = m021_grab_common(vd);
+    int ret = m021_grab(vd);
 
     if (!ret)
         frame_decode(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
@@ -851,7 +851,7 @@ int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
 
 int m021_grab_bgr(m021_t * vd, uint8_t *frame)
 {
-    int ret = m021_grab_common(vd);
+    int ret = m021_grab(vd);
 
     if (!ret)
         frame_decode_bgr(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
