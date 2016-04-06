@@ -684,14 +684,6 @@ static void bayer16_convert_bayer8(int16_t *inbuf, uint8_t *outbuf, int width, i
 	}
 }
 
-static void frame_decode_bgr(m021_t * vd, uint8_t * framebuffer, uint8_t * tmpbuffer, uint8_t * tmpbuffer1,
-        uint8_t * frame, int width, int height)
-{
-    bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], tmpbuffer1, width, height, 4);
-    bayer_to_bgr24 (tmpbuffer1, tmpbuffer, width, height);
-    memcpy(frame, tmpbuffer, width * height * 3);
-}
-
 static int check_frame_available(m021_t *vd)
 {
     int ret = VDIN_OK;
@@ -848,8 +840,11 @@ int m021_grab_bgr(m021_t * vd, uint8_t *frame)
 {
     int ret = m021_grab(vd);
 
-    if (!ret)
-        frame_decode_bgr(vd, vd->framebuffer, vd->tmpbuffer, vd->tmpbuffer1, frame, vd->width, vd->height);
+    if (!ret) {
+        bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
+        bayer_to_bgr24 (vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+        memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
+    }
 
     return ret;
 }
