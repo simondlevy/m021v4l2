@@ -14,8 +14,8 @@ typedef struct {
 static void * loop(void * arg)
 {
 
-    m021_800x460_t cap;
-    m021_800x460_init(0, &cap);
+    m021_t cap;
+    m021_init(0, &cap, 800, 460);
 
     data_t * data = (data_t *)arg;
     pthread_mutex_t lock = data->lock;
@@ -27,7 +27,7 @@ static void * loop(void * arg)
 
         pthread_mutex_lock(&lock);
 
-        m021_800x460_grab_bgr(&cap, mat.data);
+        m021_grab_bgr(&cap, mat.data);
 
         pthread_mutex_unlock(&lock);
 

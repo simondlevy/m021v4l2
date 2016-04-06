@@ -69,10 +69,9 @@ typedef struct m021 {
     int      format;
     int      width;
     int      height;
-
-    uint8_t tmpbuffer[1280*720*2];     // temp buffer for decoding compressed data
-    uint8_t tmpbuffer1[1280*720*3];    // temp buffer for converting bayer16 to bayer8
-    uint8_t framebuffer[1280*720*2];   // frame buffer (YUYV)
+    uint8_t * tmpbuffer;                  // temp buffer for decoding compressed data
+    uint8_t * tmpbuffer1;                 // temp buffer for converting bayer16 to bayer8
+    uint8_t * framebuffer;                // frame buffer (YUYV)
 
 } m021_t;
 
