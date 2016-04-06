@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
-LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lpthread -lopencv_imgproc -lv4l2 -ludev
+LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_video \
+	   -lpthread -lv4l2 -ludev
 
-all: capture flow
+all: capture flowcap
 
 cap: capture
 	./capture
@@ -26,11 +27,14 @@ cap: capture
 capture: capture.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
 	g++ -I ../.. -Wall -o capture capture.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
 
-flow: flow.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
-	g++ -I ../.. -Wall -o flow flow.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
+flow: flowcap
+	./flowcap
+
+flowcap: flowcap.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
+	g++ -I ../.. -Wall -o flowcap flowcap.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
 
 clean:
-	rm -rf capture Documentation *~ 
+	rm -rf capture flowcap Documentation *~ 
 
 edit:
 	vim capture.cpp
