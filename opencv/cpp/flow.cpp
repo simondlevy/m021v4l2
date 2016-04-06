@@ -1,5 +1,5 @@
 /*
-   capture.cpp - Simple demo of OpenCV image capture using Leopard Imageing M021 camear on Linux.
+   flow.cpp - OpenCV optical flow using Leopard Imageing M021 camear on Linux.
   
    Copyright (C) 2016 Simon D. Levy
 
