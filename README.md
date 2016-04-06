@@ -3,7 +3,7 @@
 The LI-USB30-M021 camera from Leopard Imaging is a fast (up to 90 frames per second) camera that captures
 images over USB 3.0.  Because the camera serves up raw image bytes, getting it to work on Linux using V4L2 
 (Video For Linux 2) requires a bit of extra format-conversion work.  With some help from the folks at Leopard Imaging, 
-I was able to write a simple APIs for the camera for people who want to use it on Linux without doing the conversion
+I was able to write a two simple APIs for the camera for people who want to use it on Linux without doing the conversion
 themselves.
 
 The C++ API is intended for OpenCV users who want to be able to capture images in Mat format.  Because the M021
