@@ -27,8 +27,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define NB_BUFFER 4
-
+// Error codes for reference
 #define VDIN_OK                    0
 #define VDIN_DEVICE_ERR           -1
 #define VDIN_FORMAT_ERR           -2
@@ -47,6 +46,8 @@
 #define VDIN_STREAMON_ERR        -15
 #define VDIN_STREAMOFF_ERR       -16
 #define VDIN_DYNCTRL_ERR         -17
+
+#define NB_BUFFER 4
 
 typedef struct m021 {
 
@@ -75,12 +76,43 @@ typedef struct m021 {
 
 } m021_t;
 
-int m021_init(int id, m021_t * videoIn, int widht, int height);
+/**
+  * Initializes capture from M021 camera.
+  * @param id numerical id of camera: 0 -> /dev/video0, etc.
+  * @param m021 m021_t data structure to be initialized
+  * @width image width
+  * @height image height
+  * @return 0 on success, nonzero on error (see error codes in m021_v4l2.h)
+  * Width x Height possibilities are: 1280x720, 800x460, 640x480.
+  * This routine should be called on its own thread, separate from the thread on which the
+  * grab routines are called.
+  */
+int m021_init(int id, m021_t * m021, int widht, int height);
 
+/**
+  * Grabs a YUYV image from the M021 camera.
+  * @param m021 m021_t data structure intialized by m021_init
+  * @param frame pre-allocated image frame buffer of appropriate size
+  * @return 0 on success, nonzero on error (see error codes in m021_v4l2.h)
+  * This routine should be called a separate thread from the thread on which m021_init was called.
+  */
 int m021_grab_yuyv(m021_t * m021, uint8_t * frame);
 
+/**
+  * Grabs a BGR image from the M021 camera.
+  * @param m021 m021_t data structure intialized by m021_init
+  * @param frame pre-allocated image frame buffer of appropriate size
+  * @return 0 on success, nonzero on error (see error codes in m021_v4l2.h)
+  * This routine should be called a separate thread from the thread on which m021_init was called.
+  */
 int m021_grab_bgr(m021_t * m021, uint8_t * frame);
 
+/**
+  * Frees storage allocated for m021 data structure.
+  * @param m021 pointer to m021_t data structure to be freed
+  * This routine should be called on its own thread, separate from the thread on which the
+  * grab routines are called.
+  */
 void m021_free(m021_t * m021);
 
 #endif

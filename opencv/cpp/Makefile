@@ -7,10 +7,13 @@ run: capture
 	./capture
 
 clean:
-	rm -f capture *~ 
+	rm -rf capture Documentation *~ 
 
 edit:
 	vim capture.cpp
+
+doc: Doxyfile
+	doxygen
 
 commit:
 	git commit -a --allow-empty-message -m '' 
