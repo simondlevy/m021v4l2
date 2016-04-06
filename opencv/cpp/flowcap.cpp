@@ -51,7 +51,7 @@ int main()
         if (waitKey(5) >= 0)   
             break;
 
-        prev = next.clone();
+        prev = next;
     }
 }
 
