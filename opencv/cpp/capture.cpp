@@ -101,9 +101,11 @@ int main()
 
         SimplestCB(src, dst1, 25);
 
-        GammaCorrection(dst1, dst2, 0.85);
+        GammaCorrection(dst1, dst2, 0.95);
 
-        imshow("LI-USB30-M021", dst2);
+        imshow("LI-USB30-M021", src);
+
+        imshow("LI-USB30-M021 corrected", dst2);
 
         if (cvWaitKey(1) == 27) 
             break;
