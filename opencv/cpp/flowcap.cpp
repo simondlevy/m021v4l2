@@ -28,13 +28,13 @@ int main()
 
     VideoCapture cap(0); 
 
-    int s = 2;
+    static const int SCALEDOWN = 1;
 
     while (true) {   
 
         cap >> img;
 
-        resize(img, next, Size(img.size().width/s, img.size().height/s) );
+        resize(img, next, Size(img.size().width>>SCALEDOWN, img.size().height>>SCALEDOWN) );
 
         cvtColor(next, next, CV_BGR2GRAY);
 
