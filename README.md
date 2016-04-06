@@ -8,7 +8,8 @@ themselves.
 
 The C++ API is intended for OpenCV users who want to be able to capture images in Mat format.  Because the M021
 camera supports three frame sizes (1280 x 720 at 60 FPS; 800 x 460 at 90 FPS; 640x480 at 30 FPS), I've provided
-a class for each frame size.  As the code fragment below shows,  the classes are extremely simple to use:
+a class for each frame size. The capture runs on its own automatically-launched thread. As the code fragment below 
+shows,  the classes are extremely simple to use:
 
 <pre>
     Mat mat;
@@ -29,4 +30,5 @@ a class for each frame size.  As the code fragment below shows,  the classes are
  </pre>
 
 I've also provided a C API (which is used by my C++ code) for capturing images in YUYV format, along with a demo 
-program (a cut-down version of Guvcview) that displays the images using GTK and SDL.  
+program (a cut-down version of Guvcview) that displays the images using GTK and SDL.  I'm working on a Python
+API as well.
