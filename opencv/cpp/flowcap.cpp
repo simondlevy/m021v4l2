@@ -33,11 +33,9 @@ using namespace std;
 static void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
 
     for(int y = 0; y < cflowmap.rows; y += step)
-        for(int x = 0; x < cflowmap.cols; x += step)
-        {
-            const Point2f& fxy = flow.at< Point2f>(y, x);
-            line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)),
-                    color);
+        for(int x = 0; x < cflowmap.cols; x += step) {
+            const Point2f& fxy = flow.at< Point2f>(y>>1, x>>1);
+            line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), color);
             circle(cflowmap, Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), 1, color, -1);
         }
 }
@@ -61,10 +59,10 @@ int main()
             Mat flow;
             calcOpticalFlowFarneback(prevgray, gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
 
-            drawOptFlowMap(flow, gray, 10, CV_RGB(0, 255, 0));
+            drawOptFlowMap(flow, img, 10, CV_RGB(0, 255, 0));
         }
 
-        imshow("Optical Flow", gray);
+        imshow("Optical Flow", img);
 
         if (waitKey(5) >= 0)   
             break;
