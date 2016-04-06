@@ -29,3 +29,10 @@ class M021_800x460_Capture : public M021_Capture{
         M021_800x460_Capture(Mat & mat);
 };
 
+class M021_640x480_Capture : public M021_Capture{
+
+    public:
+
+        M021_640x480_Capture(Mat & mat);
+};
+

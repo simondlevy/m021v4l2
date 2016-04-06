@@ -19,7 +19,7 @@ int main()
 {
     Mat mat;
 
-    M021_800x460_Capture cap(mat);
+    M021_640x480_Capture cap(mat);
 
     cvNamedWindow("LI-USB30-M021", CV_WINDOW_AUTOSIZE);
 
