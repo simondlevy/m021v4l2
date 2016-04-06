@@ -103,9 +103,7 @@ int main()
 
         GammaCorrection(dst1, dst2, 0.95);
 
-        imshow("LI-USB30-M021", src);
-
-        imshow("LI-USB30-M021 corrected", dst2);
+        imshow("LI-USB30-M021", dst2);
 
         if (cvWaitKey(1) == 27) 
             break;
