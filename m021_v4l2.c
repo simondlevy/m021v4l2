@@ -776,11 +776,9 @@ int m021_init(int id, m021_t * vd, int width, int height)
     vd->width = width;
     vd->height = height;
 
-    printf("%d %d\n", width, height);
-
-    vd->framebuffer = (uint8_t *)malloc(width*height*4);
-    vd->tmpbuffer   = (uint8_t *)malloc(width*height*4);
-    vd->tmpbuffer1  = (uint8_t *)malloc(width*height*4);
+    vd->framebuffer = (uint8_t *)malloc(width*height*2);
+    vd->tmpbuffer   = (uint8_t *)malloc(width*height*3);
+    vd->tmpbuffer1  = (uint8_t *)malloc(width*height*3);
 
     vd->udev = udev_new();
 
