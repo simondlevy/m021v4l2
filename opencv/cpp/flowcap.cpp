@@ -59,7 +59,7 @@ int main()
             Mat flow;
             calcOpticalFlowFarneback(prevgray, gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
 
-            drawOptFlowMap(flow, img, 10, CV_RGB(0, 255, 0));
+            drawOptFlowMap(flow, img, 40, CV_RGB(0, 255, 0));
         }
 
         imshow("Optical Flow", img);
