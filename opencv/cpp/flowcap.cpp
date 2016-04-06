@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sys/timeb.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -30,11 +31,21 @@ using namespace std;
 
 #include "m021_v4l2_opencv.hpp"
 
+static const int SCALEDOWN = 1; 
+
+static int getMilliCount(void){
+
+    timeb tb;
+    ftime(&tb);
+    int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
+    return nCount;
+}
+
 static void drawOptFlowMap (const Mat& flow, Mat& cflowmap, int step, const Scalar& color) {
 
     for(int y = 0; y < cflowmap.rows; y += step)
         for(int x = 0; x < cflowmap.cols; x += step) {
-            const Point2f& fxy = flow.at< Point2f>(y>>1, x>>1);
+            const Point2f& fxy = flow.at< Point2f>(y>>SCALEDOWN, x>>SCALEDOWN);
             line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), color);
             circle(cflowmap, Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), 1, color, -1);
         }
@@ -46,7 +57,8 @@ int main()
 
     M021_800x460_Capture cap(img);
 
-    static const int SCALEDOWN = 1;
+    int count = 0;
+    int start = getMilliCount();
 
     while (true) {   
 
@@ -60,6 +72,8 @@ int main()
             calcOpticalFlowFarneback(prevgray, gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
 
             drawOptFlowMap(flow, img, 20, CV_RGB(0, 255, 0));
+
+            count++;
         }
 
         imshow("Optical Flow", img);
@@ -69,6 +83,10 @@ int main()
 
         prevgray = gray;
     }
+
+    double duration = (getMilliCount() - start) / 1000.;
+
+    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 }
 
 
