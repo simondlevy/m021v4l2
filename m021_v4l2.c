@@ -849,3 +849,9 @@ int m021_grab_bgr(m021_t * vd, uint8_t *frame)
     return ret;
 }
 
+void m021_free(m021_t * vd)
+{
+    free(vd->framebuffer);
+    free(vd->tmpbuffer);
+    free(vd->tmpbuffer1);
+}

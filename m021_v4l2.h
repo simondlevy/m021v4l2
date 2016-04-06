@@ -76,9 +76,12 @@ typedef struct m021 {
 } m021_t;
 
 int m021_init(int id, m021_t * videoIn, int widht, int height);
+
 int m021_grab_yuyv(m021_t * m021, uint8_t * frame);
+
 int m021_grab_bgr(m021_t * m021, uint8_t * frame);
 
+void m021_free(m021_t * m021);
 
 #endif
 
