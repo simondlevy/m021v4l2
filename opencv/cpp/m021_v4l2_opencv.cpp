@@ -74,6 +74,8 @@ unsigned long long M021_Capture::getCount(void)
     return data->count;
 }
 
+M021_1280x720_Capture::M021_1280x720_Capture(Mat & mat) : M021_Capture(mat, 1280, 720) { }
+
 M021_800x460_Capture::M021_800x460_Capture(Mat & mat) : M021_Capture(mat, 800, 460) { }
 
 M021_640x480_Capture::M021_640x480_Capture(Mat & mat) : M021_Capture(mat, 640, 480) { }

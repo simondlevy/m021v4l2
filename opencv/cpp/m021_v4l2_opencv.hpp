@@ -22,6 +22,13 @@ class M021_Capture {
         unsigned long long getCount(void);
 };
 
+class M021_1280x720_Capture : public M021_Capture{
+
+    public:
+
+        M021_1280x720_Capture(Mat & mat);
+};
+
 class M021_800x460_Capture : public M021_Capture{
 
     public:
@@ -35,4 +42,5 @@ class M021_640x480_Capture : public M021_Capture{
 
         M021_640x480_Capture(Mat & mat);
 };
+
 
