@@ -32,8 +32,7 @@ static int getMilliCount(void){
 }
 
 
-static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
-                    double, const Scalar& color)
+static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scalar& color)
 {
     for(int y = 0; y < cflowmap.rows; y += step)
         for(int x = 0; x < cflowmap.cols; x += step)
@@ -67,7 +66,7 @@ int main(int argc, char** argv)
         {
             calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
-            drawOptFlowMap(flow, bright, 16, 1.5, Scalar(0, 255, 0));
+            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));
             imshow("flow", bright);
             count++;
         }
