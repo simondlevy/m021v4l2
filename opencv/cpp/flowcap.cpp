@@ -10,6 +10,9 @@ using namespace std;
 #include "m021_v4l2_opencv.hpp"
 #include "colorbalance.hpp"
 
+#include <stdio.h>
+#include <sys/timeb.h>
+
 static const float COLORBALANCE = 0.5;
 
 static const double PYRSCALE   = 0.5;
@@ -18,6 +21,16 @@ static const int    WINSIZE    = 15;
 static const int    ITERATIONS = 3;
 static const int    POLY_N     = 5;
 static const double POLY_SIGMA = 1.2;
+
+// http://codepad.org/qPsNtwzp
+static int getMilliCount(void){
+
+    timeb tb;
+    ftime(&tb);
+    int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
+    return nCount;
+}
+
 
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
                     double, const Scalar& color)
@@ -41,6 +54,9 @@ int main(int argc, char** argv)
     
     M021_800x460_Capture cap(frame);
 
+    int start = getMilliCount();
+    int count = 0;
+
     for(;;)
     {
         //cap >> frame;
@@ -56,6 +72,7 @@ int main(int argc, char** argv)
             uflow.copyTo(flow);
             drawOptFlowMap(flow, cflow, 16, 1.5, Scalar(0, 255, 0));
             imshow("flow", cflow);
+            count++;
         }
 
         if(waitKey(1)>=0)
@@ -63,5 +80,7 @@ int main(int argc, char** argv)
 
         std::swap(prevgray, gray);
     }
+    double duration = (getMilliCount() - start) / 1000.;
+    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
     return 0;
 }
