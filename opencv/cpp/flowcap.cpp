@@ -7,6 +7,8 @@
 using namespace cv;
 using namespace std;
 
+#include "m021_v4l2_opencv.hpp"
+
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
                     double, const Scalar& color)
 {
@@ -23,9 +25,6 @@ static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
 int main(int argc, char** argv)
 {
     VideoCapture cap(0);
-
-    if( !cap.isOpened() )
-        return -1;
 
     Mat flow, cflow, frame;
     Mat gray, prevgray, uflow;
