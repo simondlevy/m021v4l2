@@ -48,6 +48,8 @@ int main()
 
     int start = getMilliCount();
 
+    int count = 0;
+
     while (true) {
 
         ColorBalance(img, img2, COLORBALANCE);
@@ -56,11 +58,11 @@ int main()
 
         if (cvWaitKey(1) == 27) 
             break;
+
+        count++;
     }
 
     double duration = (getMilliCount() - start) / 1000.;
-
-    int count = cap.getCount();
 
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 

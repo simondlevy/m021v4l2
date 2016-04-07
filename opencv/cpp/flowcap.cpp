@@ -60,10 +60,10 @@ int main(int argc, char** argv)
         //cap >> frame;
         ColorBalance(frame, bright, COLORBALANCE);
 
-        cvtColor(bright, gray, COLOR_BGR2GRAY);
+        //cvtColor(bright, gray, COLOR_BGR2GRAY);
 
-        if( !prevgray.empty() )
-        {
+        if(true) {// !prevgray.empty() ) {
+        
            /* calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
             drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));*/
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
         if(waitKey(1)>=0)
             break;
 
-        std::swap(prevgray, gray);
+        //std::swap(prevgray, gray);
     }
     double duration = (getMilliCount() - start) / 1000.;
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
