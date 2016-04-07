@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             imshow("flow", cflow);
         }
 
-        if(waitKey(30)>=0)
+        if(waitKey(1)>=0)
             break;
 
         std::swap(prevgray, gray);
