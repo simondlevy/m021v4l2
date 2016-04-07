@@ -12,6 +12,13 @@ using namespace std;
 
 static const float COLORBALANCE = 0.5;
 
+static const double PYRSCALE   = 0.5;
+static const int    LEVELS     = 3;
+static const int    WINSIZE    = 15;
+static const int    ITERATIONS = 3;
+static const int    POLY_N     = 5;
+static const double POLY_SIGMA = 1.2;
+
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
                     double, const Scalar& color)
 {
@@ -43,7 +50,7 @@ int main(int argc, char** argv)
 
         if( !prevgray.empty() )
         {
-            calcOpticalFlowFarneback(prevgray, gray, uflow, 0.5, 3, 15, 3, 5, 1.2, 0);
+            calcOpticalFlowFarneback(prevgray, gray, uflow, PYRSCALE, LEVELS, 15, 3, 5, 1.2, 0);
             cvtColor(prevgray, cflow, COLOR_GRAY2BGR);
             uflow.copyTo(flow);
             drawOptFlowMap(flow, cflow, 16, 1.5, Scalar(0, 255, 0));
