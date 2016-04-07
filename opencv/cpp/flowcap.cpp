@@ -49,16 +49,15 @@ int main(int argc, char** argv)
 {
     //VideoCapture cap(0);
 
-    Mat flow, cflow, frame, bright;
-    Mat gray, prevgray, uflow;
+    Mat flow, cflow, frame, bright, gray, prevgray, uflow;
     
     M021_800x460_Capture cap(frame);
 
     int start = getMilliCount();
     int count = 0;
 
-    for(;;)
-    {
+    while (true) {
+
         //cap >> frame;
         ColorBalance(frame, bright, COLORBALANCE);
 
