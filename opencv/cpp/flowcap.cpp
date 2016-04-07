@@ -17,9 +17,9 @@ static const float COLORBALANCE = 0.5;
 
 static const double PYRSCALE   = 0.5;
 static const int    LEVELS     = 3;
-static const int    WINSIZE    = 15;
-static const int    ITERATIONS = 3;
-static const int    POLY_N     = 5;
+static const int    WINSIZE    = 10;
+static const int    ITERATIONS = 2;
+static const int    POLY_N     = 2;
 static const double POLY_SIGMA = 1.2;
 
 // http://codepad.org/qPsNtwzp
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 {
     //VideoCapture cap(0);
 
-    Mat flow, frame, bright, gray, prevgray;
+    Mat flow, frame, frame2, bright, gray, prevgray;
     
     M021_800x460_Capture cap(frame);
 
@@ -58,15 +58,16 @@ int main(int argc, char** argv)
     while (true) {
 
         //cap >> frame;
-        ColorBalance(frame, bright, COLORBALANCE);
+        resize(frame, frame2, Size(400, 230));
+        ColorBalance(frame2, bright, COLORBALANCE);
 
-        //cvtColor(bright, gray, COLOR_BGR2GRAY);
+        cvtColor(bright, gray, COLOR_BGR2GRAY);
 
-        if(true) {// !prevgray.empty() ) {
+        if(!prevgray.empty() ) {
         
-           /* calcOpticalFlowFarneback(prevgray, gray, flow, 
+            calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
-            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));*/
+            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));
             imshow("flow", bright);
             count++;
         }
@@ -74,7 +75,7 @@ int main(int argc, char** argv)
         if(waitKey(1)>=0)
             break;
 
-        //std::swap(prevgray, gray);
+        std::swap(prevgray, gray);
     }
     double duration = (getMilliCount() - start) / 1000.;
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
