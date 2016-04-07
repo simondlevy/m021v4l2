@@ -8,6 +8,9 @@ using namespace cv;
 using namespace std;
 
 #include "m021_v4l2_opencv.hpp"
+#include "colorbalance.hpp"
+
+static const float COLORBALANCE = 0.5;
 
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
                     double, const Scalar& color)
@@ -26,7 +29,7 @@ int main(int argc, char** argv)
 {
     //VideoCapture cap(0);
 
-    Mat flow, cflow, frame;
+    Mat flow, cflow, frame, bright;
     Mat gray, prevgray, uflow;
     
     M021_800x460_Capture cap(frame);
@@ -34,7 +37,9 @@ int main(int argc, char** argv)
     for(;;)
     {
         //cap >> frame;
-        cvtColor(frame, gray, COLOR_BGR2GRAY);
+        ColorBalance(frame, bright, COLORBALANCE);
+
+        cvtColor(bright, gray, COLOR_BGR2GRAY);
 
         if( !prevgray.empty() )
         {
