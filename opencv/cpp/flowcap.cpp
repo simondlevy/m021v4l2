@@ -24,15 +24,16 @@ static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
 
 int main(int argc, char** argv)
 {
-    VideoCapture cap(0);
+    //VideoCapture cap(0);
 
     Mat flow, cflow, frame;
     Mat gray, prevgray, uflow;
-    namedWindow("flow", 1);
+    
+    M021_800x460_Capture cap(frame);
 
     for(;;)
     {
-        cap >> frame;
+        //cap >> frame;
         cvtColor(frame, gray, COLOR_BGR2GRAY);
 
         if( !prevgray.empty() )
@@ -43,8 +44,10 @@ int main(int argc, char** argv)
             drawOptFlowMap(flow, cflow, 16, 1.5, Scalar(0, 255, 0));
             imshow("flow", cflow);
         }
+
         if(waitKey(30)>=0)
             break;
+
         std::swap(prevgray, gray);
     }
     return 0;
