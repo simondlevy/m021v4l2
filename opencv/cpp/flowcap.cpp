@@ -31,7 +31,7 @@ using namespace std;
 
 #include "m021_v4l2_opencv.hpp"
 
-static const int SCALEDOWN = 1; 
+static const int SCALEDOWN = 2; 
 
 static int getMilliCount(void){
 
@@ -70,7 +70,6 @@ int main()
 
             Mat flow;
             calcOpticalFlowFarneback(prevgray, gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
-
             drawOptFlowMap(flow, img, 20, CV_RGB(0, 255, 0));
 
             count++;

@@ -26,6 +26,7 @@ using namespace cv;
 #include <sys/timeb.h>
 
 #include "m021_v4l2_opencv.hpp"
+#include "colorbalance.hpp"
 
 // http://codepad.org/qPsNtwzp
 static int getMilliCount(void){
@@ -34,57 +35,6 @@ static int getMilliCount(void){
     ftime(&tb);
     int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
     return nCount;
-}
-
-// http://www.codepool.biz/image-processing-opencv-gamma-correction.html
-static void GammaCorrection(Mat& src, Mat& dst, float fGamma)
-{
-
-    unsigned char lut[256];
-
-    for (int i = 0; i < 256; i++) {
-
-        lut[i] = saturate_cast<uchar>(pow((float)(i / 255.0), fGamma) * 255.0f);
-    }
-
-    dst = src.clone();
-
-    MatIterator_<Vec3b> it, end;
-
-    for (it = dst.begin<Vec3b>(), end = dst.end<Vec3b>(); it != end; it++) {
-        (*it)[0] = lut[((*it)[0])];
-        (*it)[1] = lut[((*it)[1])];
-        (*it)[2] = lut[((*it)[2])];
-    }
-}
-
-// http://www.morethantechnical.com/2015/01/14/simplest-color-balance-with-opencv-wcode/
-static void SimplestCB(Mat& in, Mat& out, float percent) {
-
-    assert(in.channels() == 3);
-    assert(percent > 0 && percent < 100);
-
-    float half_percent = percent / 200.0f;
-
-    vector<Mat> tmpsplit; split(in,tmpsplit);
-
-    for(int i=0;i<3;i++) {
-
-        //find the low and high precentile values (based on the input percentile)
-        Mat flat; tmpsplit[i].reshape(1,1).copyTo(flat);
-        cv::sort(flat,flat,CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
-        int lowval = flat.at<uchar>(cvFloor(((float)flat.cols) * half_percent));
-        int highval = flat.at<uchar>(cvCeil(((float)flat.cols) * (1.0 - half_percent)));
-
-        //saturate below the low percentile and above the high percentile
-        tmpsplit[i].setTo(lowval,tmpsplit[i] < lowval);
-        tmpsplit[i].setTo(highval,tmpsplit[i] > highval);
-
-        //scale the channel
-        normalize(tmpsplit[i],tmpsplit[i],0,255,NORM_MINMAX);
-    }
-
-    merge(tmpsplit,out);
 }
 
 int main()
@@ -99,11 +49,9 @@ int main()
 
     while (true) {
 
-        SimplestCB(src, dst1, 25);
-
-        GammaCorrection(dst1, dst2, 0.95);
-
-        imshow("LI-USB30-M021", dst2);
+        ColorBalance(src, dst1, 1);
+        
+        imshow("LI-USB30-M021", dst1);
 
         if (cvWaitKey(1) == 27) 
             break;

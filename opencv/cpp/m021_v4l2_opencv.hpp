@@ -32,7 +32,6 @@ class M021_Capture {
 
         ~M021_Capture(void);
 
-
     protected: 
 
         void * data;

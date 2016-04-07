@@ -24,8 +24,9 @@ all: capture flowcap
 cap: capture
 	./capture
 
-capture: capture.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
-	g++ -I ../.. -Wall -o capture capture.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
+capture: capture.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp colorbalance.cpp colorbalance.hpp \
+	../../m021_v4l2.c ../../m021_v4l2.h 
+	g++ -I ../.. -Wall -o capture capture.cpp m021_v4l2_opencv.cpp colorbalance.cpp ../../m021_v4l2.c $(LIBS)
 
 flow: flowcap
 	./flowcap
