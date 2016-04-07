@@ -1,3 +1,23 @@
+/*
+   flowcap.cpp - Optical Flow from image capture  using Leopard Imageing M021 camear on Linux.
+  
+   Copyright (C) 2016 Simon D. Levy
+
+   This file is part of M021_V4L2.
+
+   M021_V4L2 is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   BreezySTM32 is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -14,6 +34,7 @@ using namespace std;
 #include <sys/timeb.h>
 
 static const float COLORBALANCE = 0.5;
+static const int   SCALEDOWN    = 1;
 
 static const double PYRSCALE   = 0.5;
 static const int    LEVELS     = 3;
@@ -58,7 +79,7 @@ int main(int argc, char** argv)
     while (true) {
 
         //cap >> frame;
-        resize(frame, frame2, Size(400, 230));
+        resize(frame, frame2, Size(800>>SCALEDOWN, 460>>SCALEDOWN));
         ColorBalance(frame2, bright, COLORBALANCE);
 
         cvtColor(bright, gray, COLOR_BGR2GRAY);
@@ -77,7 +98,10 @@ int main(int argc, char** argv)
 
         std::swap(prevgray, gray);
     }
+
     double duration = (getMilliCount() - start) / 1000.;
+
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
+
     return 0;
 }
