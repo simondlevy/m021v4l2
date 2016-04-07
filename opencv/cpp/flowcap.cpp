@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 {
     //VideoCapture cap(0);
 
-    Mat flow, cflow, frame, bright, gray, prevgray;
+    Mat flow, frame, bright, gray, prevgray;
     
     M021_800x460_Capture cap(frame);
 
@@ -67,7 +67,6 @@ int main(int argc, char** argv)
         {
             calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
-            cvtColor(prevgray, cflow, COLOR_GRAY2BGR);
             drawOptFlowMap(flow, bright, 16, 1.5, Scalar(0, 255, 0));
             imshow("flow", bright);
             count++;
