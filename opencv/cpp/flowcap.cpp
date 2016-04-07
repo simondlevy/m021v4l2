@@ -64,9 +64,9 @@ int main(int argc, char** argv)
 
         if( !prevgray.empty() )
         {
-            calcOpticalFlowFarneback(prevgray, gray, flow, 
+           /* calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
-            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));
+            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));*/
             imshow("flow", bright);
             count++;
         }
