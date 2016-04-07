@@ -28,6 +28,8 @@ using namespace cv;
 #include "m021_v4l2_opencv.hpp"
 #include "colorbalance.hpp"
 
+static const float COLORBALANCE = 0.5;
+
 // http://codepad.org/qPsNtwzp
 static int getMilliCount(void){
 
@@ -39,19 +41,18 @@ static int getMilliCount(void){
 
 int main()
 {
-    Mat src;
-    Mat dst1;
-    Mat dst2;
+    Mat img;
+    Mat img2;
 
-    M021_800x460_Capture cap(src);
+    M021_800x460_Capture cap(img);
 
     int start = getMilliCount();
 
     while (true) {
 
-        ColorBalance(src, dst1, 1);
+        ColorBalance(img, img2, COLORBALANCE);
         
-        imshow("LI-USB30-M021", dst1);
+        imshow("LI-USB30-M021", img2);
 
         if (cvWaitKey(1) == 27) 
             break;
