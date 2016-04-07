@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 {
     //VideoCapture cap(0);
 
-    Mat flow, cflow, frame, bright, gray, prevgray, uflow;
+    Mat flow, cflow, frame, bright, gray, prevgray;
     
     M021_800x460_Capture cap(frame);
 
@@ -65,12 +65,11 @@ int main(int argc, char** argv)
 
         if( !prevgray.empty() )
         {
-            calcOpticalFlowFarneback(prevgray, gray, uflow, 
+            calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
             cvtColor(prevgray, cflow, COLOR_GRAY2BGR);
-            uflow.copyTo(flow);
-            drawOptFlowMap(flow, cflow, 16, 1.5, Scalar(0, 255, 0));
-            imshow("flow", cflow);
+            drawOptFlowMap(flow, bright, 16, 1.5, Scalar(0, 255, 0));
+            imshow("flow", bright);
             count++;
         }
 
