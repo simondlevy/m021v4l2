@@ -50,7 +50,8 @@ int main(int argc, char** argv)
 
         if( !prevgray.empty() )
         {
-            calcOpticalFlowFarneback(prevgray, gray, uflow, PYRSCALE, LEVELS, 15, 3, 5, 1.2, 0);
+            calcOpticalFlowFarneback(prevgray, gray, uflow, 
+                PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
             cvtColor(prevgray, cflow, COLOR_GRAY2BGR);
             uflow.copyTo(flow);
             drawOptFlowMap(flow, cflow, 16, 1.5, Scalar(0, 255, 0));
