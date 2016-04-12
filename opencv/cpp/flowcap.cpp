@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     M021_800x460_Capture cap(frame);
 
     int start = getMilliCount();
-    int count = 0;
+    int flowcount = 0;
 
     while (true) {
 
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
             drawOptFlowMap(flow, frame2, 16, Scalar(0, 255, 0));
             imshow("flow", frame2);
-            count++;
+            flowcount++;
         }
 
         if(waitKey(1)>=0)
@@ -93,6 +93,10 @@ int main(int argc, char** argv)
     }
 
     double duration = (getMilliCount() - start) / 1000.;
+
+    int capcount = cap.getCount();
+
+    int count = capcount > flowcount ? flowcount : capcount;
 
     printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
 
