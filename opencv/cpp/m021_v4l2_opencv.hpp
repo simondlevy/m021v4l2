@@ -26,13 +26,17 @@ using namespace cv;
 
 class M021_Capture {
 
+    private:
+
+        int bcorrect;
+        int gcorrect;
+        int rcorrect;
+
     protected:
 
         M021_Capture(Mat & mat, int width, int height);
 
         ~M021_Capture(void);
-
-    protected: 
 
         void * data;
 
