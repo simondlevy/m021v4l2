@@ -102,6 +102,9 @@ int m021_grab_yuyv(m021_t * m021, uint8_t * frame);
   * Grabs a BGR image from the M021 camera.
   * @param m021 m021_t data structure intialized by m021_init
   * @param frame pre-allocated image frame buffer of appropriate size
+  * @param bcorrect color correction for blue
+  * @param gcorrect color correction for green
+  * @param rcorrect color correction for red
   * @return 0 on success, nonzero on error (see error codes in m021_v4l2.h)
   * This routine should be called a separate thread from the thread on which m021_init was called.
   */

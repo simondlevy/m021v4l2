@@ -26,7 +26,6 @@ using namespace cv;
 #include <sys/timeb.h>
 
 #include "m021_v4l2_opencv.hpp"
-#include "colorbalance.hpp"
 
 // http://codepad.org/qPsNtwzp
 static int getMilliCount(void){
