@@ -766,7 +766,7 @@ static void color_correct(uint8_t * bgr, int width, int height)
     for (int k=0; k<width*height*3; k+=3) {
         add(&bgr[k],   40);
         sub(&bgr[k+1], 20);
-        add(&bgr[k+2], 40);
+        add(&bgr[k+2], 30);
     }
 }
 
