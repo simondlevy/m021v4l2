@@ -87,7 +87,7 @@ typedef struct m021 {
   * This routine should be called on its own thread, separate from the thread on which the
   * grab routines are called.
   */
-int m021_init(int id, m021_t * m021, int widht, int height);
+int m021_init(int id, m021_t * m021, int width, int height);
 
 /**
   * Grabs a YUYV image from the M021 camera.
@@ -105,7 +105,7 @@ int m021_grab_yuyv(m021_t * m021, uint8_t * frame);
   * @return 0 on success, nonzero on error (see error codes in m021_v4l2.h)
   * This routine should be called a separate thread from the thread on which m021_init was called.
   */
-int m021_grab_bgr(m021_t * m021, uint8_t * frame);
+int m021_grab_bgr(m021_t * m021, uint8_t * frame, int8_t bcorrect, int8_t gcorrect, int8_t rcorrect);
 
 /**
   * Frees storage allocated for m021 data structure.

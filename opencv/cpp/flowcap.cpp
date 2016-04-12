@@ -28,7 +28,6 @@ using namespace cv;
 using namespace std;
 
 #include "m021_v4l2_opencv.hpp"
-#include "colorbalance.hpp"
 
 #include <stdio.h>
 #include <sys/timeb.h>
@@ -65,7 +64,7 @@ static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scala
 
 int main(int argc, char** argv)
 {
-    Mat flow, frame, frame2, bright, gray, prevgray;
+    Mat flow, frame, frame2, gray, prevgray;
     
     M021_800x460_Capture cap(frame);
 
@@ -75,16 +74,15 @@ int main(int argc, char** argv)
     while (true) {
 
         resize(frame, frame2, Size(800>>SCALEDOWN, 460>>SCALEDOWN));
-        ColorBalance(frame2, bright);
 
-        cvtColor(bright, gray, COLOR_BGR2GRAY);
+        cvtColor(frame2, gray, COLOR_BGR2GRAY);
 
         if(!prevgray.empty() ) {
         
             calcOpticalFlowFarneback(prevgray, gray, flow, 
                 PYRSCALE, LEVELS, WINSIZE, ITERATIONS, POLY_N, POLY_SIGMA, 0);
-            drawOptFlowMap(flow, bright, 16, Scalar(0, 255, 0));
-            imshow("flow", bright);
+            drawOptFlowMap(flow, frame2, 16, Scalar(0, 255, 0));
+            imshow("flow", frame2);
             count++;
         }
 

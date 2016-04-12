@@ -48,7 +48,7 @@ static void * loop(void * arg)
 
         pthread_mutex_lock(&lock);
 
-        m021_grab_bgr(&cap, mat.data);
+        m021_grab_bgr(&cap, mat.data, 50, -20, 30);
 
         pthread_mutex_unlock(&lock);
 

@@ -763,12 +763,12 @@ static void add(uint8_t * val, int8_t inc)
         * val = newval;
 }
 
-static void color_correct(uint8_t * bgr, int width, int height)
+static void color_correct(uint8_t * bgr, int width, int height, int8_t bcorrect, int8_t gcorrect, int8_t rcorrect)
 {
     for (int k=0; k<width*height*3; k+=3) {
-        add(&bgr[k],   +50);
-        add(&bgr[k+1], -20);
-        add(&bgr[k+2], +30);
+        add(&bgr[k],   bcorrect);
+        add(&bgr[k+1], gcorrect);
+        add(&bgr[k+2], rcorrect);
     }
 }
 
@@ -858,14 +858,14 @@ int m021_grab_yuyv(m021_t * vd, uint8_t * frame)
     return ret;
 }
 
-int m021_grab_bgr(m021_t * vd, uint8_t *frame)
+int m021_grab_bgr(m021_t * vd, uint8_t * frame, int8_t bcorrect, int8_t gcorrect, int8_t rcorrect)
 {
     int ret = m021_grab(vd);
 
     if (!ret) {
         bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
         bayer_to_bgr24(vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
-        color_correct(vd->tmpbuffer, vd->width, vd->height);
+        color_correct(vd->tmpbuffer, vd->width, vd->height, bcorrect, gcorrect, rcorrect);
         memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
     }
 
