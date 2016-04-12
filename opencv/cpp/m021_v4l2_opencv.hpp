@@ -80,7 +80,8 @@ class M021_800x460_Capture : public M021_Capture{
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
           */
-         M021_800x460_Capture(Mat & mat): M021_Capture(mat, 800, 460, 0, 0, 0) {}
+         M021_800x460_Capture(Mat & mat, int bcorrect=0, int gcorrect=0, int rcorrect=0): 
+             M021_Capture(mat, 800, 460, bcorrect, gcorrect, rcorrect) {}
 
          /**
            * Returns the count of image frames captured thus far.
