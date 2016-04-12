@@ -21,7 +21,6 @@
    along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -750,6 +749,27 @@ int m021_grab(m021_t * common)
     return ret;
 }
 
+static void add(uint8_t * val, uint8_t inc)
+{
+    uint16_t hi = *val + inc;
+    *val = hi > 255 ? 255 : hi;
+}
+
+static void sub(uint8_t * val, uint8_t dec)
+{
+    int16_t lo = *val - dec;
+    *val = lo < 0 ? 0 : lo;
+}
+
+static void color_correct(uint8_t * bgr, int width, int height)
+{
+    for (int k=0; k<width*height*3; k+=3) {
+        add(&bgr[k],   40);
+        sub(&bgr[k+1], 20);
+        add(&bgr[k+2], 40);
+    }
+}
+
 // =============================================================================================
 
 int m021_init(int id, m021_t * vd, int width, int height)
@@ -843,6 +863,7 @@ int m021_grab_bgr(m021_t * vd, uint8_t *frame)
     if (!ret) {
         bayer16_convert_bayer8((int16_t *)vd->mem[vd->buf.index], vd->tmpbuffer1, vd->width, vd->height, 4);
         bayer_to_bgr24(vd->tmpbuffer1, vd->tmpbuffer, vd->width, vd->height);
+        color_correct(vd->tmpbuffer, vd->width, vd->height);
         memcpy(frame, vd->tmpbuffer, vd->width * vd->height * 3);
     }
 

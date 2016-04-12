@@ -51,7 +51,6 @@ static int getMilliCount(void){
     return nCount;
 }
 
-
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scalar& color)
 {
     for(int y = 0; y < cflowmap.rows; y += step)
@@ -66,8 +65,6 @@ static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scala
 
 int main(int argc, char** argv)
 {
-    //VideoCapture cap(0);
-
     Mat flow, frame, frame2, bright, gray, prevgray;
     
     M021_800x460_Capture cap(frame);
@@ -77,7 +74,6 @@ int main(int argc, char** argv)
 
     while (true) {
 
-        //cap >> frame;
         resize(frame, frame2, Size(800>>SCALEDOWN, 460>>SCALEDOWN));
         ColorBalance(frame2, bright);
 

@@ -6,7 +6,9 @@ void ColorBalance(Mat& src, Mat& dst) {
 
     assert(src.channels() == 3);
 
-    vector<Mat> tmpsplit; split(src, tmpsplit);
+    vector<Mat> tmpsplit; 
+
+    split(src, tmpsplit);
 
     int lows[3]  = {18, 18,  18};
     int highs[3] = {75, 142, 125};
@@ -20,7 +22,7 @@ void ColorBalance(Mat& src, Mat& dst) {
         int highval = highs[i]; 
 
         //saturate below the low percentile and above the high
-        tmpsplit[i].setTo(lowval,tmpsplit[i] < lowval);
+        tmpsplit[i].setTo(lowval, tmpsplit[i] < lowval);
         tmpsplit[i].setTo(highval,tmpsplit[i] > highval);
 
         //scale the channel
