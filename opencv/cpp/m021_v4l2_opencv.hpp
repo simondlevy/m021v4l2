@@ -34,7 +34,7 @@ class M021_Capture {
 
     protected:
 
-        M021_Capture(Mat & mat, int width, int height);
+        M021_Capture(Mat & mat, int width, int height, int bcorrect, int gcorrect, int rcorrect);
 
         ~M021_Capture(void);
 
@@ -59,7 +59,7 @@ class M021_1280x720_Capture : public M021_Capture{
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
           */
-        M021_1280x720_Capture(Mat & mat) : M021_Capture(mat, 1280, 720) {}
+        M021_1280x720_Capture(Mat & mat) : M021_Capture(mat, 1280, 720, 0, 0, 0) {}
 
          /**
            * Returns the count of image frames captured thus far.
@@ -80,7 +80,7 @@ class M021_800x460_Capture : public M021_Capture{
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
           */
-         M021_800x460_Capture(Mat & mat): M021_Capture(mat, 800, 460) {}
+         M021_800x460_Capture(Mat & mat): M021_Capture(mat, 800, 460, 0, 0, 0) {}
 
          /**
            * Returns the count of image frames captured thus far.
@@ -101,7 +101,7 @@ class M021_640x480_Capture : public M021_Capture{
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
           */
-         M021_640x480_Capture(Mat & mat) : M021_Capture(mat, 640, 480) {}
+         M021_640x480_Capture(Mat & mat) : M021_Capture(mat, 640, 480, 0, 0, 0) {}
 
          /**
            * Returns the count of image frames captured thus far.

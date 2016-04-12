@@ -60,7 +60,11 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-M021_Capture::M021_Capture(Mat & mat, int width, int height) {
+M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int gcorrect, int rcorrect)
+{
+    this->bcorrect = bcorrect;
+    this->gcorrect = gcorrect;
+    this->rcorrect = rcorrect;
 
     mat = Mat(height, width, CV_8UC3);
 
