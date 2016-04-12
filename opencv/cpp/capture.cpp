@@ -28,8 +28,6 @@ using namespace cv;
 #include "m021_v4l2_opencv.hpp"
 #include "colorbalance.hpp"
 
-static const float COLORBALANCE = 0.5;
-
 // http://codepad.org/qPsNtwzp
 static int getMilliCount(void){
 
@@ -52,7 +50,7 @@ int main()
 
     while (true) {
 
-        ColorBalance(img, img2, COLORBALANCE);
+        ColorBalance(img, img2);
         
         imshow("LI-USB30-M021", img2);
 

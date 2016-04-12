@@ -3,6 +3,6 @@ using namespace cv;
 
 void GammaCorrect(Mat& src, Mat& dst, float fGamma);
 
-void ColorBalance(Mat& src, Mat& dst, float percent);
+void ColorBalance(Mat& src, Mat& dst);
 
 

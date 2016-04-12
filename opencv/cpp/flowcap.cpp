@@ -33,7 +33,6 @@ using namespace std;
 #include <stdio.h>
 #include <sys/timeb.h>
 
-static const float COLORBALANCE = 0.5;
 static const int   SCALEDOWN    = 1;
 
 static const double PYRSCALE   = 0.5;
@@ -80,7 +79,7 @@ int main(int argc, char** argv)
 
         //cap >> frame;
         resize(frame, frame2, Size(800>>SCALEDOWN, 460>>SCALEDOWN));
-        ColorBalance(frame2, bright, COLORBALANCE);
+        ColorBalance(frame2, bright);
 
         cvtColor(bright, gray, COLOR_BGR2GRAY);
 
