@@ -49,14 +49,10 @@ int main()
 
     while (true) {
 
-        //ColorBalance(img, img2);
-        
         imshow("LI-USB30-M021", img);
 
         if (cvWaitKey(1) == 27) 
             break;
-
-        //count++;
     }
 
     count = cap.getCount();

@@ -32,7 +32,7 @@ using namespace std;
 #include <stdio.h>
 #include <sys/timeb.h>
 
-static const int   SCALEDOWN    = 1;
+static const int   SCALEDOWN   = 2;
 
 static const double PYRSCALE   = 0.5;
 static const int    LEVELS     = 3;
