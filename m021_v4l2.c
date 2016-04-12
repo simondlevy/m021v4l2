@@ -749,24 +749,26 @@ int m021_grab(m021_t * common)
     return ret;
 }
 
-static void add(uint8_t * val, uint8_t inc)
+static void add(uint8_t * val, int8_t inc)
 {
-    uint16_t hi = *val + inc;
-    *val = hi > 255 ? 255 : hi;
-}
+    int16_t newval = *val + inc;
 
-static void sub(uint8_t * val, uint8_t dec)
-{
-    int16_t lo = *val - dec;
-    *val = lo < 0 ? 0 : lo;
+    if (newval < 0)
+       *val = 0;
+
+    else if (newval > 255)
+        *val = 255;
+
+    else 
+        * val = newval;
 }
 
 static void color_correct(uint8_t * bgr, int width, int height)
 {
     for (int k=0; k<width*height*3; k+=3) {
-        add(&bgr[k],   40);
-        sub(&bgr[k+1], 20);
-        add(&bgr[k+2], 30);
+        add(&bgr[k],   +50);
+        add(&bgr[k+1], -20);
+        add(&bgr[k+2], +30);
     }
 }
 
