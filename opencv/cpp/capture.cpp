@@ -1,5 +1,5 @@
 /*
-   capture.cpp - Simple demo of OpenCV image capture using Leopard Imageing M021 camear on Linux.
+   capture.cpp - Simple demo of OpenCV image capture using Leopard Imageing M021 camera on Linux.
   
    Copyright (C) 2016 Simon D. Levy
 
