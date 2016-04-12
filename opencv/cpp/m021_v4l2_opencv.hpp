@@ -58,8 +58,12 @@ class M021_1280x720_Capture : public M021_Capture{
           * Constructs an object for 1280x720 capture.
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
+          * @param bcorrect correction offset for blue component
+          * @param rcorrect correction offset for green component
+          * @param gcorrect correction offset for red component
           */
-        M021_1280x720_Capture(Mat & mat) : M021_Capture(mat, 1280, 720, 0, 0, 0) {}
+        M021_1280x720_Capture(Mat & mat, int bcorrect=50, int gcorrect=0, int rcorrect=50) : 
+            M021_Capture(mat, 1280, 720, bcorrect, gcorrect, rcorrect) {}
 
          /**
            * Returns the count of image frames captured thus far.
@@ -79,6 +83,9 @@ class M021_800x460_Capture : public M021_Capture{
           * Constructs an object for 800x460 capture.
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
+          * @param bcorrect correction offset for blue component
+          * @param rcorrect correction offset for green component
+          * @param gcorrect correction offset for red component
           */
          M021_800x460_Capture(Mat & mat, int bcorrect=50, int gcorrect=0, int rcorrect=50): 
              M021_Capture(mat, 800, 460, bcorrect, gcorrect, rcorrect) {}
@@ -101,8 +108,12 @@ class M021_640x480_Capture : public M021_Capture{
           * Constructs an object for 640x480 capture.
           * Launches a new thread for running the capture.
           * @param mat Empty Mat that will be allocated by this constructor and filled with successive image frames.
+          * @param bcorrect correction offset for blue component
+          * @param rcorrect correction offset for green component
+          * @param gcorrect correction offset for red component
           */
-         M021_640x480_Capture(Mat & mat) : M021_Capture(mat, 640, 480, 0, 0, 0) {}
+         M021_640x480_Capture(Mat & mat, int bcorrect=50, int gcorrect=0, int rcorrect=50) : 
+             M021_Capture(mat, 640, 480, bcorrect, gcorrect, rcorrect) {}
 
          /**
            * Returns the count of image frames captured thus far.
