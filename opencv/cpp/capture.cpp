@@ -41,7 +41,8 @@ int main()
     Mat img;
     Mat img2;
 
-    M021_800x460_Capture cap(img);
+    //M021_800x460_Capture cap(img);
+    M021_640x480_Capture cap(img);
 
     int start = getMilliCount();
 

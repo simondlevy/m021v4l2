@@ -32,7 +32,7 @@ using namespace std;
 #include <stdio.h>
 #include <sys/timeb.h>
 
-static const int   SCALEDOWN   = 1;
+static const int   SCALEDOWN   = 2;
 
 static const double PYRSCALE   = 0.5;
 static const int    LEVELS     = 3;
@@ -52,20 +52,28 @@ static int getMilliCount(void){
 
 static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scalar& color)
 {
+    double fx = 0;
+    double fy = 0;
+
     for(int y = 0; y < cflowmap.rows; y += step)
         for(int x = 0; x < cflowmap.cols; x += step)
         {
             const Point2f& fxy = flow.at<Point2f>(y, x);
-            line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)),
-                 color);
+            fx += fxy.x;
+            fy += fxy.y;
+            line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), color);
             circle(cflowmap, Point(x,y), 2, color, -1);
         }
+
+    printf("%4d %4d\r", (int)fx, (int)fy);
+    fflush(stdout);
 }
 
 int main(int argc, char** argv)
 {
     Mat flow, frame, frame2, gray, prevgray;
     
+    //M021_800x460_Capture cap(frame);
     M021_800x460_Capture cap(frame);
 
     int start = getMilliCount();
@@ -73,7 +81,7 @@ int main(int argc, char** argv)
 
     while (true) {
 
-        resize(frame, frame2, Size(800>>SCALEDOWN, 460>>SCALEDOWN));
+        resize(frame, frame2, Size(frame.cols>>SCALEDOWN, frame.rows>>SCALEDOWN));
 
         cvtColor(frame2, gray, COLOR_BGR2GRAY);
 
@@ -98,7 +106,7 @@ int main(int argc, char** argv)
 
     int count = capcount > flowcount ? flowcount : capcount;
 
-    printf("%d frames in %3.3f seconds = %3.3f frames /sec \n", count, duration, count/duration);
+    printf("%d (%d) frames in %3.3f seconds = %3.3f frames /sec \n", count, flowcount, duration, count/duration);
 
     return 0;
 }

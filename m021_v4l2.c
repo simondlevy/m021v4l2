@@ -478,15 +478,18 @@ static int check_videoIn(const char * devicename, m021_t *vd)
 	fival.width = 800;
 	fival.height = 460;
 
-	xioctl(vd->fd, VIDIOC_ENUM_FRAMEINTERVALS, &fival);
-	printf("%u/%u, ", fival.discrete.numerator, fival.discrete.denominator);
-	
-	return VDIN_OK;
+    while (xioctl(vd->fd, VIDIOC_ENUM_FRAMEINTERVALS, &fival) == 0) {
+        fival.index++;
+        printf("%u/%u, ", fival.discrete.numerator, fival.discrete.denominator);
+        fflush(stdout);
+    }
+
+    return VDIN_OK;
 }
 
 static int unmap_buff(m021_t *vd)
 {
-	int i=0;
+    int i=0;
     int ret=0;
 
     for (i = 0; i < NB_BUFFER; i++)
