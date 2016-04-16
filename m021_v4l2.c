@@ -471,6 +471,16 @@ static int check_videoIn(const char * devicename, m021_t *vd)
 
 	printf("Init. %s (location: %s)\n", vd->cap.card, vd->cap.bus_info);
 
+	struct v4l2_frmivalenum fival;
+	memset(&fival, 0, sizeof(fival));
+	fival.index = 0;
+	fival.pixel_format = 1448695129;
+	fival.width = 800;
+	fival.height = 460;
+
+	xioctl(vd->fd, VIDIOC_ENUM_FRAMEINTERVALS, &fival);
+	printf("%u/%u, ", fival.discrete.numerator, fival.discrete.denominator);
+	
 	return VDIN_OK;
 }
 
