@@ -21,6 +21,7 @@
 
 #include "Python.h"
 #include "numpy/arrayobject.h"
+#include "m021_v4l2.h"
 
 #include <stdio.h>
 
