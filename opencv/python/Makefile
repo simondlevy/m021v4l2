@@ -19,6 +19,5 @@
 clean:
 	rm -rf build *.pyc *~
 
-commit:
-	git commit -a --allow-empty-message -m '' 
-	git push
+install:
+	python setup.py install
