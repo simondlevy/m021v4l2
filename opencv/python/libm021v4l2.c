@@ -22,8 +22,17 @@
 #include "Python.h"
 #include "numpy/arrayobject.h"
 
+#include <stdio.h>
+
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
+    int rows, cols;
+
+    if (!PyArg_ParseTuple(args, "ii", &rows, &cols))
+        return NULL;
+
+    printf("%d %d\n", rows, cols);
+
     Py_INCREF(Py_None);
     return Py_None;
 }

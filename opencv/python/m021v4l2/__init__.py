@@ -25,7 +25,7 @@ class Capture1280x720:
 
     def __init__(self):
 
-        lib.init() 
+        lib.init(720, 1280) 
 
     def read(self):
 
