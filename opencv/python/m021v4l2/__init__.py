@@ -23,9 +23,9 @@ import libm021v4l2 as lib
 
 class Capture1280x720:
 
-    def __init__(self):
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
-        lib.init(720, 1280) 
+        lib.init(720, 1280, bcorrect, gcorrect, rcorrect) 
 
     def read(self):
 

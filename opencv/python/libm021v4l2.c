@@ -27,11 +27,12 @@
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
     int rows, cols;
+    int bcorrect, gcorrect, rcorrect;
 
-    if (!PyArg_ParseTuple(args, "ii", &rows, &cols))
+    if (!PyArg_ParseTuple(args, "iiiii", &rows, &cols, &bcorrect, &gcorrect, &rcorrect))
         return NULL;
 
-    printf("%d %d\n", rows, cols);
+    printf("%d %d %d %d %d\n", rows, cols, bcorrect, gcorrect, rcorrect);
 
     Py_INCREF(Py_None);
     return Py_None;
