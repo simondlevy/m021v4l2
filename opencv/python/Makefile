@@ -17,7 +17,7 @@
 # along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
 clean:
-	rm -f *.pyc *~
+	rm -rf build *.pyc *~
 
 commit:
 	git commit -a --allow-empty-message -m '' 
