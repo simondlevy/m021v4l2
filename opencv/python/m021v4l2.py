@@ -1,4 +1,5 @@
 import numpy as np
+import libm021v4l2 as lib
 
 class Capture1280x720:
 
@@ -8,7 +9,11 @@ class Capture1280x720:
 
     def read(self):
 
-        return True, np.zeros((720,1280,3))
+        frame = np.zeros((720,1280,3), dtype='uint8')
+
+        lib.acquire(frame)
+
+        return True, frame
 
     def release(self):
 

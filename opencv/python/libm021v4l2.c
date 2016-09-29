@@ -3,31 +3,31 @@
 
 static PyObject* acquire (PyObject *dummy, PyObject *args)
 {
-    PyObject *out=NULL;
-    PyArrayObject *oarr=NULL;
+    PyObject * obj = NULL;
+    PyArrayObject * arr = NULL;
 
-    if (!PyArg_ParseTuple(args, "O!", &PyArray_Type, &out)) return NULL;
+    if (!PyArg_ParseTuple(args, "O!", &PyArray_Type, &obj)) return NULL;
 
-    oarr = (PyArrayObject*)PyArray_FROM_OTF(out, NPY_DOUBLE, NPY_INOUT_ARRAY);
-    if (oarr == NULL) goto fail;
+    arr = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
 
-    /*vv* code that makes use of arguments *vv*/
+    if (arr == NULL) {
+        PyArray_XDECREF_ERR(arr);
+        return NULL;
+    }
 
-    for (int i=0; i<oarr->dimensions[0]; ++i) {
-        for (int j=0; j<oarr->dimensions[1]; ++j) {
-            double *v = (double*)PyArray_GETPTR2(oarr, i, j);
-            *v = *v * 2;
+
+    for (int i=0; i<arr->dimensions[0]; ++i) {
+        for (int j=0; j<arr->dimensions[1]; ++j) {
+            for (int k=0; k<arr->dimensions[2]; ++k) {
+                uint8_t *v = (uint8_t*)PyArray_GETPTR3(arr, i, j, k);
+                *v = 100;
+            }
         }
     }
-    /*^^* code that makes use of arguments *^^*/
 
-    Py_DECREF(oarr);
+    Py_DECREF(arr);
     Py_INCREF(Py_None);
     return Py_None;
-
-fail:
-    PyArray_XDECREF_ERR(oarr);
-    return NULL;
 }
 
 static struct PyMethodDef methods[] = {
@@ -36,8 +36,7 @@ static struct PyMethodDef methods[] = {
 };
 
 
-PyMODINIT_FUNC
-initlibm021v4l2 (void)
+PyMODINIT_FUNC initlibm021v4l2 (void)
 {
     (void)Py_InitModule("libm021v4l2", methods);
     import_array();
