@@ -21,6 +21,9 @@ LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lopencv_imgp
 
 all: capture flowcap
 
+test: capture
+	./capture
+
 cap: capture
 	./capture
 

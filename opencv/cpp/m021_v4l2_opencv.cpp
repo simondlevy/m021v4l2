@@ -26,7 +26,9 @@
 
 typedef struct {
 
-    Mat mat;
+    int rows;
+    int cols;
+    uint8_t * bytes;
     pthread_mutex_t lock;
     unsigned long long count;
     int bcorrect;
@@ -40,10 +42,9 @@ static void * loop(void * arg)
 
     data_t * data = (data_t *)arg;
     pthread_mutex_t lock = data->lock;
-    Mat mat = data->mat;
 
     m021_t cap;
-    m021_init(0, &cap, mat.cols, mat.rows);
+    m021_init(0, &cap, data->cols, data->rows);
 
     data->count = 0;
 
@@ -51,7 +52,7 @@ static void * loop(void * arg)
 
         pthread_mutex_lock(&lock);
 
-        m021_grab_bgr(&cap, mat.data, data->bcorrect, data->gcorrect, data->rcorrect);
+        m021_grab_bgr(&cap, data->bytes, data->bcorrect, data->gcorrect, data->rcorrect);
 
         pthread_mutex_unlock(&lock);
 
@@ -79,7 +80,9 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
     }
 
     data_t * data = new data_t;
-    data->mat = mat;
+    data->rows = mat.rows;
+    data->cols = mat.cols;
+    data->bytes = mat.data;
     data->lock = lock;
     data->bcorrect = bcorrect;
     data->gcorrect = gcorrect;
