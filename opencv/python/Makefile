@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 
-clean:
-	rm -rf build *.pyc *~
-
 install:
 	python setup.py install
+
+clean:
+	rm -rf build *.pyc *~
 
 test:
 	./capture.py

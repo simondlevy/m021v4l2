@@ -22,7 +22,13 @@
 #include "Python.h"
 #include "numpy/arrayobject.h"
 
-static PyObject* acquire (PyObject *dummy, PyObject *args)
+static PyObject * init (PyObject * dummy, PyObject * args)
+{
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject * acquire (PyObject * dummy, PyObject * args)
 {
     PyObject * obj = NULL;
     PyArrayObject * arr = NULL;
@@ -35,7 +41,6 @@ static PyObject* acquire (PyObject *dummy, PyObject *args)
         PyArray_XDECREF_ERR(arr);
         return NULL;
     }
-
 
     for (int i=0; i<arr->dimensions[0]; ++i) {
         for (int j=0; j<arr->dimensions[1]; ++j) {
@@ -52,6 +57,7 @@ static PyObject* acquire (PyObject *dummy, PyObject *args)
 }
 
 static struct PyMethodDef methods[] = {
+    {"init", init, METH_VARARGS, NULL},
     {"acquire", acquire, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
