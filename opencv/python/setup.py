@@ -29,7 +29,8 @@ ext_modules = [ Extension('libm021v4l2', sources = ['libm021v4l2.c']) ]
 
 setup(
         name = 'M021V4L2',
-        version = '1.0',
+        packages = ['m021v4l2'],
+        version = '0.1',
         include_dirs = [np.get_include()], #Add Include path of numpy
         ext_modules = ext_modules
       )

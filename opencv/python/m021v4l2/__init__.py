@@ -1,5 +1,5 @@
 '''
-m021v4l2.py : Python classes for Leopard Imaging LI-USB30-M021 on Linux
+m021v4l2 : Python classes for Leopard Imaging LI-USB30-M021 on Linux
 
 Copyright (C) 2016 Simon D. Levy
 
