@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-capturem021.py : capture frames from Leopard Imaging LI-USB30-M021 camera and display them using OpenCV
+capturem.py : capture frames from Leopard Imaging LI-USB30-M021 camera and display them using OpenCV
 
 Copyright (C) 2016 Simon D. Levy
 

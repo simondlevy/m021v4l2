@@ -23,4 +23,4 @@ install:
 	python setup.py install
 
 test:
-	./capturem021.py
+	./capture.py
