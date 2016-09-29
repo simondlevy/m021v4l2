@@ -21,3 +21,6 @@ clean:
 
 install:
 	python setup.py install
+
+test:
+	./capture.py
