@@ -33,6 +33,11 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
 
     mat = Mat(height, width, CV_8UC3);
 
+    m021_thread_data_t * data = new m021_thread_data_t;
+    this->data = data;
+
+    // -------------------------------
+
     pthread_mutex_t lock;
 
     if (pthread_mutex_init(&lock, NULL) != 0) {
@@ -40,7 +45,6 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
         exit(1);
     }
 
-    thread_data_t * data = new thread_data_t;
     data->rows = mat.rows;
     data->cols = mat.cols;
     data->bytes = mat.data;
@@ -49,9 +53,7 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
     data->gcorrect = gcorrect;
     data->rcorrect = rcorrect;
 
-    this->data = data;
-
-    if (pthread_create(&this->video_thread, NULL, loop, data)) {
+    if (pthread_create(&this->video_thread, NULL, m021_thread_loop, data)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
@@ -64,7 +66,7 @@ M021_Capture::~M021_Capture(void)
 
 unsigned long long M021_Capture::getCount(void) 
 {
-    thread_data_t * data = (thread_data_t *)this->data;
+    m021_thread_data_t * data = (m021_thread_data_t *)this->data;
 
     return data->count;
 }

@@ -32,6 +32,6 @@ typedef struct {
     int gcorrect;
     int rcorrect;
 
-} thread_data_t;
+} m021_thread_data_t;
 
-void * loop(void * arg);
+void * m021_thread_loop(void * arg);

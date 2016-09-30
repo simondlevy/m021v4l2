@@ -21,10 +21,10 @@
 #include "m021_thread_support.h"
 #include "m021_v4l2.h"
 
-void * loop(void * arg)
+void * m021_thread_loop(void * arg)
 {
 
-    thread_data_t * data = (thread_data_t *)arg;
+    m021_thread_data_t * data = (m021_thread_data_t *)arg;
     pthread_mutex_t lock = data->lock;
 
     m021_t cap;

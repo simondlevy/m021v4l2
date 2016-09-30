@@ -22,8 +22,13 @@
 #include "Python.h"
 #include "numpy/arrayobject.h"
 #include "m021_v4l2.h"
+#include "m021_thread_support.h"
 
 #include <stdio.h>
+
+// XXX support just one camera for now
+
+static m021_thread_data_t thread_data;
 
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
