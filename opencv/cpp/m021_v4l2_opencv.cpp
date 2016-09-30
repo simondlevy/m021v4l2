@@ -21,7 +21,7 @@
 
 #include "m021_v4l2.h"
 #include "m021_v4l2_opencv.hpp"
-#include "thread_support.h"
+#include "m021_thread_support.h"
 
 #include <stdio.h>
 
