@@ -18,13 +18,12 @@ the classes are extremely simple to use:
 <pre>
     cap = Capture800x460()
 
-    start = time()
-
     while True:
 
         ret, frame = cap.read()
 
         cv2.imshow('LI-USB30-M021',frame)
+
         if cv2.waitKey(1) & 0xFF == 27:
             break
  </pre>
