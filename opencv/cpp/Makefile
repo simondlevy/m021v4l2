@@ -19,6 +19,8 @@
 LIBS = -L /usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_video \
 	   -lpthread -lv4l2 -ludev
 
+CFLAGS = -Wall
+
 all: capture flowcap
 
 test: capture
@@ -27,17 +29,30 @@ test: capture
 cap: capture
 	./capture
 
-capture: capture.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
-	g++ -I ../.. -Wall -o capture capture.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
+capture: capture.o m021_v4l2_opencv.o m021_v4l2.o m021_thread_support.o
+	g++ -o capture capture.o m021_v4l2_opencv.o m021_v4l2.o m021_thread_support.o $(LIBS)
 
-flow: flowcap
-	./flowcap
+capture.o: capture.cpp
+	g++ $(CFLAGS) -c capture.cpp
 
-flowcap: flowcap.cpp m021_v4l2_opencv.cpp m021_v4l2_opencv.hpp ../../m021_v4l2.c ../../m021_v4l2.h 
-	g++ -I ../.. -Wall -o flowcap flowcap.cpp m021_v4l2_opencv.cpp ../../m021_v4l2.c $(LIBS)
+flowcap: flowcap.o m021_v4l2_opencv.o m021_v4l2.o m021_thread_support.o
+	g++ -o flowcap flowcap.o m021_v4l2_opencv.o m021_v4l2.o m021_thread_support.o $(LIBS)
+
+flowcap.o: flowcap.cpp
+	g++ $(CFLAGS) -c flowcap.cpp
+
+
+m021_v4l2.o: ../../m021_v4l2.c
+	g++ -c -I .. -I ../.. ../../m021_v4l2.c 
+
+m021_v4l2_opencv.o: m021_v4l2_opencv.cpp  
+	g++ -c -I .. -I ../.. m021_v4l2_opencv.cpp 
+
+m021_thread_support.o: ../m021_thread_support.c ../m021_thread_support.h
+	g++ -c -I.. -I../.. ../m021_thread_support.c
 
 clean:
-	rm -rf capture flowcap Documentation *~ 
+	rm -rf capture flowcap *.o Documentation *~ 
 
 edit:
 	vim capture.cpp

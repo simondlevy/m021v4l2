@@ -21,48 +21,9 @@
 
 #include "m021_v4l2.h"
 #include "m021_v4l2_opencv.hpp"
+#include "thread_support.h"
 
 #include <stdio.h>
-
-typedef struct {
-
-    int rows;
-    int cols;
-    uint8_t * bytes;
-    pthread_mutex_t lock;
-    unsigned long long count;
-    int bcorrect;
-    int gcorrect;
-    int rcorrect;
-
-} data_t;
-
-static void * loop(void * arg)
-{
-
-    data_t * data = (data_t *)arg;
-    pthread_mutex_t lock = data->lock;
-
-    m021_t cap;
-    m021_init(0, &cap, data->cols, data->rows);
-
-    data->count = 0;
-
-    while (true) {
-
-        pthread_mutex_lock(&lock);
-
-        m021_grab_bgr(&cap, data->bytes, data->bcorrect, data->gcorrect, data->rcorrect);
-
-        pthread_mutex_unlock(&lock);
-
-        data->count++;
-    }
-
-    m021_free(&cap);
-
-    return (void *)0;
-}
 
 M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int gcorrect, int rcorrect)
 {
@@ -79,7 +40,7 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
         exit(1);
     }
 
-    data_t * data = new data_t;
+    thread_data_t * data = new thread_data_t;
     data->rows = mat.rows;
     data->cols = mat.cols;
     data->bytes = mat.data;
@@ -103,7 +64,7 @@ M021_Capture::~M021_Capture(void)
 
 unsigned long long M021_Capture::getCount(void) 
 {
-    data_t * data = (data_t *)this->data;
+    thread_data_t * data = (thread_data_t *)this->data;
 
     return data->count;
 }
