@@ -28,13 +28,18 @@ the classes are extremely simple to use:
             break
  </pre>
 
-To run the OpenCV capture demo, cd to <b>opencv/cpp</b> and type <b>make
-run</b>.  This program does some post-capture color balancing to compensate for
-the slightly dimmed / green appearance of the image from the camera.
 
-For your own OpenCV projects, I would put the C and C++ files
-(<tt>m021\_v4l2.h</tt>, <tt>m021\_v4l2.c</tt>, <tt>m021\_v4l2\_opencv.hpp</tt>,
-<tt>m021\_v4l2\_opencv.hpp</tt>) and modify the Makefile appropriately.
+To run the Python demo program, cd to <tt>opencv/python</tt> and do
+<pre>
+  % sudo python setup. py install
+  % make cap
+</pre>
+
+To run the C++ OpenCV capture demo, cd to <b>opencv/cpp</b> and type <b>make
+cap</b>.  
+
+Both of these programs do some post-capture color balancing to compensate for
+the slightly dimmed / green appearance of the image from the camera.
 
 I've also provided a C API (which is used by the C++ and Python code) for
 capturing images in YUYV format, along with a demo program (a cut-down version
