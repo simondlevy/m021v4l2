@@ -21,7 +21,9 @@
 #include "m021_thread_support.h"
 #include "m021_v4l2.h"
 
-void * m021_thread_loop(void * arg)
+#include <stdio.h>
+
+static void * loop(void * arg)
 {
 
     m021_thread_data_t * data = (m021_thread_data_t *)arg;
@@ -46,6 +48,28 @@ void * m021_thread_loop(void * arg)
     m021_free(&cap);
 
     return (void *)0;
+}
+
+void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes, 
+        int bcorrect, int gcorrect, int rcorrect)
+{
+    pthread_mutex_t lock;
+
+    if (pthread_mutex_init(&lock, NULL) != 0) {
+        printf("\n mutex init failed\n");
+        return;
+    }
+
+    data->rows = rows;
+    data->cols = cols;
+    data->bytes = bytes;
+    data->lock = lock;
+    data->bcorrect = bcorrect;
+    data->gcorrect = gcorrect;
+    data->rcorrect = rcorrect;
+
+    if (pthread_create(&data->video_thread, NULL, loop, data)) 
+        printf("\nFailed to create thread\n");
 }
 
 

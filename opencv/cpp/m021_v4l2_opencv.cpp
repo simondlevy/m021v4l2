@@ -33,33 +33,11 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
 
     mat = Mat(height, width, CV_8UC3);
 
-    m021_thread_data_t * data = new m021_thread_data_t;
+    m021_thread_data_t * thread_data = new m021_thread_data_t;
 
-    //m021_thread_init(this->data, mat.rows, mat.cols, mat.data, bcorrect, gcorrect, rcorrect);
+    m021_thread_start(thread_data, mat.rows, mat.cols, mat.data, bcorrect, gcorrect, rcorrect);
 
-    // -------------------------------
-
-    pthread_mutex_t lock;
-
-    if (pthread_mutex_init(&lock, NULL) != 0) {
-        printf("\n mutex init failed\n");
-        exit(1);
-    }
-
-    data->rows = mat.rows;
-    data->cols = mat.cols;
-    data->bytes = mat.data;
-    data->lock = lock;
-    data->bcorrect = bcorrect;
-    data->gcorrect = gcorrect;
-    data->rcorrect = rcorrect;
-
-    if (pthread_create(&data->video_thread, NULL, m021_thread_loop, data)) {
-        fprintf(stderr, "Failed to create thread\n");
-        exit(1);
-    }
-
-    this->data = data;
+   this->data = thread_data;
 }
         
 M021_Capture::~M021_Capture(void)

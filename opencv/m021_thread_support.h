@@ -35,4 +35,5 @@ typedef struct {
 
 } m021_thread_data_t;
 
-void * m021_thread_loop(void * arg);
+void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes, 
+        int bcorrect, int gcorrect, int rcorrect);
