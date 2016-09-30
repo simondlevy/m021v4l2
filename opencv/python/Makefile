@@ -24,5 +24,9 @@ clean:
 
 cap:
 	./capture.py
+
+flow:
+	./flowcap.py
+
 test:
 	./capture.py

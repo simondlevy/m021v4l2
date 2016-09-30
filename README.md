@@ -45,3 +45,5 @@ I've also provided a C API (which is used by the C++ and Python code) for
 capturing images in YUYV format, along with a demo program (a cut-down version
 of Guvcview) that displays the images using GTK and SDL.  To run the GTK/SDL
 demo, cd to <b>gtksdl</b> and type <b>make run</b>.
+
+<b>Known Issues</b>: Programs will occasionally seg-fault on exit.

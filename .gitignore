@@ -2,4 +2,5 @@ opencv/cpp/Documentation
 opencv/python/build
 *.pyc
 *.o
+*.swp
 
