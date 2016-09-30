@@ -35,6 +35,7 @@ class Capture1280x720:
 
         return True, self.frame
 
-    def release(self):
+    def getCount(self):
 
-        return
+        return lib.count()
+

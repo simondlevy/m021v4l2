@@ -50,17 +50,6 @@ static PyObject * init (PyObject * dummy, PyObject * args)
     m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0), 
             bcorrect, gcorrect, rcorrect);
 
-    /*
-    for (int i=0; i<arr->dimensions[0]; ++i) {
-        for (int j=0; j<arr->dimensions[1]; ++j) {
-            for (int k=0; k<arr->dimensions[2]; ++k) {
-                uint8_t *v = (uint8_t*)PyArray_GETPTR3(arr, i, j, k);
-                *v = 100;
-            }
-        }
-    }
-    */
-
     Py_DECREF(nparray);
 
 
@@ -74,9 +63,16 @@ static PyObject * acquire (PyObject * dummy, PyObject * args)
     return Py_None;
 }
 
+static PyObject *
+count(PyObject *self, PyObject *args)
+{
+    return Py_BuildValue("i", thread_data.count);
+}
+
 static struct PyMethodDef methods[] = {
     {"init", init, METH_VARARGS, NULL},
     {"acquire", acquire, METH_VARARGS, NULL},
+    {"count", count, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
