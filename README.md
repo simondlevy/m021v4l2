@@ -46,4 +46,9 @@ capturing images in YUYV format, along with a demo program (a cut-down version
 of Guvcview) that displays the images using GTK and SDL.  To run the GTK/SDL
 demo, cd to <b>gtksdl</b> and type <b>make run</b>.
 
-<b>Known Issues</b>: Programs will occasionally seg-fault on exit.
+<b>Known Issues</b> 
+
+<ul>
+<li>Programs will occasionally seg-fault on exit.
+<p><li> On ODROID XU4, Python version is much slower than C++ version
+</ul>

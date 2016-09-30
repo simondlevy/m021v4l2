@@ -20,7 +20,7 @@
    along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-SCALEDOWN  = 1
+SCALEDOWN  = 2
 PYRSCALE   = 0.5
 LEVELS     = 3
 WINSIZE    = 10
