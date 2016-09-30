@@ -21,11 +21,14 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import libm021v4l2 as lib
 
-class Capture1280x720:
+# XXX This is kind of a sleazy implementation, partly in Python, partly in C extension.  
+# XXX We probably should do the whole thing in C.
 
-    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+class _Capture(object):
 
-        self.frame = np.zeros((720,1280,3), dtype='uint8')
+    def __init__(self, rows, cols, bcorrect, gcorrect, rcorrect):
+
+        self.frame = np.zeros((rows,cols,3), dtype='uint8')
 
         lib.init(self.frame, bcorrect, gcorrect, rcorrect) 
 
@@ -38,4 +41,23 @@ class Capture1280x720:
     def getCount(self):
 
         return lib.count()
+
+class Capture1280x720(_Capture):
+
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+
+        _Capture.__init__(self, 720, 1280, bcorrect, gcorrect, rcorrect) 
+
+class Capture800x460(_Capture):
+
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+
+        _Capture.__init__(self, 460, 800, bcorrect, gcorrect, rcorrect) 
+
+class Capture640x480(_Capture):
+
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+
+        _Capture.__init__(self, 480, 640, bcorrect, gcorrect, rcorrect) 
+
 

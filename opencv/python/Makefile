@@ -1,4 +1,4 @@
-# Makefile : builds M021_V4L2 OpenCV Python examples
+# Makefile : convenient for installing/testing M021 Python API
 #
 # Copyright (C) Simon D. Levy 2016
 #
@@ -22,5 +22,7 @@ install:
 clean:
 	rm -rf build *.pyc *~
 
+cap:
+	./capture.py
 test:
 	./capture.py

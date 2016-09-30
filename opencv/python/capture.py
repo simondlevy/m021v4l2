@@ -21,10 +21,10 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import cv2
-from m021v4l2 import Capture1280x720
+from m021v4l2 import Capture800x460
 from time import time
 
-cap = Capture1280x720()
+cap = Capture800x460()
 
 start = time()
 
