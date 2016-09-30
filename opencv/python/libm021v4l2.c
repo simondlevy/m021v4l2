@@ -27,29 +27,17 @@
 #include <stdio.h>
 
 // XXX support just one camera for now
-
 static m021_thread_data_t thread_data;
 
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
-    int rows, cols;
-    int bcorrect, gcorrect, rcorrect;
-
-    if (!PyArg_ParseTuple(args, "iiiii", &rows, &cols, &bcorrect, &gcorrect, &rcorrect))
-        return NULL;
-
-    printf("%d %d %d %d %d\n", rows, cols, bcorrect, gcorrect, rcorrect);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject * acquire (PyObject * dummy, PyObject * args)
-{
     PyObject * obj = NULL;
     PyArrayObject * arr = NULL;
 
-    if (!PyArg_ParseTuple(args, "O!", &PyArray_Type, &obj)) return NULL;
+    int bcorrect, gcorrect, rcorrect;
+
+    if (!PyArg_ParseTuple(args, "O!iii", &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
+        return NULL;
 
     arr = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
 
@@ -58,6 +46,10 @@ static PyObject * acquire (PyObject * dummy, PyObject * args)
         return NULL;
     }
 
+    int rows = arr->dimensions[0];
+    int cols = arr->dimensions[1];
+
+    /*
     for (int i=0; i<arr->dimensions[0]; ++i) {
         for (int j=0; j<arr->dimensions[1]; ++j) {
             for (int k=0; k<arr->dimensions[2]; ++k) {
@@ -66,9 +58,19 @@ static PyObject * acquire (PyObject * dummy, PyObject * args)
             }
         }
     }
+    */
 
     Py_DECREF(arr);
+
+    //m021_thread_start(&thread_data, rows, cols, bytes, bcorrect, gcorrect, rcorrect);
+
     Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject * acquire (PyObject * dummy, PyObject * args)
+{
+   Py_INCREF(Py_None);
     return Py_None;
 }
 

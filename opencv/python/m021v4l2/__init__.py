@@ -25,15 +25,15 @@ class Capture1280x720:
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
-        lib.init(720, 1280, bcorrect, gcorrect, rcorrect) 
+        self.frame = np.zeros((720,1280,3), dtype='uint8')
+
+        lib.init(self.frame, bcorrect, gcorrect, rcorrect) 
 
     def read(self):
 
-        frame = np.zeros((720,1280,3), dtype='uint8')
+        lib.acquire(self.frame)
 
-        lib.acquire(frame)
-
-        return True, frame
+        return True, self.frame
 
     def release(self):
 
