@@ -1,5 +1,5 @@
 '''
-m021v4l2 : Python classes for Leopard Imaging LI-USB30-M021 on Linux
+Python classes for Leopard Imaging LI-USB30-M021 on Linux
 
 Copyright (C) 2016 Simon D. Levy
 
@@ -25,6 +25,9 @@ import libm021v4l2 as lib
 # XXX We probably should do the whole thing in C.
 
 class _Capture(object):
+    '''
+    Abstract parent class; do not instantiate directly.
+    '''
 
     def __init__(self, rows, cols, bcorrect, gcorrect, rcorrect):
 
@@ -33,31 +36,45 @@ class _Capture(object):
         lib.init(self.frame, bcorrect, gcorrect, rcorrect) 
 
     def read(self):
+        '''
+        Reads one frame of data from the camera.  Returns a pair success, frame, where success is True or
+        False, frame is an RxCx3 NumPy array of color image bytes.
+        '''
 
         lib.acquire(self.frame)
 
         return True, self.frame
 
     def getCount(self):
+        '''
+        Returns the number of frames acquired since init. 
+        '''
 
         return lib.count()
 
 class Capture1280x720(_Capture):
+    '''
+    A class for capturing 1280x720 color images at 60 frames per second
+    '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
         _Capture.__init__(self, 720, 1280, bcorrect, gcorrect, rcorrect) 
 
 class Capture800x460(_Capture):
+    '''
+    A class for capturing 800x460 color images at 90 frames per second
+    '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
         _Capture.__init__(self, 460, 800, bcorrect, gcorrect, rcorrect) 
 
 class Capture640x480(_Capture):
+    '''
+    A class for capturing 640x480 color images at 30 frames per second
+    '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
         _Capture.__init__(self, 480, 640, bcorrect, gcorrect, rcorrect) 
-
-
