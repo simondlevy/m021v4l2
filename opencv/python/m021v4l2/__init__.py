@@ -37,7 +37,7 @@ class _Capture(object):
 
     def read(self):
         '''
-        Reads one frame of data from the camera.  Returns a pair success, frame, where success is True or
+        Reads one frame of data from the camera.  Returns a pair (success,frame), where success is True or
         False, frame is an RxCx3 NumPy array of color image bytes.
         '''
 
@@ -54,7 +54,9 @@ class _Capture(object):
 
 class Capture1280x720(_Capture):
     '''
-    A class for capturing 1280x720 color images at 60 frames per second
+    A class for capturing 1280x720 color images at 60 frames per second.
+    Optional bcorrect, gcorrect, rcorrect values specify color-correction for
+    red, green, and blue components, respectively.
     '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
@@ -64,6 +66,8 @@ class Capture1280x720(_Capture):
 class Capture800x460(_Capture):
     '''
     A class for capturing 800x460 color images at 90 frames per second
+    Optional bcorrect, gcorrect, rcorrect values specify color-correction for
+    red, green, and blue components, respectively.
     '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
@@ -73,6 +77,8 @@ class Capture800x460(_Capture):
 class Capture640x480(_Capture):
     '''
     A class for capturing 640x480 color images at 30 frames per second
+    Optional bcorrect, gcorrect, rcorrect values specify color-correction for
+    red, green, and blue components, respectively.
     '''
 
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
