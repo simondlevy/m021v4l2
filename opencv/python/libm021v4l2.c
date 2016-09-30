@@ -32,22 +32,23 @@ static m021_thread_data_t thread_data;
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
     PyObject * obj = NULL;
-    PyArrayObject * arr = NULL;
-
     int bcorrect, gcorrect, rcorrect;
 
     if (!PyArg_ParseTuple(args, "O!iii", &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
         return NULL;
 
-    arr = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
+    PyArrayObject * nparray = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
 
-    if (arr == NULL) {
-        PyArray_XDECREF_ERR(arr);
+    if (nparray == NULL) {
+        PyArray_XDECREF_ERR(nparray);
         return NULL;
     }
 
-    int rows = arr->dimensions[0];
-    int cols = arr->dimensions[1];
+    int rows = nparray->dimensions[0];
+    int cols = nparray->dimensions[1];
+
+    m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0), 
+            bcorrect, gcorrect, rcorrect);
 
     /*
     for (int i=0; i<arr->dimensions[0]; ++i) {
@@ -60,9 +61,8 @@ static PyObject * init (PyObject * dummy, PyObject * args)
     }
     */
 
-    Py_DECREF(arr);
+    Py_DECREF(nparray);
 
-    //m021_thread_start(&thread_data, rows, cols, bytes, bcorrect, gcorrect, rcorrect);
 
     Py_INCREF(Py_None);
     return Py_None;
