@@ -26,6 +26,7 @@ typedef struct {
     int rows;
     int cols;
     uint8_t * bytes;
+    pthread_t video_thread;
     pthread_mutex_t lock;
     unsigned long long count;
     int bcorrect;

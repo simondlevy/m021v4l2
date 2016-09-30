@@ -34,7 +34,8 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
     mat = Mat(height, width, CV_8UC3);
 
     m021_thread_data_t * data = new m021_thread_data_t;
-    this->data = data;
+
+    //m021_thread_init(this->data, mat.rows, mat.cols, mat.data, bcorrect, gcorrect, rcorrect);
 
     // -------------------------------
 
@@ -53,10 +54,12 @@ M021_Capture::M021_Capture(Mat & mat, int width, int height, int bcorrect, int g
     data->gcorrect = gcorrect;
     data->rcorrect = rcorrect;
 
-    if (pthread_create(&this->video_thread, NULL, m021_thread_loop, data)) {
+    if (pthread_create(&data->video_thread, NULL, m021_thread_loop, data)) {
         fprintf(stderr, "Failed to create thread\n");
         exit(1);
     }
+
+    this->data = data;
 }
         
 M021_Capture::~M021_Capture(void)

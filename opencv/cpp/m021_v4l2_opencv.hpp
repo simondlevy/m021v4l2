@@ -40,8 +40,6 @@ class M021_Capture {
 
         void * data;
 
-        pthread_t video_thread;
-
     public:
 
         unsigned long long getCount(void);
