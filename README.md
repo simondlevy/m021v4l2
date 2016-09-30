@@ -1,7 +1,7 @@
 # M021V4L2: Capture images from Leopard Imaging LI-USB30-M021 camera on Linux in C++ and Python
 
 The LI-USB30-M021 camera from Leopard Imaging is a fast (up to 90 frames per
-second) global-shutter camera that captures images over USB 3.0.  Because the
+second) global-shutter CMOS camera that captures images over USB 3.0.  Because the
 camera serves up raw image bytes, getting it to work on Linux using V4L2 (Video
 For Linux 2) requires a bit of extra format-conversion work.  With some help
 from the folks at Leopard Imaging, I was able to write a few simple APIs for
