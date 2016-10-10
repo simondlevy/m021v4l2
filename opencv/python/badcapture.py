@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
 '''
-capture.py : capture frames from Leopard Imaging LI-USB30-M021 camera and display them using OpenCV
+badcapture.py : illustrates failure to capture frames from Leopard Imaging LI-USB30-M021 using ordinary OpenCV
+                cv2.VideoCapture method. Result: big green blobby image!
 
 Copyright (C) 2016 Simon D. Levy
 
@@ -20,27 +20,33 @@ You should have received a copy of the GNU General Public License
 along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+
+
+
 import cv2
-from m021v4l2 import Capture800x460
 from time import time
 
-cap = Capture800x460()
+cap = cv2.VideoCapture(0)
 
 start = time()
+
+count = 0
 
 while True:
 
     # Capture frame-by-frame
     ret, frame = cap.read()
 
+    count += 1
+
     # Display the resulting frame
-    cv2.imshow('LI-USB30-M021',frame)
+    cv2.imshow('frame',frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
-count = cap.getCount()
 elapsed = time() - start
 print('%d frames in %3.2f seconds = %3.2f fps' % (count, elapsed, count/elapsed))
 
 # When everything done, release the capture
+cap.release()
 cv2.destroyAllWindows()
