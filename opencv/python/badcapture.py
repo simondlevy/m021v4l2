@@ -20,9 +20,6 @@ You should have received a copy of the GNU General Public License
 along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-
-
-
 import cv2
 from time import time
 
@@ -40,7 +37,7 @@ while True:
     count += 1
 
     # Display the resulting frame
-    cv2.imshow('frame',frame)
+    cv2.imshow('Okay for normal webcam, green blobs for M021',frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
