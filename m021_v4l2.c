@@ -778,7 +778,8 @@ static void add(uint8_t * val, int8_t inc)
 
 static void color_correct(uint8_t * bgr, int width, int height, int8_t bcorrect, int8_t gcorrect, int8_t rcorrect)
 {
-    for (int k=0; k<width*height*3; k+=3) {
+    int k;
+    for (k=0; k<width*height*3; k+=3) {
         add(&bgr[k],   bcorrect);
         add(&bgr[k+1], gcorrect);
         add(&bgr[k+2], rcorrect);
