@@ -41,7 +41,7 @@ sure that they're installed now:
 <pre>
   % sudo pip3 install numpy
   % sudo pip3 install opencv-python
-<pre>
+</pre>
 
 Because Python2 will not be [supported](https://pythonclock.org/) much longer,
 I've switched to Python3 for this project, and will not be supporting Python2.
