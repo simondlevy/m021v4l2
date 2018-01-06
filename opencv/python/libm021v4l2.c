@@ -77,7 +77,8 @@ static struct PyMethodDef methods[] = {
 };
 
 
-// https://stackoverflow.com/questions/28305731/compiler-cant-find-py-initmodule-is-it-deprecated-and-if-so-what-should-i
+// Python3 version, adapted from
+//   https://stackoverflow.com/questions/28305731/compiler-cant-find-py-initmodule-is-it-deprecated-and-if-so-what-should-i
 
 static struct PyModuleDef cModPyDem =
 {
