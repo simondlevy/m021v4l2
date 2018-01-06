@@ -31,7 +31,7 @@ the classes are extremely simple to use:
 
 To run the Python3 demo program, cd to <tt>opencv/python</tt> and do
 <pre>
-  % sudo python3 setup. py install
+  % sudo python3 setup.py install
   % make cap
 </pre>
 
