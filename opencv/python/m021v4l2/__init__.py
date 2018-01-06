@@ -84,3 +84,14 @@ class Capture640x480(_Capture):
     def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
 
         _Capture.__init__(self, 480, 640, bcorrect, gcorrect, rcorrect) 
+
+class Capture1600x1200(_Capture):
+    '''
+    An experimental class for capturing 1600x1200 color images at 30 frames per
+    second with the LI-C570 camera. Optional bcorrect, gcorrect, rcorrect values 
+    specify color-correction for red, green, and blue components, respectively.
+    '''
+
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+
+        _Capture.__init__(self, 1200, 1600, bcorrect, gcorrect, rcorrect) 
