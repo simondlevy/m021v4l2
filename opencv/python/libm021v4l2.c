@@ -82,9 +82,9 @@ static struct PyMethodDef methods[] = {
 static struct PyModuleDef cModPyDem =
 {
     PyModuleDef_HEAD_INIT,
-    "libm021v4l2", /* name of module */
-    "",          /* module documentation, may be NULL */
-    -1,          /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    "libm021v4l2", // name of module
+    "",          // module documentation, may be NULL 
+    -1,          // size of per-interpreter state of the module, or -1 if the module keeps state in global variables. 
     methods
 };
 
@@ -94,3 +94,11 @@ PyMODINIT_FUNC PyInit_libm021v4l2 (void)
     import_array();
     return retval;
 }
+
+
+/* Python2 version
+PyMODINIT_FUNC initlibm021v4l2 (void)
+{
+    (void)Py_InitModule("libm021v4l2", methods);
+    import_array();
+}*/
