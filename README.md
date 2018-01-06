@@ -62,4 +62,6 @@ demo, cd to <b>gtksdl</b> and type <b>make run</b>.
 <ul>
 <li>Programs will occasionally seg-fault on exit.
 <p><li> On ODROID XU4, Python3 version is much slower than C++ version.
+<p><li> On desktop Ubuntu 16.04, an <b>Unable to dequeue buffer</b> error
+occurs in the OpenCV C++ examples, and no image is displayed.
 </ul>
