@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 badcapture.py : illustrates failure to capture frames from Leopard Imaging LI-USB30-M021 using ordinary OpenCV
                 cv2.VideoCapture method. Result: big green blobby image!

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
    flowcap.py - Optical Flow from image capture  using Leopard Imageing M021 camear on Linux.
@@ -41,6 +41,7 @@ if __name__ == '__main__':
     start = time()
     flowcount = 0
     prev_gray = None
+    flow = None
 
     newsize = 800>>SCALEDOWN, 460>>SCALEDOWN
 
@@ -51,11 +52,11 @@ if __name__ == '__main__':
 
         frame2 = cv2.resize(frame, newsize)
 
-        gray = cv2.cvtColor(frame2, cv2.cv.CV_BGR2GRAY)
+        gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 
         if prev_gray is not None:
 
-            flow = cv2.calcOpticalFlowFarneback(prev_gray, gray, 
+            flow = cv2.calcOpticalFlowFarneback(prev_gray, gray, flow,
                     pyr_scale=PYRSCALE, levels=LEVELS, winsize=WINSIZE, iterations=ITERATIONS, 
                     poly_n=POLY_N, poly_sigma=POLY_SIGMA, flags=0) 
 
